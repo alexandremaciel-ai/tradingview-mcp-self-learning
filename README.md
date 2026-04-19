@@ -87,7 +87,25 @@ Each session compounds on previous knowledge. The wiki grows. The analysis impro
 
 ## Quick Start
 
-### 1. Clone this fork
+### Option A — One-Line Install (recommended)
+
+Clones, installs dependencies, registers the MCP server in Claude Code, and optionally launches TradingView — all in one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/alexandremaciel-ai/tradingview-mcp-self-learning/main/scripts/setup.sh | bash
+```
+
+Or if you already cloned the repo:
+
+```bash
+./scripts/setup.sh
+```
+
+That's it. Open Claude Code and start using.
+
+### Option B — Project Auto-Config (zero setup)
+
+If you just want to clone and go:
 
 ```bash
 git clone https://github.com/alexandremaciel-ai/tradingview-mcp-self-learning.git
@@ -95,55 +113,55 @@ cd tradingview-mcp-self-learning
 npm install
 ```
 
-### 2. Launch TradingView with CDP
+Then open Claude Code **inside the project directory**. The `.mcp.json` at the root auto-registers the MCP server — no manual JSON editing needed.
 
-TradingView Desktop must be running with Chrome DevTools Protocol enabled on port 9222.
+> [!NOTE]
+> With Option B the MCP server is only active when Claude Code is opened inside this project directory. Use Option A for global access from any directory.
 
-**Mac:**
+### Option C — Manual Setup
+
+If you prefer full control:
+
 ```bash
-./scripts/launch_tv_debug_mac.sh
+git clone https://github.com/alexandremaciel-ai/tradingview-mcp-self-learning.git
+cd tradingview-mcp-self-learning
+npm install
+
+# Register globally via Claude Code CLI
+claude mcp add --scope user tradingview -- node "$(pwd)/src/server.js"
 ```
 
-**Windows:**
-```bash
-scripts\launch_tv_debug.bat
-```
-
-**Linux:**
-```bash
-./scripts/launch_tv_debug_linux.sh
-```
-
-**Or launch manually:**
-```bash
-/path/to/TradingView --remote-debugging-port=9222
-```
-
-**Or use the MCP tool** (auto-detects your install):
-> "Use tv_launch to start TradingView in debug mode"
-
-### 3. Add to Claude Code
-
-Add to your MCP config (`~/.claude/.mcp.json` or project `.mcp.json`):
+Or add to `~/.claude/.mcp.json` manually:
 
 ```json
 {
   "mcpServers": {
     "tradingview": {
       "command": "node",
-      "args": ["/path/to/tradingview-mcp-self-learning/src/server.js"]
+      "args": ["/absolute/path/to/tradingview-mcp-self-learning/src/server.js"]
     }
   }
 }
 ```
 
-### 4. Verify
+### Launch TradingView
 
-Ask Claude: *"Use tv_health_check to verify TradingView is connected"*
+TradingView Desktop must be running with Chrome DevTools Protocol enabled:
 
-### 5. Start learning
+| Platform | Command |
+|----------|---------|
+| **Mac** | `./scripts/launch_tv_debug_mac.sh` |
+| **Windows** | `scripts\launch_tv_debug.bat` |
+| **Linux** | `./scripts/launch_tv_debug_linux.sh` |
+| **Manual** | `/path/to/TradingView --remote-debugging-port=9222` |
+| **Via MCP** | Ask Claude: *"Use tv_launch to start TradingView"* |
 
-Ask Claude: *"Analise o gráfico atual e registre na wiki"*
+### Verify & Start
+
+```
+1. Ask Claude: "Use tv_health_check to verify TradingView is connected"
+2. Ask Claude: "Analyze the current graph and record it on the wiki."
+```
 
 The wiki will grow from here.
 

@@ -37,8 +37,9 @@ Desktop.ini
 *token*
 !wiki/concepts/**
 
-# MCP config with potential paths/secrets
-.mcp.json
+# User-level MCP config (may contain local paths/secrets)
+# NOTE: The project-root .mcp.json is intentionally tracked — it enables auto-config
+~/.claude/.mcp.json
 
 # TradingView screenshots (local captures — do not redistribute)
 screenshots/

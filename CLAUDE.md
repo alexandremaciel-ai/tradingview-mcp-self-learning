@@ -2,6 +2,33 @@
 
 68 tools for reading and controlling a live TradingView Desktop chart via CDP (port 9222).
 
+---
+
+## ⚡ AUTO-PILOT — Regra Obrigatória (leia PRIMEIRO)
+
+**Este bloco se aplica a TODA interação neste projeto. Não é opcional. Não precisa ser pedido.**
+
+### ANTES de responder qualquer pedido:
+1. Ler `wiki/brain/insights.md` — aplicar aprendizados anteriores
+2. Ler `wiki/brain/mistakes.md` (últimos 10) — evitar repetir erros
+3. Se o pedido envolve um ativo → ler `wiki/assets/{SYMBOL}.md`
+4. Se o pedido envolve análise → ler `wiki/brain/predictions-log.md` para previsões abertas
+5. Se previsão aberta existe para o ativo → comparar com estado atual → fechar como ✅/❌
+
+### DEPOIS de responder qualquer pedido:
+1. **Sempre** — Extrair insight da interação → append em `wiki/brain/insights.md`
+2. **Se bias definido** — Registrar previsão em `wiki/brain/predictions-log.md`
+3. **Se indicador surpreendeu** — Atualizar `wiki/brain/indicators.md`
+4. **Se padrão já visto antes** — Atualizar `wiki/brain/patterns.md`
+5. **Se erro confirmado** — Append em `wiki/brain/mistakes.md`
+6. **Sempre** — Append em `wiki/log.md`
+
+> Se algum brain file não existir, criar cópia de `wiki/brain/_templates/{nome}.md`.
+> Se `wiki/index.md` não existir, criar de `wiki/index.initial.md`.
+> Se `wiki/log.md` não existir, criar de `wiki/log.initial.md`.
+
+---
+
 ## Decision Tree — Which Tool When
 
 ### "What's on my chart right now?"

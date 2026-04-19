@@ -127,3 +127,78 @@ Claude Code ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ Trading
 ```
 
 Pine graphics path: `study._graphics._primitivesCollection.dwglines.get('lines').get(false)._primitivesDataById`
+
+---
+
+# Wiki Maintenance Protocol
+
+> Este repositório implementa o padrão LLM Wiki (Karpathy). 
+> O LLM escreve e mantém a wiki. O humano raramente edita.
+
+## Estrutura da Wiki
+- `wiki/` — wiki compilada em markdown
+- `raw/` — dados brutos (screenshots, OHLCV exports, pine exports)
+- `wiki/index.md` — índice mestre, lido primeiro em qualquer query
+- `wiki/log.md` — append-only log de todas as operações
+
+## Operações Disponíveis
+
+### 1. INGEST — Após captura de dados do TradingView
+Trigger: "Analise o gráfico atual e registre na wiki"
+
+Workflow:
+1. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
+2. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template
+3. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
+4. Se setup identificado → criar/atualizar `wiki/setups/{nome}.md`
+5. Atualizar `wiki/index.md` (contadores e links)
+6. Append em `wiki/log.md`: `## [YYYY-MM-DD HH:MM] ingest | {SYMBOL} {TF}`
+
+### 2. QUERY — Perguntas contra a wiki
+Trigger: "Baseado na wiki, [pergunta]"
+
+Workflow:
+1. Ler `wiki/index.md` para mapear páginas relevantes
+2. Ler páginas relevantes
+3. Sintetizar resposta
+4. Se resposta é valiosa → arquivar em `wiki/analysis/YYYY-MM-DD-{slug}.md`
+5. Append em `wiki/log.md`: `## [YYYY-MM-DD] query | {resumo da pergunta}`
+
+### 3. LINT — Health-check periódico
+Trigger: "Faça o lint da wiki" ou "Health-check da wiki"
+
+Workflow:
+1. Ler `wiki/index.md` completo
+2. Verificar: links quebrados, dados desatualizados, campos vazios nos templates
+3. Cruzar `wiki/setups/` com `wiki/sessions/` para atualizar estatísticas
+4. Identificar conceitos mencionados mas sem página própria
+5. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
+6. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
+
+### 4. UPDATE STRATEGY — Revisão de estratégia
+Trigger: "Atualize a estratégia com base nos resultados recentes"
+
+Workflow:
+1. Ler `wiki/strategies/` + `wiki/setups/index.md` + últimas 10 sessões
+2. Calcular win rate, R:R médio, drawdown
+3. Propor ajustes
+4. Atualizar `wiki/strategies/conservative-trend-follower-v2.md`
+5. Append no log
+
+## Convenções de Backlinks
+- Use `[[nome-do-arquivo]]` (sem extensão, sem path)
+- Toda página nova deve ter seção `## Backlinks`
+- Ao atualizar uma página, verificar e adicionar backlinks bidirecionais
+
+## Convenções de Nomenclatura
+- Sessões: `YYYY-MM-DD-SYMBOL-TF.md` (ex: `2026-04-19-BTCUSD-4H.md`)
+- Setups: `kebab-case` descritivo (ex: `fvg-pullback-bull-ob.md`)
+- Analysis: `YYYY-MM-DD-slug.md`
+- Lint: `YYYY-MM-DD.md`
+
+## Regras Críticas
+1. NUNCA modificar arquivos em `raw/` — são imutáveis
+2. SEMPRE atualizar `wiki/log.md` após qualquer operação
+3. SEMPRE atualizar `wiki/index.md` quando criar nova página
+4. Screenshots vão em `raw/screenshots/` antes de referenciar na wiki
+5. Dados OHLCV exportados vão em `raw/ohlcv/`

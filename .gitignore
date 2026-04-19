@@ -1,6 +1,68 @@
+# Dependencies
 node_modules/
-screenshots/
-scripts/current.pine
+
+# Runtime & temp files
 temp_*
 *.log
 discovery-log.json
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+._*
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment & secrets — NEVER commit these
+.env
+.env.*
+.env.local
+.env.production
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+*.jks
+
+# API keys, credentials, tokens
+*credentials*
+*secret*
+*token*
+!wiki/concepts/**
+
+# MCP config with potential paths/secrets
+.mcp.json
+
+# TradingView screenshots (local captures — do not redistribute)
+screenshots/
+
+# Pine Script working files
+scripts/current.pine
+
+# Raw data — immutable local captures (gitkeep only)
+raw/screenshots/*.png
+raw/screenshots/*.jpg
+raw/screenshots/*.webp
+raw/ohlcv/*.json
+raw/ohlcv/*.csv
+raw/pine-exports/*.json
+raw/pine-exports/*.txt
+
+# Keep the raw directory structure in git
+!raw/**/.gitkeep
+
+# Build artifacts
+dist/
+build/
+*.tgz
+
+# Package manager lock files (keep package-lock.json)
+yarn.lock
+pnpm-lock.yaml

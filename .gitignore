@@ -1,25 +1,32 @@
-# Dependencies
+# ══════════════════════════════════════════════════════════════
+# TradingView MCP Self-Learning — .gitignore
+# ══════════════════════════════════════════════════════════════
+# This repo is PUBLIC. Personal analysis data MUST NOT be committed.
+# Only templates, reference docs, and framework code should be tracked.
+# ══════════════════════════════════════════════════════════════
+
+# ── Dependencies ─────────────────────────────────────────────
 node_modules/
 
-# Runtime & temp files
+# ── Runtime & temp files ─────────────────────────────────────
 temp_*
 *.log
 discovery-log.json
 
-# OS files
+# ── OS files ─────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 Desktop.ini
 ._*
 
-# IDE / editor
+# ── IDE / editor ─────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# Environment & secrets — NEVER commit these
+# ── Environment & secrets — NEVER commit ─────────────────────
 .env
 .env.*
 .env.local
@@ -31,39 +38,82 @@ Desktop.ini
 *.pfx
 *.jks
 
-# API keys, credentials, tokens
+# ── API keys, credentials, tokens ───────────────────────────
 *credentials*
 *secret*
 *token*
+# Exclude wiki concepts from the *token* glob (ATR contains "token" substring etc)
 !wiki/concepts/**
 
-# User-level MCP config (may contain local paths/secrets)
-# NOTE: The project-root .mcp.json is intentionally tracked — it enables auto-config
+# ── User-level MCP config ───────────────────────────────────
+# NOTE: The project-root .mcp.json IS tracked (enables auto-config for forks)
 ~/.claude/.mcp.json
 
-# TradingView screenshots (local captures — do not redistribute)
+# ── TradingView screenshots (runtime captures) ──────────────
 screenshots/
 
-# Pine Script working files
+# ── Pine Script working files ────────────────────────────────
 scripts/current.pine
 
-# Raw data — immutable local captures (gitkeep only)
-raw/screenshots/*.png
-raw/screenshots/*.jpg
-raw/screenshots/*.webp
-raw/ohlcv/*.json
-raw/ohlcv/*.csv
-raw/pine-exports/*.json
-raw/pine-exports/*.txt
-
-# Keep the raw directory structure in git
-!raw/**/.gitkeep
-
-# Build artifacts
+# ── Build artifacts ──────────────────────────────────────────
 dist/
 build/
 *.tgz
 
-# Package manager lock files (keep package-lock.json)
+# ── Package manager (keep package-lock.json) ─────────────────
 yarn.lock
 pnpm-lock.yaml
+
+# ══════════════════════════════════════════════════════════════
+# WIKI — PERSONAL DATA PROTECTION
+# ══════════════════════════════════════════════════════════════
+# The wiki/ directory contains both:
+#   - TEMPLATES & REFERENCE DOCS (committed — shared with forks)
+#   - PERSONAL RUNTIME DATA (gitignored — stays local only)
+#
+# Rule: only _template.md files, _templates/ dirs, concepts/,
+# strategies/, and overview.md are committed.
+# Everything generated during analysis sessions is LOCAL ONLY.
+# ══════════════════════════════════════════════════════════════
+
+# ── Wiki Brain — personal learning data (NEVER commit) ──────
+# Working brain files accumulate personal analysis data.
+# Templates in wiki/brain/_templates/ ARE committed for forks.
+wiki/brain/insights.md
+wiki/brain/mistakes.md
+wiki/brain/predictions-log.md
+wiki/brain/indicators.md
+wiki/brain/patterns.md
+
+# ── Wiki Sessions — personal analysis sessions ──────────────
+wiki/sessions/*.md
+!wiki/sessions/_template.md
+
+# ── Wiki Analysis — personal Q&A and investigations ─────────
+wiki/analysis/*.md
+!wiki/analysis/_template.md
+
+# ── Wiki Lint — personal health-check reports ────────────────
+wiki/lint/*.md
+!wiki/lint/_template.md
+
+# ── Wiki Assets — personal asset data (bias, levels, notes) ─
+wiki/assets/*.md
+!wiki/assets/_template.md
+
+# ── Wiki Setups — personal trade setups with statistics ──────
+wiki/setups/*.md
+!wiki/setups/_template.md
+!wiki/setups/index.md
+
+# ── Wiki Log — personal operation history ────────────────────
+wiki/log.md
+
+# ── Wiki Index — auto-updated with personal links/counters ──
+wiki/index.md
+
+# ── Raw data — immutable local captures (NEVER commit) ───────
+raw/screenshots/*
+raw/ohlcv/*
+raw/pine-exports/*
+!raw/**/.gitkeep

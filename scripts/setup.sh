@@ -131,6 +131,23 @@ cd "$INSTALL_DIR"
 npm install --silent 2>/dev/null
 success "Dependencies installed"
 
+# Initialize wiki working files from templates (gitignored, local only)
+if [ -d "$INSTALL_DIR/wiki/brain/_templates" ]; then
+  info "Initializing wiki brain..."
+  for tmpl in "$INSTALL_DIR/wiki/brain/_templates/"*.md; do
+    target="$INSTALL_DIR/wiki/brain/$(basename "$tmpl")"
+    if [ ! -f "$target" ]; then
+      cp "$tmpl" "$target"
+    fi
+  done
+  # Copy initial index and log if not present
+  [ ! -f "$INSTALL_DIR/wiki/index.md" ] && [ -f "$INSTALL_DIR/wiki/index.initial.md" ] && \
+    cp "$INSTALL_DIR/wiki/index.initial.md" "$INSTALL_DIR/wiki/index.md"
+  [ ! -f "$INSTALL_DIR/wiki/log.md" ] && [ -f "$INSTALL_DIR/wiki/log.initial.md" ] && \
+    cp "$INSTALL_DIR/wiki/log.initial.md" "$INSTALL_DIR/wiki/log.md"
+  success "Wiki brain initialized (local only — not tracked by git)"
+fi
+
 # ── Step 3: Register MCP Server ──────────────────────────────
 step 3 "Registering MCP server in Claude Code"
 

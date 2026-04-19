@@ -139,9 +139,14 @@ Pine graphics path: `study._graphics._primitivesCollection.dwglines.get('lines')
 ## Estrutura da Wiki
 - `wiki/` — wiki compilada em markdown
 - `wiki/brain/` — **cérebro ativo** (insights, erros, previsões, padrões, indicadores)
+- `wiki/brain/_templates/` — templates iniciais dos brain files (comitados no git)
 - `raw/` — dados brutos imutáveis (screenshots, OHLCV, pine exports)
-- `wiki/index.md` — índice mestre
-- `wiki/log.md` — append-only log de todas as operações
+- `wiki/index.md` — índice mestre (gitignored — criado a partir de `index.initial.md`)
+- `wiki/log.md` — append-only log (gitignored — criado a partir de `log.initial.md`)
+
+> **IMPORTANTE:** Os brain files (`wiki/brain/*.md`) são gitignored — dados pessoais.
+> Se um brain file não existir, criar cópia de `wiki/brain/_templates/{nome}.md`.
+> O `setup.sh` faz isso automaticamente. Se rodando sem setup, criar manualmente.
 
 ## Brain — O Cérebro da Aplicação
 

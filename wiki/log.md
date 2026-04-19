@@ -1,7 +1,7 @@
 # Wiki Log
 
 > Append-only. Cada entrada: `## [YYYY-MM-DD] tipo | descrição`
-> Tipos: `ingest` | `analyze` | `lint` | `query` | `update`
+> Tipos: `ingest` | `analyze` | `lint` | `query` | `update` | `feedback`
 
 ## Como parsear
 ```bash
@@ -15,3 +15,10 @@ grep "^## \[" wiki/log.md | grep "ingest"
 - Estrutura base gerada
 - Arquivos template criados
 - CLAUDE.md expandido com seção WikiMaintenance
+
+## [2026-04-19] update | Brain system adicionado — autoaprendizado ativo
+- wiki/brain/ criado com 5 arquivos (insights, mistakes, predictions-log, indicators, patterns)
+- CLAUDE.md reescrito com REGRA ZERO: ciclo READ → ANALYZE → WRITE automático
+- Operação FEEDBACK adicionada para fechar loop de aprendizado
+- Prioridade de contexto definida para carregamento eficiente
+

@@ -132,58 +132,166 @@ Pine graphics path: `study._graphics._primitivesCollection.dwglines.get('lines')
 
 # Wiki Maintenance Protocol
 
-> Este repositório implementa o padrão LLM Wiki (Karpathy). 
-> O LLM escreve e mantém a wiki. O humano raramente edita.
+> Este repositório implementa o padrão LLM Wiki (Karpathy) com **brain ativo**.
+> O LLM lê o brain ANTES de analisar e escreve nele DEPOIS de cada interação.
+> O humano raramente edita. O cérebro cresce sozinho.
 
 ## Estrutura da Wiki
 - `wiki/` — wiki compilada em markdown
-- `raw/` — dados brutos (screenshots, OHLCV exports, pine exports)
-- `wiki/index.md` — índice mestre, lido primeiro em qualquer query
+- `wiki/brain/` — **cérebro ativo** (insights, erros, previsões, padrões, indicadores)
+- `raw/` — dados brutos imutáveis (screenshots, OHLCV, pine exports)
+- `wiki/index.md` — índice mestre
 - `wiki/log.md` — append-only log de todas as operações
+
+## Brain — O Cérebro da Aplicação
+
+O diretório `wiki/brain/` é o núcleo de autoaprendizado:
+
+| Arquivo | Propósito | Quando ler | Quando escrever |
+|---------|-----------|------------|-----------------|
+| `brain/insights.md` | Insights acumulados de todas as análises | ANTES de cada análise | DEPOIS de cada análise |
+| `brain/mistakes.md` | Erros cometidos e lições aprendidas | ANTES de cada análise | Quando feedback confirma erro |
+| `brain/predictions-log.md` | Previsões com outcomes (aberta/acertou/errou) | Ao analisar ativo com previsão aberta | Quando análise gera bias definido |
+| `brain/indicators.md` | Aprendizados sobre cada indicador | ANTES de analisar indicadores | Quando indicador surpreende (acerta/falha) |
+| `brain/patterns.md` | Padrões comportamentais recorrentes | ANTES de cada análise | Quando padrão se repete pela 2ª+ vez |
+
+---
+
+## REGRA ZERO — Ciclo Automático de Aprendizado
+
+**TODA interação com chart/análise segue este ciclo. Não é opcional.**
+
+### ANTES de analisar (READ):
+1. Ler `wiki/brain/insights.md` — aplicar top insights à análise atual
+2. Ler `wiki/brain/mistakes.md` (últimos 10) — evitar repetir erros
+3. Ler `wiki/assets/{SYMBOL}.md` — contexto histórico do ativo
+4. Ler `wiki/brain/predictions-log.md` — verificar se há previsão aberta para o ativo
+5. Se previsão aberta existe → comparar previsão com estado atual → fechar como ✅/❌
+
+### DEPOIS de analisar (WRITE):
+1. **Sempre** — Extrair insight da análise → append em `brain/insights.md`
+2. **Se bias definido** — Registrar previsão em `brain/predictions-log.md`
+3. **Se indicador surpreendeu** — Atualizar `brain/indicators.md`
+4. **Se padrão visto antes** — Atualizar `brain/patterns.md`
+5. **Se erro identificado** (via feedback) — Append em `brain/mistakes.md`
+6. **Sempre** — Append em `wiki/log.md`
+
+### Formato de Insight (brain/insights.md)
+```markdown
+### [YYYY-MM-DD] {título curto}
+_{descrição em 1-2 linhas}_
+- **Ativo:** {SYMBOL} | **TF:** {timeframe}
+- **Confiança:** alta | média | baixa
+- **Baseado em:** {indicadores/padrões usados}
+```
+
+### Formato de Previsão (brain/predictions-log.md)
+```markdown
+### [YYYY-MM-DD HH:MM] SYMBOL TF — BIAS
+- **Preço na previsão:** $XX,XXX
+- **Alvo:** $XX,XXX
+- **Invalidação:** $XX,XXX
+- **Confiança:** alta | média | baixa
+- **Indicadores base:** [lista]
+- **Status:** ⏳ aberta
+```
+
+### Formato de Erro (brain/mistakes.md)
+```markdown
+### [YYYY-MM-DD] {categoria}: {título}
+- **O que aconteceu:** _{descrição}_
+- **Por que errou:** _{causa raiz}_
+- **Lição:** _{o que fazer diferente}_
+- **Sessão:** [[YYYY-MM-DD-SYMBOL-TF]]
+```
+
+Categorias de erro: `falso-sinal` | `bias-errado` | `timing` | `indicador` | `htf-ignorado` | `overtrading` | `sl-apertado`
+
+---
 
 ## Operações Disponíveis
 
-### 1. INGEST — Após captura de dados do TradingView
-Trigger: "Analise o gráfico atual e registre na wiki"
+### 1. INGEST — Análise de gráfico com registro
+Trigger: "Analyze the current graph and record it on the wiki" ou qualquer pedido de análise de chart
 
 Workflow:
-1. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
-2. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template
-3. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
-4. Se setup identificado → criar/atualizar `wiki/setups/{nome}.md`
-5. Atualizar `wiki/index.md` (contadores e links)
-6. Append em `wiki/log.md`: `## [YYYY-MM-DD HH:MM] ingest | {SYMBOL} {TF}`
+1. **[BRAIN READ]** Executar ciclo READ (insights, mistakes, asset, predictions)
+2. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
+3. Analisar com contexto do brain (aplicar insights, evitar erros passados)
+4. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template
+5. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
+6. Se setup identificado → criar/atualizar `wiki/setups/{nome}.md`
+7. Atualizar `wiki/index.md` (contadores e links)
+8. **[BRAIN WRITE]** Executar ciclo WRITE (insight, prediction, indicators)
+9. Append em `wiki/log.md`: `## [YYYY-MM-DD HH:MM] ingest | {SYMBOL} {TF}`
 
 ### 2. QUERY — Perguntas contra a wiki
-Trigger: "Baseado na wiki, [pergunta]"
+Trigger: "Baseado na wiki, [pergunta]" ou qualquer pergunta sobre mercado/estratégia
 
 Workflow:
-1. Ler `wiki/index.md` para mapear páginas relevantes
-2. Ler páginas relevantes
-3. Sintetizar resposta
-4. Se resposta é valiosa → arquivar em `wiki/analysis/YYYY-MM-DD-{slug}.md`
-5. Append em `wiki/log.md`: `## [YYYY-MM-DD] query | {resumo da pergunta}`
+1. **[BRAIN READ]** Ler brain relevante ao tema da pergunta
+2. Ler `wiki/index.md` para mapear páginas relevantes
+3. Ler páginas relevantes
+4. Sintetizar resposta com contexto do brain
+5. Se resposta gerou novo insight → append em `brain/insights.md`
+6. Se resposta é valiosa → arquivar em `wiki/analysis/YYYY-MM-DD-{slug}.md`
+7. Append em `wiki/log.md`: `## [YYYY-MM-DD] query | {resumo da pergunta}`
 
-### 3. LINT — Health-check periódico
+### 3. FEEDBACK — Fechar loop de aprendizado
+Trigger: "Como foi minha previsão?" ou "O mercado confirmou?" ou ao analisar ativo com previsão aberta
+
+Workflow:
+1. Ler `wiki/brain/predictions-log.md` → buscar previsões abertas (⏳)
+2. Comparar previsão com estado atual do mercado
+3. Marcar como ✅ acertou | ❌ errou | ⚪ expirou
+4. Se ❌ errou:
+   - Identificar causa raiz
+   - Append em `brain/mistakes.md` com categoria e lição
+   - Atualizar `brain/indicators.md` se indicador falhou
+5. Se ✅ acertou:
+   - Reforçar insight em `brain/insights.md`
+   - Atualizar confiabilidade em `brain/indicators.md`
+6. Atualizar `brain/patterns.md` se padrão se confirmou/negou
+7. Append em `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`
+
+### 4. LINT — Health-check periódico
 Trigger: "Faça o lint da wiki" ou "Health-check da wiki"
 
 Workflow:
 1. Ler `wiki/index.md` completo
-2. Verificar: links quebrados, dados desatualizados, campos vazios nos templates
+2. Verificar: links quebrados, dados desatualizados, campos vazios
 3. Cruzar `wiki/setups/` com `wiki/sessions/` para atualizar estatísticas
-4. Identificar conceitos mencionados mas sem página própria
-5. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
-6. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
+4. **Verificar previsões expiradas** em `brain/predictions-log.md` (> 48h abertas)
+5. **Ranquear insights** em `brain/insights.md` (mover mais validados para cima)
+6. Identificar conceitos mencionados mas sem página própria
+7. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
+8. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
 
-### 4. UPDATE STRATEGY — Revisão de estratégia
+### 5. UPDATE STRATEGY — Revisão de estratégia
 Trigger: "Atualize a estratégia com base nos resultados recentes"
 
 Workflow:
 1. Ler `wiki/strategies/` + `wiki/setups/index.md` + últimas 10 sessões
-2. Calcular win rate, R:R médio, drawdown
-3. Propor ajustes
-4. Atualizar `wiki/strategies/conservative-trend-follower-v2.md`
-5. Append no log
+2. Ler `brain/mistakes.md` + `brain/indicators.md` (aprendizados)
+3. Calcular win rate, R:R médio, drawdown
+4. Propor ajustes **baseados nos erros e padrões identificados pelo brain**
+5. Atualizar `wiki/strategies/conservative-trend-follower-v2.md`
+6. Append no log
+
+---
+
+## Prioridade de Contexto (o que ler primeiro)
+
+Quando o contexto é limitado, carregar nesta ordem:
+
+1. `wiki/brain/insights.md` — SEMPRE (resumo compacto do que já sabe)
+2. `wiki/brain/mistakes.md` — SEMPRE (últimos 10, evitar repetir)
+3. `wiki/assets/{SYMBOL}.md` — quando analisando um ativo específico
+4. `wiki/brain/predictions-log.md` — quando analisando ativo com previsão aberta
+5. `wiki/brain/indicators.md` — quando interpretando indicadores
+6. `wiki/brain/patterns.md` — quando buscando recorrências
+7. `wiki/strategies/` — quando avaliando entrada
+8. `wiki/concepts/` — quando conceito específico é relevante
 
 ## Convenções de Backlinks
 - Use `[[nome-do-arquivo]]` (sem extensão, sem path)
@@ -198,7 +306,11 @@ Workflow:
 
 ## Regras Críticas
 1. NUNCA modificar arquivos em `raw/` — são imutáveis
-2. SEMPRE atualizar `wiki/log.md` após qualquer operação
-3. SEMPRE atualizar `wiki/index.md` quando criar nova página
-4. Screenshots vão em `raw/screenshots/` antes de referenciar na wiki
-5. Dados OHLCV exportados vão em `raw/ohlcv/`
+2. SEMPRE executar ciclo READ antes de qualquer análise
+3. SEMPRE executar ciclo WRITE depois de qualquer análise
+4. SEMPRE atualizar `wiki/log.md` após qualquer operação
+5. SEMPRE atualizar `wiki/index.md` quando criar nova página
+6. Screenshots vão em `raw/screenshots/` antes de referenciar na wiki
+7. Dados OHLCV exportados vão em `raw/ohlcv/`
+8. Previsões abertas > 48h devem ser marcadas como ⚪ expiradas no próximo LINT
+

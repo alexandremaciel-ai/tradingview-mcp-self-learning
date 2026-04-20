@@ -14,6 +14,7 @@ import { registerWatchlistTools } from './tools/watchlist.js';
 import { registerUiTools } from './tools/ui.js';
 import { registerPaneTools } from './tools/pane.js';
 import { registerTabTools } from './tools/tab.js';
+import { registerWikiTools } from './tools/wiki.js';
 
 const server = new McpServer(
   {
@@ -51,6 +52,9 @@ Pine Script development:
 - pine_get_errors → read errors, pine_get_console → read log output
 - WARNING: pine_get_source can return 200KB+ for complex scripts — avoid unless editing
 
+Wiki Knowledge Management:
+- wiki_search → use this when querying the LLM to search for past decisions, sessions, setups, or concepts across the workspace. Highly recommended before proposing new setups.
+
 Screenshots: capture_screenshot → regions: "full", "chart", "strategy_tester"
 Replay: replay_start → replay_step → replay_trade → replay_status → replay_stop
 Batch: batch_run → run action across multiple symbols/timeframes
@@ -84,6 +88,7 @@ registerWatchlistTools(server);
 registerUiTools(server);
 registerPaneTools(server);
 registerTabTools(server);
+registerWikiTools(server);
 
 // Startup notice (stderr so it doesn't interfere with MCP stdio protocol)
 process.stderr.write('⚠  tradingview-mcp  |  Unofficial tool. Not affiliated with TradingView Inc. or Anthropic.\n');

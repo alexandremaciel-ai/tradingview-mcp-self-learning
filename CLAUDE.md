@@ -291,11 +291,11 @@ Trigger: "Faça o lint da wiki" ou "Health-check da wiki"
 
 Workflow:
 1. Ler `wiki/index.md` completo
-2. Verificar: links quebrados, dados desatualizados, campos vazios
+2. Usar a tool `wiki_search` para cruzar conceitos soltos e sugerir novas páginas em `wiki/research/`
 3. Cruzar `wiki/setups/` com `wiki/sessions/` para atualizar estatísticas
 4. **Verificar previsões expiradas** em `brain/predictions-log.md` (> 48h abertas)
 5. **Ranquear insights** em `brain/insights.md` (mover mais validados para cima)
-6. Identificar conceitos mencionados mas sem página própria
+6. Identificar conceitos mencionados em `raw/clippings/` mas sem página `wiki/concepts/` própria
 7. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
 8. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
 
@@ -327,15 +327,17 @@ Trigger: "Gere a revisão semanal" ou "Visualize os resultados"
 Workflow:
 1. Analisar as sessões do período solicitado (ex: últimos 7 dias)
 2. Extrair métricas (win rate, total profit, drawdown, key insights)
-3. Criar uma apresentação usando formato Marp (`wiki/outputs/YYYY-MM-DD-review.md`) ou acionar script Python de geração de gráficos se instruído
-4. Append em `wiki/log.md`
+3. Executar o script Python `scripts/tools/plot_accuracy.py` para gerar o gráfico na pasta `wiki/outputs/charts/`
+4. Criar uma apresentação usando formato Marp (`wiki/outputs/YYYY-MM-DD-review.md`)
+5. Append em `wiki/log.md`
 
 ### 8. SEARCH — Pesquisa indexada
 Trigger: "Ache na wiki..." para consultas que superem o limite de leitura direta
 
 Workflow:
-1. Consultar o LLM a executar uma ferramenta de busca (futuro)
-2. Sintetizar os resultados com backlinks
+1. Executar no sistema a tool nativa do MCP conectada: `wiki_search` passando a `query` desejada.
+2. Analisar o ranqueamento retornado e ler trechos (snippets) para orientar decisões avançadas.
+3. Sintetizar os resultados com backlinks
 
 ---
 

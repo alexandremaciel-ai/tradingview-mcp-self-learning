@@ -49,14 +49,17 @@ wiki/
 └── lint/                             # Wiki health-check reports
 ```
 
-### Four Wiki Operations
+### Six Wiki Operations
 
 | Command | Trigger | What Happens |
 |---------|---------|-------------|
-| **INGEST** | _"Analise o gráfico e registre na wiki"_ | Captures chart state → creates session → updates asset page → logs |
-| **QUERY** | _"Baseado na wiki, [pergunta]"_ | Reads relevant pages → synthesizes answer → archives if valuable |
-| **LINT** | _"Health-check da wiki"_ | Checks broken links, stale data, missing fields → generates report |
-| **UPDATE** | _"Atualize a estratégia"_ | Reviews recent sessions → recalculates stats → proposes adjustments |
+| **INGEST** | _"Analyze the chart and record it in the wiki"_ | Captures chart state → creates session → updates asset page → logs |
+| **COMPILE** | _"Compile recent clippings in the wiki"_ | Reads `raw/clippings/` → auto-generates research notes and concepts |
+| **SEARCH** | _"Search the wiki for..."_ | Triggers `wiki_search` MCP Tool to find disconnected insights across the vault |
+| **QUERY** | _"Based on the wiki, [question]"_ | Reads relevant pages → synthesizes answer → archives if valuable |
+| **VISUALIZE**| _"Generate the weekly review"_ | Runs Python scripts to plot Accuracy Curves and create Marp Slides for outputs |
+| **LINT** | _"Wiki health-check"_ | Checks broken links, finds missed concepts via search, marks expired predictions |
+| **UPDATE** | _"Update the strategy"_ | Reviews recent sessions → recalculates stats → proposes adjustments |
 
 ### The Self-Learning Loop
 

@@ -167,6 +167,219 @@ The wiki will grow from here.
 
 ---
 
+## Running the Application — Complete Step-by-Step Guide
+
+Follow these steps every time you want to use the TradingView MCP Self-Learning system.
+
+### Prerequisites Checklist
+
+Before starting, make sure you have:
+
+- [ ] **TradingView Desktop** installed (paid subscription required)
+- [ ] **Node.js 18+** — verify with `node --version`
+- [ ] **Claude Code** with MCP support — verify with `claude --version`
+- [ ] This repository cloned and dependencies installed (see Step 1)
+
+---
+
+### Step 1 — Install Dependencies
+
+Clone the repository (if you haven't already) and install Node.js dependencies:
+
+```bash
+git clone https://github.com/alexandremaciel-ai/tradingview-mcp-self-learning.git
+cd tradingview-mcp-self-learning
+npm install
+```
+
+If you already cloned it, just make sure dependencies are up to date:
+
+```bash
+npm install
+```
+
+> [!NOTE]
+> The project has no heavy dependencies — only `@modelcontextprotocol/sdk` and `chrome-remote-interface`. Installation is fast.
+
+---
+
+### Step 2 — Launch TradingView with CDP Enabled
+
+> [!IMPORTANT]
+> TradingView **must be launched via this script** (not from your Dock or Applications folder). The Chrome DevTools Protocol (CDP) debug port must be explicitly enabled for the MCP bridge to connect.
+
+Run the platform-specific launch script:
+
+**macOS:**
+```bash
+./scripts/launch_tv_debug_mac.sh
+```
+
+**Windows:**
+```cmd
+scripts\launch_tv_debug.bat
+```
+
+**Linux:**
+```bash
+./scripts/launch_tv_debug_linux.sh
+```
+
+**What the script does:**
+1. Auto-detects your TradingView installation path
+2. Kills any existing TradingView process
+3. Relaunches TradingView with `--remote-debugging-port=9222`
+4. Waits up to 15 seconds for the CDP endpoint to become available
+5. Confirms readiness with a `CDP ready at http://localhost:9222` message
+
+**Expected output:**
+```
+Found TradingView at: /Applications/TradingView.app/Contents/MacOS/TradingView
+Launching with --remote-debugging-port=9222 ...
+PID: 12345
+Waiting for CDP...
+CDP ready at http://localhost:9222
+{
+  "Browser": "Chrome/...",
+  "webSocketDebuggerUrl": "ws://localhost:9222/..."
+}
+```
+
+**If TradingView is installed in a custom path**, run it manually:
+```bash
+/path/to/TradingView.app/Contents/MacOS/TradingView --remote-debugging-port=9222 &
+```
+
+**Verify CDP is responding:**
+```bash
+curl http://localhost:9222/json/version
+```
+
+---
+
+### Step 3 — Register the MCP Server in Claude Code
+
+This step only needs to be done **once**. Skip to Step 4 if you've already registered it.
+
+#### Option A — Global registration (recommended)
+
+Registers the MCP server globally so it's available from any directory in Claude Code:
+
+```bash
+claude mcp add --scope user tradingview -- node "$(pwd)/src/server.js"
+```
+
+> [!TIP]
+> Use `$(pwd)/src/server.js` to automatically insert the absolute path. Run this command from inside the project directory.
+
+#### Option B — Project-local auto-registration (zero config)
+
+The repository already includes a `.mcp.json` at the root. When you open Claude Code **inside the project directory**, the MCP server is registered automatically — no command needed.
+
+```bash
+# Just open Claude Code from within the project folder
+cd tradingview-mcp-self-learning
+claude  # MCP server auto-activates
+```
+
+> [!NOTE]
+> With Option B, the MCP server is only active when Claude Code is opened inside this project directory. Use Option A for global access.
+
+#### Option C — Manual JSON config
+
+Edit `~/.claude/.mcp.json` (create if it doesn't exist):
+
+```json
+{
+  "mcpServers": {
+    "tradingview": {
+      "command": "node",
+      "args": ["/absolute/path/to/tradingview-mcp-self-learning/src/server.js"]
+    }
+  }
+}
+```
+
+---
+
+### Step 4 — Verify the Connection
+
+With TradingView running (Step 2) and the MCP server registered (Step 3), open Claude Code and ask:
+
+```
+Use tv_health_check to verify TradingView is connected
+```
+
+**Expected response:** Claude will confirm the CDP connection is active, report the TradingView version, and list available tools.
+
+**If the connection fails:**
+
+| Symptom | Fix |
+|---------|-----|
+| `CDP connection refused` | TradingView was not launched with the debug script — repeat Step 2 |
+| `Port 9222 already in use` | Run `lsof -i :9222` and kill the conflicting process |
+| `MCP server not found` | Re-run Step 3; restart Claude Code after registering |
+| `TradingView not found` in script | Install TradingView Desktop or pass a custom path manually |
+
+You can also verify via CLI without Claude Code:
+```bash
+tv status          # check CDP connection
+curl http://localhost:9222/json/version  # raw CDP check
+```
+
+---
+
+### Step 5 — Start Using the System
+
+Everything is connected. Here are the key commands to get started:
+
+#### First analysis (triggers wiki creation)
+```
+Analyze the current chart and record it in the wiki
+```
+
+#### Wiki operations
+| What you want | What to say |
+|---------------|-------------|
+| Analyze & save | *"Analyze the current graph and record it on the wiki"* |
+| Query the wiki | *"Based on the wiki, what is the current bias for BTC?"* |
+| Run a health check | *"Run a wiki health-check"* |
+| Update strategy | *"Update the strategy based on recent sessions"* |
+
+#### CLI commands (for power users)
+```bash
+tv status                     # verify CDP connection
+tv quote                      # get current price
+tv symbol AAPL                # switch chart symbol
+tv ohlcv --summary            # price summary
+tv screenshot -r chart        # capture the chart
+tv stream quote | jq '.close' # monitor price live
+tv pine compile               # compile Pine Script
+```
+
+#### Run tests (no TradingView needed)
+```bash
+npm test          # runs 29 offline unit tests
+```
+
+---
+
+### Typical Session Flow
+
+```
+1. Run ./scripts/launch_tv_debug_mac.sh
+2. Open Claude Code in the project directory
+3. Ask: "Use tv_health_check to verify TradingView is connected"
+4. Ask: "Analyze the current chart and record it in the wiki"
+5. Review the new session file created in wiki/sessions/
+6. Continue your analysis — the wiki compounds automatically
+```
+
+> [!TIP]
+> The wiki grows with every session. The more you use it, the better the analysis becomes as the LLM reads accumulated insights before every new session.
+
+---
+
 ## Wiki Structure
 
 ### Concepts (pre-populated)

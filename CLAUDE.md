@@ -310,6 +310,33 @@ Workflow:
 5. Atualizar `wiki/strategies/conservative-trend-follower-v2.md`
 6. Append no log
 
+### 6. COMPILE — Ingestão de clippings e artigos
+Trigger: "Compile os clippings recentes na wiki"
+
+Workflow:
+1. Ler arquivos `.md` novos em `raw/clippings/` e `raw/papers/`
+2. Extrair conceitos chave, dados, e insights
+3. Atualizar `wiki/concepts/` ou criar arquivos em `wiki/research/`
+4. Inserir backlinks bidirecionais
+5. Atualizar `wiki/index.md` e `wiki/search-index.md`
+6. Append em `wiki/log.md`: `## [YYYY-MM-DD] compile | {N} artigos processados`
+
+### 7. REVIEW / VISUALIZE — Outputs visuais no Obsidian
+Trigger: "Gere a revisão semanal" ou "Visualize os resultados"
+
+Workflow:
+1. Analisar as sessões do período solicitado (ex: últimos 7 dias)
+2. Extrair métricas (win rate, total profit, drawdown, key insights)
+3. Criar uma apresentação usando formato Marp (`wiki/outputs/YYYY-MM-DD-review.md`) ou acionar script Python de geração de gráficos se instruído
+4. Append em `wiki/log.md`
+
+### 8. SEARCH — Pesquisa indexada
+Trigger: "Ache na wiki..." para consultas que superem o limite de leitura direta
+
+Workflow:
+1. Consultar o LLM a executar uma ferramenta de busca (futuro)
+2. Sintetizar os resultados com backlinks
+
 ---
 
 ## Prioridade de Contexto (o que ler primeiro)

@@ -76,6 +76,41 @@ wiki/
 
 Each session compounds on previous knowledge. The wiki grows. The analysis improves.
 
+### The Obsidian Interface
+
+The entire repository is designed to be opened as an **Obsidian Vault**. 
+The LLM writes the markdown, and you visualize it in Obsidian using:
+- **Graph View**: Interconnected map of assets, setups, and sessions
+- **Dataview Dashboards**: Real-time tables of win-rates and open predictions
+- **Web Clipper**: Save articles directly to `raw/clippings/` for the LLM to process
+- **Marp Slides**: Weekly performance reviews generated as presentations
+
+#### Obsidian Step-by-Step Configuration
+
+1. **Open the Vault:** Install [Obsidian](https://obsidian.md/), click "Open Folder as Vault", and select this repository folder.
+2. **Trust Author:** If prompted, click "Trust Author" to allow the pre-configured Workspace settings to load safely.
+3. **Enable Community Plugins:** Go to Settings ⚙️ -> Community Plugins -> Turn on Safe Mode (disable it) to allow our pre-configured plugins (Dataview, Templater, Calendar) to run.
+4. **View the Dashboard:** Open `wiki/dashboard.md` in Obsidian to see your automatic learning stats natively rendered.
+5. **Obsidian Web Clipper Setup:**
+   - Install the official [Obsidian Web Clipper](https://obsidian.md/clipper) browser extension.
+   - Select your vault in the extension settings.
+   - Set **Behavior > Folder location** to: `raw/clippings`
+   - In **Properties**, add: `source_url: {{url}}` and `date_captured: {{date}}`
+   - In **Note Content**, paste the following template:
+     ```markdown
+     # Clipping: {{title}}
+
+     ## Key Takeaways
+     - 
+
+     ## Concepts Mentioned
+     - 
+
+     ## Original Content
+     {{content}}
+     ```
+   - **How to use:** Clip any trading article, then ask Claude: *"Compile recent clippings in the wiki"*.
+
 ---
 
 ## Prerequisites

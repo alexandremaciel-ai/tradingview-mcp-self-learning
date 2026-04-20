@@ -1,11 +1,11 @@
-# Sessão: {SYMBOL} {TIMEFRAME} — {YYYY-MM-DD HH:MM}
+# Sessão: {{title}} — {{date}}
 
-> Gerado automaticamente pelo MCP. Não editar manualmente.
+> Gerado automaticamente pelo MCP / Templater. Não editar manualmente.
 
 ## Contexto
-- **Ativo:** {SYMBOL}
-- **Timeframe principal:** {TF}
-- **Hora:** {HH:MM} BRT
+- **Ativo:** {{symbol}}
+- **Timeframe principal:** {{tf}}
+- **Hora:** {{time}} BRT
 
 ## Dados Capturados
 ### Quote
@@ -20,7 +20,7 @@
 |-------|------|-------|
 
 ## Análise
-### Estrutura {TF}
+### Estrutura {{tf}}
 _{descrição}_
 
 ### Bias
@@ -35,8 +35,8 @@ _{links para wiki/setups/}_
 - [ ] Sem oportunidade
 
 ## Screenshot
-![[{YYYY-MM-DD}-{SYMBOL}-{TF}.png]]
+![[{{date}}-{{symbol}}-{{tf}}.png]]
 
 ## Backlinks
-- [[{SYMBOL}]]
-- [[{SETUP se identificado}]]
+- [[{{symbol}}]]
+- [[{{setup_name}}]]

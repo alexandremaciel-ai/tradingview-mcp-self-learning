@@ -128,3 +128,32 @@ Then `tv status`, `tv quote`, `tv pine compile`, etc. work from anywhere.
 - `CLAUDE.md` — Decision tree for which tool to use when (auto-loaded by Claude Code)
 - `README.md` — Full tool reference and wiki documentation
 - `wiki/index.md` — The self-learning wiki index
+
+---
+
+## Obsidian Web Clipper Configuration
+
+To fully leverage the LLM compilation capabilities, you should use the [Obsidian Web Clipper](https://obsidian.md/clipper) extension to ingest external articles into the `raw/clippings/` folder.
+
+1. Install the official Obsidian Web Clipper extension in your browser.
+2. In the clipper settings, choose the Vault corresponding to this repository.
+3. In **Behavior**, set the "Folder location" to: `raw/clippings`
+4. In the **Properties** section, add (by clicking `+ Add property`):
+   - Property: `source_url` | Value: `{{url}}`
+   - Property: `date_captured` | Value: `{{date}}`
+5. In the **Note content** section, paste exactly this text (removing any `---` block):
+
+```markdown
+# Clipping: {{title}}
+
+## Key Takeaways
+- 
+
+## Concepts Mentioned
+- 
+
+## Original Content
+{{content}}
+```
+
+**Workflow:** After clipping an article, go to Claude Code and say: *"Compile recent clippings in the wiki"* to have the LLM automatically extract insights, connect concepts, and create backlinks for your trading wiki!

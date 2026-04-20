@@ -26,6 +26,9 @@ Desktop.ini
 *.swo
 *~
 
+# ── Obsidian vault config (personal settings, themes, workspace) ─
+.obsidian/
+
 # ── Environment & secrets — NEVER commit ─────────────────────
 .env
 .env.*
@@ -116,4 +119,13 @@ wiki/index.md
 raw/screenshots/*
 raw/ohlcv/*
 raw/pine-exports/*
+raw/clippings/*
+raw/papers/*
 !raw/**/.gitkeep
+
+# ── Wiki outputs & research (NEVER commit) ───────────────────
+wiki/outputs/*
+wiki/research/*
+wiki/search-index.md
+!wiki/outputs/.gitkeep
+!wiki/research/.gitkeep

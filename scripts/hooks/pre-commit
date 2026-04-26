@@ -1,0 +1,14 @@
+#!/bin/bash
+# Git pre-commit hook — auto-syncs wiki/library.md before every commit.
+# Install: this file is auto-installed by setup.sh or manually via:
+#   cp scripts/hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SYNC_SCRIPT="$ROOT_DIR/scripts/tools/sync-library.sh"
+
+if [ -x "$SYNC_SCRIPT" ]; then
+  echo "🔄 Pre-commit: syncing wiki/library.md..."
+  bash "$SYNC_SCRIPT"
+  git add wiki/library.md 2>/dev/null || true
+fi

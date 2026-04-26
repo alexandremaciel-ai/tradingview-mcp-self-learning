@@ -296,8 +296,9 @@ Workflow:
 4. **Verificar previsões expiradas** em `brain/predictions-log.md` (> 48h abertas)
 5. **Ranquear insights** em `brain/insights.md` (mover mais validados para cima)
 6. Identificar conceitos mencionados em `raw/clippings/` mas sem página `wiki/concepts/` própria
-7. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
-8. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
+7. **Regenerar `wiki/library.md`** — garantir que todos os clippings estejam linkados no Graph View
+8. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
+9. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
 
 ### 5. UPDATE STRATEGY — Revisão de estratégia
 Trigger: "Atualize a estratégia com base nos resultados recentes"
@@ -319,7 +320,8 @@ Workflow:
 3. Atualizar `wiki/concepts/` ou criar arquivos em `wiki/research/`
 4. Inserir backlinks bidirecionais
 5. Atualizar `wiki/index.md` e `wiki/search-index.md`
-6. Append em `wiki/log.md`: `## [YYYY-MM-DD] compile | {N} artigos processados`
+6. **Regenerar `wiki/library.md`** — listar TODOS os `.md` de `raw/clippings/` como wikilinks `[[nome]]` (garante Graph View conectado)
+7. Append em `wiki/log.md`: `## [YYYY-MM-DD] compile | {N} artigos processados`
 
 ### 7. REVIEW / VISUALIZE — Outputs visuais no Obsidian
 Trigger: "Gere a revisão semanal" ou "Visualize os resultados"

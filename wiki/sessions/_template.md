@@ -35,8 +35,8 @@ _{links para wiki/setups/}_
 - [ ] Sem oportunidade
 
 ## Screenshot
-![[{YYYY-MM-DD}-{SYMBOL}-{TF}.png]]
+<!-- screenshot: {YYYY-MM-DD}-{SYMBOL}-{TF}.png -->
 
 ## Backlinks
-- [[{SYMBOL}]]
-- [[{SETUP se identificado}]]
+- `{SYMBOL}` — replace with actual asset wikilink
+- `{SETUP}` — replace with actual setup wikilink

@@ -31,3 +31,7 @@ FROM "wiki/brain/insights"
 SORT file.mtime DESC
 LIMIT 5
 ```
+
+## Backlinks
+- [[index]]
+- [[overview]]

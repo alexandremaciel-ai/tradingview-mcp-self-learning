@@ -7,7 +7,7 @@
 _{What are we investigating?}_
 
 ## Sources
-- [[_some clipping_]]
+- `clipping_name` — replace with actual clipping wikilink
 
 ## Findings
 - 

@@ -35,8 +35,8 @@ _{links para wiki/setups/}_
 - [ ] Sem oportunidade
 
 ## Screenshot
-![[{{date}}-{{symbol}}-{{tf}}.png]]
+<!-- screenshot: {{date}}-{{symbol}}-{{tf}}.png -->
 
 ## Backlinks
-- [[{{symbol}}]]
-- [[{{setup_name}}]]
+- `{{symbol}}` — replace with actual asset wikilink
+- `{{setup_name}}` — replace with actual setup wikilink

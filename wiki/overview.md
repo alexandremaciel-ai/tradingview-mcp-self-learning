@@ -24,3 +24,9 @@ Sistema de análise técnica baseado em Smart Money Concepts (SMC) com filtros d
 - R:R mínimo: 1:3
 - Max Drawdown: < 30%
 - Sharpe Ratio alvo: > 1.0
+
+## Backlinks
+- [[index]]
+- [[BTCUSD]]
+- [[SMC]]
+- [[conservative-trend-follower-v2]]

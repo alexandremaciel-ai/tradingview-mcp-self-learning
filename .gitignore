@@ -48,9 +48,12 @@ Desktop.ini
 # Exclude wiki concepts from the *token* glob (ATR contains "token" substring etc)
 !wiki/concepts/**
 
-# ── User-level MCP config ───────────────────────────────────
-# NOTE: The project-root .mcp.json IS tracked (enables auto-config for forks)
-~/.claude/.mcp.json
+# ── CLI local configs — contain absolute paths, NEVER commit ─
+# NOTE: The project-root .mcp.json IS tracked (enables auto-config for Claude)
+# NOTE: GEMINI.md and AGENTS.md ARE tracked (protocol docs, no personal data)
+.claude/
+.gemini/
+.codex/
 
 # ── TradingView screenshots (runtime captures) ──────────────
 screenshots/

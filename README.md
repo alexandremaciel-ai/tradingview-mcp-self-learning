@@ -1,8 +1,11 @@
 # TradingView MCP — Self-Learning Edition
 
 > 🧠 Fork with a persistent **LLM Wiki** that turns every chart analysis into compounding knowledge.
+> 🔌 Works with **Claude Code**, **Gemini CLI**, and **Codex CLI** — same brain, any agent.
 
-Personal AI assistant for your TradingView Desktop charts — now with a **self-learning second brain**. Built on the [TradingView MCP Bridge](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie), this fork adds a structured wiki system inspired by [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy) where the LLM writes and maintains the knowledge base automatically.
+Personal AI assistant for your TradingView Desktop charts — now with a **self-learning second brain** and **multi-CLI support**. Built on the [TradingView MCP Bridge](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie), this fork adds a structured wiki system inspired by [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy) where the LLM writes and maintains the knowledge base automatically.
+
+Run the same 68 MCP tools and the autonomous learning protocol from Claude Code, Google Gemini CLI, or OpenAI Codex CLI — all sharing a single `wiki/brain/` knowledge base.
 
 > [!WARNING]
 > **This tool is not affiliated with, endorsed by, or associated with TradingView Inc.** It interacts with your locally running TradingView Desktop application via Chrome DevTools Protocol. Review the [Disclaimer](#disclaimer) before use.
@@ -30,6 +33,7 @@ The upstream project gives Claude **eyes and hands** on your chart. This fork gi
 | **Strategy versioning & review** | ❌ | ✅ |
 | **Concept library (SMC, Wyckoff…)** | ❌ | ✅ |
 | **Automated wiki maintenance** | ❌ | ✅ |
+| **Multi-CLI support (Claude + Gemini + Codex)** | ❌ | ✅ |
 
 ### The Wiki System
 
@@ -120,7 +124,10 @@ The LLM writes the markdown, and you visualize it in Obsidian using:
 
 - **TradingView Desktop app** (paid subscription required for real-time data)
 - **Node.js 18+**
-- **Claude Code** with MCP support (or any MCP-compatible agent)
+- **At least one MCP-compatible CLI agent:**
+  - [Claude Code](https://claude.ai/code) — uses `CLAUDE.md` + `.mcp.json`
+  - [Gemini CLI](https://geminicli.com) — uses `GEMINI.md` + `.gemini/settings.json`
+  - [Codex CLI](https://developers.openai.com/codex/cli) — uses `AGENTS.md` + `.codex/config.toml`
 - **macOS, Windows, or Linux**
 
 ## Quick Start
@@ -182,6 +189,73 @@ Or add to `~/.claude/.mcp.json` manually:
 }
 ```
 
+### Setting Up Gemini CLI
+
+The project includes `GEMINI.md` (protocol context) which is auto-loaded by Gemini CLI. You just need to create the local MCP config:
+
+```bash
+# Create project-scoped Gemini config (gitignored — never committed)
+mkdir -p .gemini
+cat > .gemini/settings.json << 'EOF'
+{
+  "mcpServers": {
+    "tradingview": {
+      "command": "node",
+      "args": ["./src/server.js"],
+      "cwd": "/absolute/path/to/tradingview-mcp-self-learning"
+    }
+  }
+}
+EOF
+```
+
+> [!IMPORTANT]
+> Replace `/absolute/path/to/tradingview-mcp-self-learning` with your actual project path (run `pwd` inside the project directory to get it).
+
+Then launch Gemini CLI from the project directory:
+
+```bash
+cd tradingview-mcp-self-learning
+gemini
+# Ask: "Analyze the current chart and record it in the wiki"
+```
+
+### Setting Up Codex CLI
+
+The project includes `AGENTS.md` (protocol context) which is auto-loaded by Codex CLI. You just need to create the local MCP config:
+
+```bash
+# Create project-scoped Codex config (gitignored — never committed)
+mkdir -p .codex
+cat > .codex/config.toml << 'EOF'
+[mcp_servers.tradingview]
+command = "node"
+args = ["./src/server.js"]
+cwd = "/absolute/path/to/tradingview-mcp-self-learning"
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+required = true
+EOF
+
+# Trust the project (required for project-scoped configs)
+cat >> ~/.codex/config.toml << EOF
+
+[projects."/absolute/path/to/tradingview-mcp-self-learning"]
+trust_level = "trusted"
+EOF
+```
+
+> [!IMPORTANT]
+> Replace `/absolute/path/to/tradingview-mcp-self-learning` with your actual project path in **both** the `.codex/config.toml` and the `~/.codex/config.toml` trust entry.
+
+Then launch Codex CLI from the project directory:
+
+```bash
+cd tradingview-mcp-self-learning
+codex
+# Ask: "Analyze the current chart and record it in the wiki"
+```
+
 ### Launch TradingView
 
 TradingView Desktop must be running with Chrome DevTools Protocol enabled:
@@ -192,13 +266,13 @@ TradingView Desktop must be running with Chrome DevTools Protocol enabled:
 | **Windows** | `scripts\launch_tv_debug.bat` |
 | **Linux** | `./scripts/launch_tv_debug_linux.sh` |
 | **Manual** | `/path/to/TradingView --remote-debugging-port=9222` |
-| **Via MCP** | Ask Claude: *"Use tv_launch to start TradingView"* |
+| **Via MCP** | Ask your agent: *"Use tv_launch to start TradingView"* |
 
 ### Verify & Start
 
 ```
-1. Ask Claude: "Use tv_health_check to verify TradingView is connected"
-2. Ask Claude: "Analyze the current graph and record it on the wiki."
+1. Ask your agent: "Use tv_health_check to verify TradingView is connected"
+2. Ask your agent: "Analyze the current graph and record it on the wiki."
 ```
 
 The wiki will grow from here.
@@ -295,13 +369,13 @@ curl http://localhost:9222/json/version
 
 ---
 
-### Step 3 — Register the MCP Server in Claude Code
+### Step 3 — Register the MCP Server in Your CLI
 
-This step only needs to be done **once**. Skip to Step 4 if you've already registered it.
+This step only needs to be done **once per CLI**. Skip to Step 4 if you've already registered it.
 
-#### Option A — Global registration (recommended)
+#### Claude Code
 
-Registers the MCP server globally so it's available from any directory in Claude Code:
+**Option A — Global registration (recommended):**
 
 ```bash
 claude mcp add --scope user tradingview -- node "$(pwd)/src/server.js"
@@ -310,7 +384,7 @@ claude mcp add --scope user tradingview -- node "$(pwd)/src/server.js"
 > [!TIP]
 > Use `$(pwd)/src/server.js` to automatically insert the absolute path. Run this command from inside the project directory.
 
-#### Option B — Project-local auto-registration (zero config)
+**Option B — Project-local auto-registration (zero config):**
 
 The repository already includes a `.mcp.json` at the root. When you open Claude Code **inside the project directory**, the MCP server is registered automatically — no command needed.
 
@@ -323,7 +397,7 @@ claude  # MCP server auto-activates
 > [!NOTE]
 > With Option B, the MCP server is only active when Claude Code is opened inside this project directory. Use Option A for global access.
 
-#### Option C — Manual JSON config
+**Option C — Manual JSON config:**
 
 Edit `~/.claude/.mcp.json` (create if it doesn't exist):
 
@@ -338,17 +412,25 @@ Edit `~/.claude/.mcp.json` (create if it doesn't exist):
 }
 ```
 
+#### Gemini CLI
+
+See [Setting Up Gemini CLI](#setting-up-gemini-cli) in the Quick Start section above.
+
+#### Codex CLI
+
+See [Setting Up Codex CLI](#setting-up-codex-cli) in the Quick Start section above.
+
 ---
 
 ### Step 4 — Verify the Connection
 
-With TradingView running (Step 2) and the MCP server registered (Step 3), open Claude Code and ask:
+With TradingView running (Step 2) and the MCP server registered (Step 3), open your preferred CLI and ask:
 
 ```
 Use tv_health_check to verify TradingView is connected
 ```
 
-**Expected response:** Claude will confirm the CDP connection is active, report the TradingView version, and list available tools.
+**Expected response:** The agent will confirm the CDP connection is active, report the TradingView version, and list available tools.
 
 **If the connection fails:**
 
@@ -406,7 +488,10 @@ npm test          # runs 29 offline unit tests
 
 ```
 1. Run ./scripts/launch_tv_debug_mac.sh
-2. Open Claude Code in the project directory
+2. Open your preferred CLI agent in the project directory:
+   - Claude Code: claude
+   - Gemini CLI:  gemini
+   - Codex CLI:   codex
 3. Ask: "Use tv_health_check to verify TradingView is connected"
 4. Ask: "Analyze the current chart and record it in the wiki"
 5. Review the new session file created in wiki/sessions/
@@ -414,7 +499,7 @@ npm test          # runs 29 offline unit tests
 ```
 
 > [!TIP]
-> The wiki grows with every session. The more you use it, the better the analysis becomes as the LLM reads accumulated insights before every new session.
+> The wiki grows with every session. The more you use it, the better the analysis becomes as the LLM reads accumulated insights before every new session. All three CLIs share the same `wiki/brain/` — insights compound across platforms.
 
 ---
 
@@ -452,7 +537,13 @@ The default strategy — [Conservative Trend Follower v2.0](wiki/strategies/cons
 
 ## MCP Tools (68 tools)
 
-All 68 tools from the upstream project are fully available. See [`CLAUDE.md`](CLAUDE.md) for the complete decision tree and tool reference.
+All 68 tools from the upstream project are fully available. Each CLI has its own context file with the complete decision tree and tool reference:
+
+| CLI | Context File | MCP Config |
+|-----|-------------|------------|
+| Claude Code | [`CLAUDE.md`](CLAUDE.md) | `.mcp.json` (tracked) |
+| Gemini CLI | [`GEMINI.md`](GEMINI.md) | `.gemini/settings.json` (gitignored) |
+| Codex CLI | [`AGENTS.md`](AGENTS.md) | `.codex/config.toml` (gitignored) |
 
 ### Chart Reading
 `chart_get_state` · `data_get_study_values` · `quote_get` · `data_get_ohlcv`
@@ -491,16 +582,36 @@ tv stream quote | jq '.close'      # monitor price
 ## Architecture
 
 ```
-Claude Code  ←→  MCP Server (stdio)  ←→  CDP (port 9222)  ←→  TradingView Desktop (Electron)
-                      │
-                      ▼
-              wiki/ (persistent markdown knowledge base)
-              raw/  (immutable screenshots, OHLCV, Pine exports)
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ Claude Code  │    │ Gemini CLI   │    │ Codex CLI    │
+│ (CLAUDE.md)  │    │ (GEMINI.md)  │    │ (AGENTS.md)  │
+│ (.mcp.json)  │    │ (.gemini/)   │    │ (.codex/)    │
+└──────┬───────┘    └──────┬───────┘    └──────┬───────┘
+       │                   │                   │
+       └───────────┬───────┴───────────────────┘
+                   │
+          ┌────────▼────────┐
+          │  MCP Server     │
+          │  (node stdio)   │
+          │  68 tools       │
+          └────────┬────────┘
+                   │ CDP (port 9222)
+          ┌────────▼────────┐
+          │  TradingView    │
+          │  Desktop        │
+          └────────┬────────┘
+                   │
+          ┌────────▼────────┐
+          │  wiki/brain/    │  ← shared state (insights, predictions,
+          │  wiki/sessions/ │     mistakes compound across all CLIs)
+          │  raw/           │
+          └─────────────────┘
 ```
 
 - **Transport**: MCP over stdio (68 tools) + CLI (`tv` command)
 - **Connection**: Chrome DevTools Protocol on localhost:9222
 - **Wiki**: Markdown files maintained by LLM, human-readable, git-trackable
+- **Multi-CLI**: All agents share the same MCP server and wiki/brain knowledge base
 - **No dependencies** beyond `@modelcontextprotocol/sdk` and `chrome-remote-interface`
 
 ## Testing
@@ -522,11 +633,16 @@ The upstream project provides the complete MCP bridge (68 tools, CLI, streaming)
 
 - **Added**: `wiki/` — persistent LLM-maintained knowledge base
 - **Added**: `raw/` — immutable data storage (screenshots, OHLCV, Pine exports)
+- **Added**: `GEMINI.md` — Gemini CLI context file (brain protocol)
+- **Added**: `AGENTS.md` — Codex CLI context file (brain protocol)
 - **Modified**: `CLAUDE.md` — added Wiki Maintenance Protocol section
-- **Modified**: `README.md` — updated for self-learning edition
-- **Modified**: `.gitignore` — added security rules for wiki raw data
+- **Modified**: `README.md` — updated for self-learning edition + multi-CLI support
+- **Modified**: `.gitignore` — security rules for wiki data + CLI local configs (`.gemini/`, `.codex/`, `.claude/`)
 
 No upstream source code (`src/`, `scripts/`, `tests/`) was modified.
+
+> [!NOTE]
+> The CLI config directories (`.gemini/`, `.codex/`, `.claude/`) are **gitignored** because they contain absolute local paths. Each fork user creates their own configs locally. The protocol files (`GEMINI.md`, `AGENTS.md`, `CLAUDE.md`) **are** tracked — they contain no personal data, only the shared brain protocol.
 
 ---
 

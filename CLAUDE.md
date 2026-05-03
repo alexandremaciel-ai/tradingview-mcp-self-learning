@@ -29,6 +29,35 @@
 
 ---
 
+## Estratégia Obrigatória — Liquidez por Pavios, Trap Short e USDT.D
+
+**Este bloco deve ser usado em TODA análise de BTC, ETH e Altcoins.** Não substitui RSI/MACD/Fib/SMC; entra como camada de confluência macro e micro antes de definir bias.
+
+### Checklist obrigatório antes de dar bias
+1. **Mapear pavios HTF:** identificar pavios longos relevantes no mensal, semanal e diário. Marcar se a liquidez dominante está acima ou abaixo do preço.
+2. **Contextualizar ciclo:** em bull market, pavios superiores tendem a ser buscados após correções; em bear market ou tendência primária fraca, pavios inferiores acumulados no semanal/mensal indicam alvo provável de captura de liquidez.
+3. **Detectar armadilha/squeeze:** se BTC rompe região crítica com aceleração curta, avaliar se é short squeeze para acionar stops antes de reversão, especialmente em zona de FVG mensal e sobrecompra diária.
+4. **Checar USDT.D:** sempre que possível analisar `USDT.D` como métrica inversa. Queda de USDT.D favorece BTC/cripto; rompimento ou acumulação altista em USDT.D confirma pressão vendedora em BTC.
+5. **Separar holder de trade:** posição spot comprada em zonas ótimas não deve ser encerrada por ruído intraday; setups de scalp/day trade não devem virar tese holder.
+6. **Altcoins:** se BTC está em risco macro ou tendência primária baixista, altcoins só entram como scalp/day trade em sobrevenda curta; evitar tese longa em altcoin já em tendência de baixa.
+7. **Macro vence micro:** não confiar em falso rompimento de LTB semanal sem confirmação por fechamento, volume, USDT.D e estrutura HTF.
+
+### Regras específicas de BTC
+- **Zona de armadilha principal:** calcular em cada análise a região crítica atual por pavios HTF, FVG, resistência relevante, liquidez acima/abaixo e sobrecompra diária. Não usar valores fixos como padrão permanente.
+- **Setup short preferencial:** procurar venda apenas após varredura/rompimento da zona crítica atual + falha/absorção/rejeição, com confirmação M15/H1. Alvos devem ser recalculados pela liquidez inferior vigente.
+- **Suportes anteriores:** se uma zona já segurou antes, não assumir que segurará novamente. Reavaliar pelo contexto atual de pavios, volume, USDT.D e liquidez abaixo.
+- **Exemplo histórico/contextual:** 80,000-82,000 foi apenas uma zona citada para a semana de 2026-05-03; não é regra universal.
+
+### Como escrever a análise
+- Declarar explicitamente: `Liquidez por pavios: acima/abaixo/neutra`.
+- Declarar explicitamente: `USDT.D: confirma/nega/indisponível`.
+- Se o trade for contra a leitura HTF dos pavios, rotular como `scalp contra-macro` e reduzir confiança.
+- Para altcoins, sempre responder se a operação é `scalp`, `day trade` ou `holder`; por padrão, altcoin em tendência de baixa não é holder.
+
+Referência wiki: [[liquidity-wicks-trap-short-usdtd]]
+
+---
+
 ## Decision Tree — Which Tool When
 
 ### "What's on my chart right now?"
@@ -376,4 +405,3 @@ Quando o contexto é limitado, carregar nesta ordem:
 6. Screenshots vão em `raw/screenshots/` antes de referenciar na wiki
 7. Dados OHLCV exportados vão em `raw/ohlcv/`
 8. Previsões abertas > 48h devem ser marcadas como ⚪ expiradas no próximo LINT
-

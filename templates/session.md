@@ -61,13 +61,15 @@
 - **Confluência:** _{Golden Zone + FVG + OB = sim/não}_
 - **Padrão de candle:** _{Engulfing/Pin Bar/Doji ou N/A}_
 
-### Indicadores
-| Indicador | Valor | Sinal |
-|-----------|-------|-------|
-| RSI | | |
-| MACD | | |
-| ADX | | |
-| EMA 50/200 | | |
+### Indicadores (valor + direção + cruzamento)
+| Indicador | Valor | Direção | Cruzamento | Sinal |
+|-----------|-------|---------|------------|-------|
+| RSI (14) | | _{subindo/descendo/achatando}_ | _{RSI × SMA: acima/abaixo}_ | |
+| Stoch RSI %K/%D | | _{subindo/descendo}_ | _{%K × %D: bullish/bearish}_ | |
+| MACD | | _{convergindo/divergindo}_ | _{MACD × Signal: cross up/down}_ | _{acima/abaixo de zero}_ |
+| MACD Histograma | | _{crescente/decrescente}_ | | |
+| ADX | | _{DI+ vs DI-}_ | | |
+| EMA 50/200 | | _{inclinação}_ | _{Golden/Death Cross}_ | |
 
 ### Bias
 _{LONG / SHORT / NEUTRO}_

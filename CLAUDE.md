@@ -238,13 +238,29 @@ Ref: [[fibonacci-structural]] + [[price-action-patterns]]
 3. Confluência: Golden Zone + FVG + OB = entrada sniper
 4. Padrões de candle: Engulfing, Pin Bar, Doji em zonas de confluência
 
-### Fase 6 — Indicadores Técnicos
+### Fase 6 — Indicadores Técnicos (valor + direção + cruzamento)
 Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]]
-1. **RSI:** Divergências bullish/bearish no 1H/4H. RSI > 70 em TF maior = teto de retração
-2. **MACD:** Cross + histograma para momentum. Cross sem volume = sinal fraco
-3. **ADX:** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar)
-4. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross)
-5. **Volume Profile:** POC como magneto, HVN como suporte/resistência
+1. **RSI (14):**
+   - Valor absoluto + zona (sobrecompra >70 / sobrevenda <30 / neutro)
+   - **Direção da linha RSI:** subindo, descendo, achatando
+   - **Cruzamento RSI × SMA(RSI):** RSI cruza SMA para cima = momentum bullish; para baixo = bearish
+   - Divergências clássicas e ocultas no 1H/4H (preço vs RSI)
+   - RSI > 70 em TF maior = teto de retração (limita upside dos TFs menores)
+2. **RSI Estocástico (Stoch RSI):**
+   - %K e %D: valores + cruzamento (%K cruza %D para cima = bullish, para baixo = bearish)
+   - Zona: sobrecompra (>80) / sobrevenda (<20)
+   - **Direção:** linhas subindo/descendo dentro da zona
+   - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
+3. **MACD (12/26/9):**
+   - **Posição relativa à linha zero:** acima = lado comprador / abaixo = lado vendedor
+   - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish
+   - **Onde ocorre o cruzamento:** acima de zero = mais forte bullish / abaixo = mais forte bearish
+   - **Histograma:** crescente (momentum aumentando) / decrescente (enfraquecendo)
+   - **Direção das linhas:** MACD e Signal convergindo ou divergindo
+   - Cross sem volume = sinal fraco → aguardar confirmação
+4. **ADX (14):** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar). DI+ > DI- = bullish / DI- > DI+ = bearish
+5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação
+6. **Volume Profile:** POC como magneto, HVN como suporte/resistência
 
 ### Fase 7 — Playbook Match
 Ref: [[trade-playbooks]]
@@ -275,7 +291,7 @@ A análise DEVE conter explicitamente:
 - `SMC: BOS/CHoCH [direção] | FVG [zona] | OB [zona]`
 - `Wyckoff: Fase [X] | Evento [Y] ou N/A`
 - `Fibonacci: Golden Zone [zona] | Confluência [sim/não]`
-- `Indicadores: RSI [valor+divergência] | MACD [sinal] | ADX [valor]`
+- `Indicadores: RSI [valor] [direção] [RSI×SMA: acima/abaixo] | StochRSI [%K/%D] [cross: bull/bear] | MACD [posição vs zero] [cross: up/down] [hist: crescente/decrescente] | ADX [valor] [DI+/DI-]`
 - `Playbook: [1/2/3/4] ou Nenhum | Checklist [X/8]`
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`

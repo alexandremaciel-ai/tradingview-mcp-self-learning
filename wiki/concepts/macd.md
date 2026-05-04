@@ -36,6 +36,29 @@
 - Cruzamento da **linha de sinal abaixo de zero** = Short de maior confiabilidade
 - Cruzamento da **linha de sinal acima de zero** = Long de maior confiabilidade
 - Cruzamentos acima/abaixo de zero mas próximos = sinais mais fracos, aguardar confirmação
+- **Cruzamento iminente** (linhas convergindo): antecipar o sinal se houver confluência com FVG/OB
+
+---
+
+## 4. Direção das Linhas (OBRIGATÓRIO ler em toda análise)
+
+> **Não basta ver o valor do MACD. A direção e a convergência das linhas definem o momentum.**
+
+### Regras de Leitura Direcional
+- **MACD subindo + acima de zero:** momentum comprador forte, mantém Long
+- **MACD descendo + acima de zero:** momentum comprador enfraquecendo, alerta para saída/redução
+- **MACD subindo + abaixo de zero:** momentum vendedor enfraquecendo, possível reversão
+- **MACD descendo + abaixo de zero:** momentum vendedor forte, mantém Short
+- **MACD e Signal convergindo:** cruzamento iminente, preparar ação
+- **MACD e Signal divergindo:** tendência acelerando, manter posição
+
+### Lado do Mercado
+| MACD vs Zero | Histograma | Leitura |
+|------|------------|---------|
+| Acima de zero | Crescente | **Comprador forte** — manter Long |
+| Acima de zero | Decrescente | Comprador enfraquecendo — preparar saída |
+| Abaixo de zero | Decrescente | **Vendedor forte** — manter Short |
+| Abaixo de zero | Crescente | Vendedor enfraquecendo — preparar reversão |
 
 ---
 

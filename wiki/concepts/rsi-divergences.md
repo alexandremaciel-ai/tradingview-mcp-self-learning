@@ -57,6 +57,48 @@
 
 ---
 
+## 5. Cruzamento RSI × SMA(RSI)
+
+> **Não basta ler o valor do RSI. A direção e o cruzamento com sua SMA definem o momentum.**
+
+- **RSI cruza SMA para cima:** momentum comprando força → bullish
+- **RSI cruza SMA para baixo:** momentum perdendo força → bearish
+- **RSI acima da SMA + subindo:** tendência de momentum saudável
+- **RSI abaixo da SMA + descendo:** momentum em deterioração
+- **RSI achatando na SMA:** indecisão, aguardar resolução
+
+### Uso Operacional
+- Em zona de sobrevenda (<30): RSI cruza SMA para cima = gatilho de Long
+- Em zona de sobrecompra (>70): RSI cruza SMA para baixo = gatilho de Short
+- Na zona neutra (40-60): cruzamento confirma direção do momentum, não é gatilho isolado
+
+---
+
+## 6. RSI Estocástico (Stochastic RSI)
+
+> Mede a posição do RSI dentro do seu próprio range. Mais sensível que o RSI clássico.
+
+### Componentes
+- **%K:** linha rápida do Stoch RSI
+- **%D:** SMA do %K (linha lenta, sinal)
+
+### Sinais
+| Cenário | %K vs %D | Zona | Ação |
+|---------|----------|------|------|
+| %K cruza %D para cima | Cross up | Sobrevenda (<20) | **Long de alta convicção** |
+| %K cruza %D para baixo | Cross down | Sobrecompra (>80) | **Short de alta convicção** |
+| %K cruza %D para cima | Cross up | Zona neutra | Confirmação de momentum, não gatilho |
+| %K cruza %D para baixo | Cross down | Zona neutra | Alerta de perda de momentum |
+
+### Direção das Linhas
+- **Ambas subindo:** momentum bullish ativo
+- **Ambas descendo:** momentum bearish ativo
+- **%K girando, %D ainda plano:** sinal prematuro, aguardar confirmação
+- **Reset de oversold em tendência de alta:** continuação bullish (comprar o dip)
+- **Reset de overbought em tendência de baixa:** continuação bearish (vender o rally)
+
+---
+
 ## 5. Integração com MTF
 
 - Divergência no **4H** + confirmação no **1H** = setup de entrada de alta confiança

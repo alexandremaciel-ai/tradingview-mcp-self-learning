@@ -58,6 +58,61 @@ Referência wiki: [[liquidity-wicks-trap-short-usdtd]]
 
 ---
 
+## 📊 Análise Macro Obrigatória — Pré-Requisito para BTC/ETH
+
+**ANTES de analisar BTC ou ETH, o agente DEVE executar um scan macro completo.**
+Esta regra é obrigatória e não pode ser pulada. O macro contexto define o viés primário.
+
+### Ativos do Scan Macro (ordem obrigatória)
+
+| # | Ativo | Ticker TradingView | Por quê |
+|---|-------|-------------------|--------|
+| 1 | **USDT.D** | `USDT.D` | Métrica inversa direta de BTC. Queda = risk-on cripto. Alta = risk-off. |
+| 2 | **S&P 500** | `SPX` (cash) ou `ES1!` (futuros, se mercado fechado) | Correlação positiva com BTC em ciclos risk-on. Divergência sinaliza regime shift. |
+| 3 | **Ouro** | `GOLD` ou `XAUUSD` | Safe haven. Alta do ouro + alta BTC = liquidez abundante. Alta do ouro + queda BTC = flight to safety. |
+| 4 | **DXY** | `DXY` | Dólar forte = pressão vendedora em BTC e commodities. Inversamente correlacionado. |
+| 5 | **TOTAL** | `TOTAL` | Market cap total cripto. Tendência primária do setor. |
+| 6 | **TOTAL2** | `TOTAL2` | Market cap excluindo BTC. Saúde das altcoins. |
+| 7 | **TOTAL3** | `TOTAL3` | Market cap excluindo BTC e ETH. Apetite real por risco em altcoins menores. |
+| 8 | **Petróleo** | `USOIL` ou `CL1!` | Proxy de inflação e custo energético. Alta persistente = hawkish = risco para BTC. |
+
+### Workflow do Scan Macro
+
+Para cada ativo acima:
+1. `chart_set_symbol` → mudar para o ticker
+2. `chart_set_timeframe` → checar **D** (diário) para tendência e **H4** para momentum
+3. `quote_get` → preço atual
+4. `data_get_study_values` → RSI, MACD (tendência e momentum)
+5. Anotar: **tendência** (alta/baixa/lateral), **nível chave próximo**, **sinal relevante**
+
+### Tabela de Correlações (preencher em cada sessão)
+
+| Ativo | Preço | Tendência D | Sinal | Correlação BTC |
+|-------|-------|-------------|-------|----------------|
+| USDT.D | | | | inversa |
+| S&P 500 / ES1! | | | | positiva |
+| Ouro | | | | contextual |
+| DXY | | | | inversa |
+| TOTAL | | | | direta |
+| TOTAL2 | | | | direta |
+| TOTAL3 | | | | direta |
+| Petróleo | | | | inversa (inflação) |
+
+### Regras de Leitura Macro
+
+1. **Risk-On confirmado:** DXY caindo + S&P subindo + USDT.D caindo + TOTAL subindo → BTC bullish
+2. **Risk-Off confirmado:** DXY subindo + S&P caindo + USDT.D subindo + Ouro subindo → BTC bearish
+3. **Divergência macro:** Se BTC sobe mas DXY também sobe e TOTAL2/3 caem → rally frágil, não confiar
+4. **Petróleo em alta forte:** Sinaliza pressão inflacionária → Fed hawkish → risco médio para cripto
+5. **TOTAL vs TOTAL2 vs TOTAL3:** Se TOTAL sobe mas TOTAL3 cai → dinheiro concentrado em BTC/ETH, altcoins em risco
+
+### Como registrar na sessão
+- Declarar explicitamente: `Macro: Risk-On | Risk-Off | Misto`
+- Declarar: `DXY: bullish/bearish/neutro | S&P: bullish/bearish/neutro`
+- Se análise cripto contradiz o macro → reduzir confiança e rotular como `contra-macro`
+
+---
+
 ## Decision Tree — Which Tool When
 
 ### "What's on my chart right now?"
@@ -277,22 +332,27 @@ Trigger: "Analyze the current graph and record it on the wiki" ou qualquer pedid
 
 Workflow:
 1. **[BRAIN READ]** Executar ciclo READ (insights, mistakes, asset, predictions)
-2. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
-3. Analisar com contexto do brain (aplicar insights, evitar erros passados)
-4. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template:
+2. **[MACRO SCAN]** Se o ativo é BTC, ETH ou Altcoin → executar scan macro obrigatório:
+   - Varrer USDT.D, S&P500/ES1!, Ouro, DXY, TOTAL, TOTAL2, TOTAL3, Petróleo
+   - Preencher tabela de correlações macro na sessão
+   - Definir regime: `Risk-On | Risk-Off | Misto`
+3. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
+4. Analisar com contexto do brain + macro (aplicar insights, evitar erros passados)
+5. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template:
+   - **OBRIGATÓRIO:** Seção "Contexto Macro" preenchida (se BTC/ETH/Altcoin)
    - **OBRIGATÓRIO:** Seção "Setups Identificados" deve ser preenchida
      (mesmo que com "Nenhum setup reconhecido nesta sessão")
    - **OBRIGATÓRIO:** Seção "Plano de Operação" com entrada/stop/TP/R:R
    - **OBRIGATÓRIO:** Seção "Resultado" inicializada com `⏳ aberta`
-5. **Se setup identificado:**
+6. **Se setup identificado:**
    a. Criar ou atualizar `wiki/setups/{nome}.md` (usar `_template.md`)
    b. Adicionar nova linha na tabela "Histórico de Ocorrências" com data, ativo, TF
    c. Recalcular seção "Estatísticas" (Total, Win, Loss, Win Rate, R:R Médio)
    d. Atualizar `wiki/setups/index.md` — atualizar linha do setup na tabela de ranking
-6. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
-7. Atualizar `wiki/index.md` (contadores e links)
-8. **[BRAIN WRITE]** Executar ciclo WRITE (insight, prediction, indicators)
-9. Append em `wiki/log.md`: `## [YYYY-MM-DD HH:MM] ingest | {SYMBOL} {TF}`
+7. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
+8. Atualizar `wiki/index.md` (contadores e links)
+9. **[BRAIN WRITE]** Executar ciclo WRITE (insight, prediction, indicators)
+10. Append em `wiki/log.md`: `## [YYYY-MM-DD HH:MM] ingest | {SYMBOL} {TF}`
 
 ### 2. QUERY — Perguntas contra a wiki
 Trigger: "Baseado na wiki, [pergunta]" ou qualquer pergunta sobre mercado/estratégia

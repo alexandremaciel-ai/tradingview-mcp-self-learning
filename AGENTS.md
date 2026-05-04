@@ -279,9 +279,17 @@ Workflow:
 1. **[BRAIN READ]** Executar ciclo READ (insights, mistakes, asset, predictions)
 2. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
 3. Analisar com contexto do brain (aplicar insights, evitar erros passados)
-4. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template
-5. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
-6. Se setup identificado → criar/atualizar `wiki/setups/{nome}.md`
+4. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template:
+   - **OBRIGATÓRIO:** Seção "Setups Identificados" deve ser preenchida
+     (mesmo que com "Nenhum setup reconhecido nesta sessão")
+   - **OBRIGATÓRIO:** Seção "Plano de Operação" com entrada/stop/TP/R:R
+   - **OBRIGATÓRIO:** Seção "Resultado" inicializada com `⏳ aberta`
+5. **Se setup identificado:**
+   a. Criar ou atualizar `wiki/setups/{nome}.md` (usar `_template.md`)
+   b. Adicionar nova linha na tabela "Histórico de Ocorrências" com data, ativo, TF
+   c. Recalcular seção "Estatísticas" (Total, Win, Loss, Win Rate, R:R Médio)
+   d. Atualizar `wiki/setups/index.md` — atualizar linha do setup na tabela de ranking
+6. Atualizar `wiki/assets/{SYMBOL}.md` com novos dados
 7. Atualizar `wiki/index.md` (contadores e links)
 8. **[BRAIN WRITE]** Executar ciclo WRITE (insight, prediction, indicators)
 9. Append em `wiki/log.md`: `## [YYYY-MM-DD HH:MM] ingest | {SYMBOL} {TF}`
@@ -298,22 +306,29 @@ Workflow:
 6. Se resposta é valiosa → arquivar em `wiki/analysis/YYYY-MM-DD-{slug}.md`
 7. Append em `wiki/log.md`: `## [YYYY-MM-DD] query | {resumo da pergunta}`
 
-### 3. FEEDBACK — Fechar loop de aprendizado
+### 3. FEEDBACK — Fechar loop de aprendizado e métricas
 Trigger: "Como foi minha previsão?" ou "O mercado confirmou?" ou ao analisar ativo com previsão aberta
 
 Workflow:
 1. Ler `wiki/brain/predictions-log.md` → buscar previsões abertas (⏳)
 2. Comparar previsão com estado atual do mercado
 3. Marcar como ✅ acertou | ❌ errou | ⚪ expirou
-4. Se ❌ errou:
+4. **Atualizar a sessão original** (`wiki/sessions/`):
+   a. Preencher seção "Resultado": outcome, entrada/saída real, R:R alcançado, P&L, tempo
+   b. Preencher "Setup utilizado" com link para o setup
+5. **Se setup foi utilizado no trade:**
+   a. Atualizar resultado na tabela "Histórico de Ocorrências" do setup
+   b. Recalcular "Estatísticas" do setup (Total, Win, Loss, Win Rate, R:R Médio)
+   c. Atualizar `wiki/setups/index.md` com métricas recalculadas
+6. Se ❌ errou:
    - Identificar causa raiz
    - Append em `brain/mistakes.md` com categoria e lição
    - Atualizar `brain/indicators.md` se indicador falhou
-5. Se ✅ acertou:
+7. Se ✅ acertou:
    - Reforçar insight em `brain/insights.md`
    - Atualizar confiabilidade em `brain/indicators.md`
-6. Atualizar `brain/patterns.md` se padrão se confirmou/negou
-7. Append em `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`
+8. Atualizar `brain/patterns.md` se padrão se confirmou/negou
+9. Append em `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`
 
 ### 4. LINT — Health-check periódico
 Trigger: "Faça o lint da wiki" ou "Health-check da wiki"
@@ -329,16 +344,28 @@ Workflow:
 8. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
 9. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
 
-### 5. UPDATE STRATEGY — Revisão de estratégia
+### 5. UPDATE STRATEGY — Revisão de estratégia com métricas
 Trigger: "Atualize a estratégia com base nos resultados recentes"
 
 Workflow:
-1. Ler `wiki/strategies/` + `wiki/setups/index.md` + últimas 10 sessões
-2. Ler `brain/mistakes.md` + `brain/indicators.md` (aprendizados)
-3. Calcular win rate, R:R médio, drawdown
-4. Propor ajustes **baseados nos erros e padrões identificados pelo brain**
-5. Atualizar `wiki/strategies/conservative-trend-follower-v2.md`
-6. Append no log
+1. Ler `wiki/setups/index.md` → ranking de setups por win rate
+2. Ler todas as sessões com Resultado preenchido (✅/❌/⚪)
+3. **Calcular métricas globais:**
+   - **Win Rate global:** (total wins / total trades fechados) × 100
+   - **R:R Médio:** média de R:R alcançado em trades fechados
+   - **Drawdown máximo:** sequência máxima de losses consecutivos
+   - **Sharpe simplificado:** (win_rate × avg_win - loss_rate × avg_loss) / desvio
+4. Ler `brain/mistakes.md` + `brain/indicators.md` (aprendizados)
+5. Ler `brain/patterns.md` para padrões validados/negados
+6. **Propor ajustes com evidência numérica:**
+   - Setups com win rate < 40% → candidato a remoção ou ajuste de regras
+   - Setups com win rate > 60% → candidato a aumento de posição
+   - Indicadores que falharam consistentemente → reduzir peso no checklist
+   - Padrões validados pelo brain → adicionar como filtro ou regra
+7. **Atualizar tabela "Performance Histórica"** na estratégia com dados reais
+8. Atualizar `wiki/setups/index.md` seção "Métricas Globais"
+9. Versionar: incrementar data de "Última revisão" na estratégia
+10. Append em `wiki/log.md`: `## [YYYY-MM-DD] update-strategy | {resumo dos ajustes}`
 
 ### 6. COMPILE — Ingestão de clippings e artigos
 Trigger: "Compile os clippings recentes na wiki"
@@ -402,6 +429,10 @@ Quando o contexto é limitado, carregar nesta ordem:
 3. SEMPRE executar ciclo WRITE depois de qualquer análise
 4. SEMPRE atualizar `wiki/log.md` após qualquer operação
 5. SEMPRE atualizar `wiki/index.md` quando criar nova página
-6. Screenshots vão em `raw/screenshots/` antes de referenciar na wiki
-7. Dados OHLCV exportados vão em `raw/ohlcv/`
-8. Previsões abertas > 48h devem ser marcadas como ⚪ expiradas no próximo LINT
+6. SEMPRE preencher "Setups Identificados" em cada sessão (mesmo se nenhum)
+7. SEMPRE preencher "Resultado" quando feedback fecha previsão
+8. SEMPRE atualizar `wiki/setups/index.md` após criar/atualizar setup
+9. SEMPRE recalcular Estatísticas do setup após FEEDBACK com resultado
+10. Screenshots vão em `raw/screenshots/` antes de referenciar na wiki
+11. Dados OHLCV exportados vão em `raw/ohlcv/`
+12. Previsões abertas > 48h devem ser marcadas como ⚪ expiradas no próximo LINT

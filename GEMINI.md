@@ -9,6 +9,11 @@
 **Este bloco se aplica a TODA interação neste projeto. Não é opcional. Não precisa ser pedido.**
 
 ### ANTES de responder qualquer pedido:
+0. **🔌 PRIMEIRO: Testar conexão MCP com TradingView:**
+   - Executar `tv_health_check()` — verificar se o TradingView Desktop está conectado via CDP
+   - Se falhar → executar `tv_launch()` para tentar iniciar o TradingView
+   - **⛔ NÃO prosseguir com NENHUMA análise até obter conexão bem-sucedida**
+   - Se após 3 tentativas não conectar → informar o usuário e parar
 1. Ler `wiki/brain/insights.md` — aplicar aprendizados anteriores
 2. Ler `wiki/brain/mistakes.md` (últimos 10) — evitar repetir erros
 3. Se o pedido envolve um ativo → ler `wiki/assets/{SYMBOL}.md`

@@ -20,6 +20,12 @@
    - Preencher tabela de correlações e definir regime: `Risk-On | Risk-Off | Misto`
    - **Só depois** analisar BTC/ETH/Altcoin
    - Ver seção "📊 Análise Macro Obrigatória" para detalhes completos
+7. **⚠️ Se o pedido envolve análise técnica → APLICAR CONHECIMENTO DA WIKI:**
+   - Ler `wiki/brain/indicators.md` — calibrar peso de cada indicador
+   - Ler `wiki/brain/patterns.md` — aplicar padrões recorrentes já validados
+   - Aplicar frameworks: SMC (BOS/CHoCH/FVG/OB), Wyckoff (fases/Spring/UT), Fibonacci, MTF
+   - Consultar `wiki/concepts/trade-playbooks.md` para match de setup
+   - Ver seção "📋 Checklist de Análise Técnica Obrigatória" para o fluxo completo
 
 ### DEPOIS de responder qualquer pedido:
 1. **Sempre** — Extrair insight da interação → append em `wiki/brain/insights.md`
@@ -180,6 +186,94 @@ Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave pró
 - Declarar explicitamente: `Macro: Risk-On | Risk-Off | Misto`
 - Declarar: `DXY: bullish/bearish/neutro | S&P: bullish/bearish/neutro`
 - Se análise cripto contradiz o macro → reduzir confiança e rotular como `contra-macro`
+
+---
+
+## 📋 Checklist de Análise Técnica Obrigatória
+
+**TODA análise de ativo DEVE seguir este checklist completo. Não é opcional.**
+O agente DEVE ler os conceitos relevantes da wiki e aplicar cada framework sistematicamente.
+Pular frameworks é PROIBIDO. Se um framework não se aplica, declarar explicitamente "N/A" com justificativa.
+
+### Fase 1 — Leitura de Contexto (antes de olhar o chart)
+1. Ler `wiki/brain/insights.md` — aplicar insights validados
+2. Ler `wiki/brain/mistakes.md` — evitar erros já cometidos
+3. Ler `wiki/brain/indicators.md` — calibrar peso de RSI, MACD, EMA, ADX, CHoCH/BOS
+4. Ler `wiki/brain/patterns.md` — aplicar padrões recorrentes
+5. Ler `wiki/assets/{SYMBOL}.md` — contexto histórico do ativo
+
+### Fase 2 — Multi-Timeframe (top-down obrigatório)
+Ref: [[multi-timeframe-analysis]]
+1. **Semanal/Mensal:** Tendência primária (HH/HL ou LH/LL), RSI macro, EMA 200
+2. **Diário:** Ciclo secundário, sobrecompra/venda estrutural
+3. **4H:** Filtro direcional (EMA 200 = above→Long only / below→Short only), ADX, estrutura
+4. **1H:** Zona de entrada, FVG, OB, divergências RSI
+5. **15M/5M:** Gatilho de execução, BOS de confirmação
+
+### Fase 3 — Smart Money Concepts (SMC)
+Ref: [[SMC]]
+1. Identificar estrutura: **BOS** (continuação) ou **CHoCH** (reversão) no 4H e 1H
+2. Mapear **FVG** (Fair Value Gaps) — buracos de liquidez não preenchidos
+3. Mapear **Order Blocks** — último candle antes de impulso (zona institucional)
+4. Identificar **zonas de liquidez**: EQH/EQL, PDH/PDL, BSL/SSL
+5. Detectar **traps**: Bull Trap, Bear Trap, BSL Grab, Stop Hunt
+6. Buscar confluências: FVG + OB + Fibonacci Golden Zone = máxima convicção
+
+### Fase 4 — Wyckoff
+Ref: [[Wyckoff]]
+1. Identificar fase atual: **Acumulação / Markup / Distribuição / Markdown**
+2. Buscar eventos-chave: Spring (false break down) ou UT/UTAD (false break up)
+3. Aplicar Lei do Esforço × Resultado: alto volume + resultado pequeno = absorção
+4. Cruzar com SMC: Spring = EQL sweep + CHoCH bullish | UT = EQH sweep + CHoCH bearish
+
+### Fase 5 — Fibonacci + Price Action
+Ref: [[fibonacci-structural]] + [[price-action-patterns]]
+1. Traçar Fibonacci do último impulso relevante
+2. Identificar **Golden Zone** (0.618–0.786) como zona de entrada prioritária
+3. Confluência: Golden Zone + FVG + OB = entrada sniper
+4. Padrões de candle: Engulfing, Pin Bar, Doji em zonas de confluência
+
+### Fase 6 — Indicadores Técnicos
+Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]]
+1. **RSI:** Divergências bullish/bearish no 1H/4H. RSI > 70 em TF maior = teto de retração
+2. **MACD:** Cross + histograma para momentum. Cross sem volume = sinal fraco
+3. **ADX:** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar)
+4. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross)
+5. **Volume Profile:** POC como magneto, HVN como suporte/resistência
+
+### Fase 7 — Playbook Match
+Ref: [[trade-playbooks]]
+1. Verificar se o cenário atual se encaixa em algum dos 4 playbooks:
+   - **Playbook 1:** Long em retração de tendência de alta
+   - **Playbook 2:** Short em repique de tendência de baixa
+   - **Playbook 3:** Stop Hunt Reversal
+   - **Playbook 4:** Squeeze de Alavancagem
+2. Executar checklist de entrada obrigatório (8 critérios, mínimo 6)
+3. Se nenhum playbook se aplica → declarar "Nenhum setup identificado"
+
+### Fase 8 — Liquidez e Correlações
+Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]]
+1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
+2. USDT.D: confirma ou nega o bias?
+3. Funding Rate + Open Interest (se disponível)
+4. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+
+### Fase 9 — Declaração de Bias Final
+1. Sintetizar todas as fases acima em um bias claro: **LONG / SHORT / NEUTRO**
+2. Declarar confiança: **alta / média / baixa**
+3. Se bias contradiz macro → rotular como `contra-macro` e reduzir confiança
+4. Se nenhum framework converge → declarar `NEUTRO — sem confluência`
+
+### Como escrever na sessão
+A análise DEVE conter explicitamente:
+- `MTF: W/D/4H/1H → [resumo de cada TF]`
+- `SMC: BOS/CHoCH [direção] | FVG [zona] | OB [zona]`
+- `Wyckoff: Fase [X] | Evento [Y] ou N/A`
+- `Fibonacci: Golden Zone [zona] | Confluência [sim/não]`
+- `Indicadores: RSI [valor+divergência] | MACD [sinal] | ADX [valor]`
+- `Playbook: [1/2/3/4] ou Nenhum | Checklist [X/8]`
+- `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 ---
 
@@ -353,6 +447,10 @@ O diretório `wiki/brain/` é o núcleo de autoaprendizado:
 3. Ler `wiki/assets/{SYMBOL}.md` — contexto histórico do ativo
 4. Ler `wiki/brain/predictions-log.md` — verificar se há previsão aberta para o ativo
 5. Se previsão aberta existe → comparar previsão com estado atual → fechar como ✅/❌
+6. Ler `wiki/brain/indicators.md` — calibrar peso de cada indicador
+7. Ler `wiki/brain/patterns.md` — aplicar padrões recorrentes já validados
+8. Consultar `wiki/concepts/` relevantes: SMC, Wyckoff, fibonacci, MTF, trade-playbooks
+9. Consultar `wiki/strategies/` — aplicar estratégias ativas (conservative-trend-follower, liquidity-wicks)
 
 ### DEPOIS de analisar (WRITE):
 1. **Sempre** — Extrair insight da análise → append em `brain/insights.md`

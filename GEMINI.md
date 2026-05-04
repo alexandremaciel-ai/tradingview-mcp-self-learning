@@ -14,6 +14,12 @@
 3. Se o pedido envolve um ativo → ler `wiki/assets/{SYMBOL}.md`
 4. Se o pedido envolve análise → ler `wiki/brain/predictions-log.md` para previsões abertas
 5. Se previsão aberta existe para o ativo → comparar com estado atual → fechar como ✅/❌
+6. **⚠️ Se o pedido envolve BTC, ETH ou qualquer Altcoin → EXECUTAR SCAN MACRO PRIMEIRO:**
+   - Varrer na ordem: USDT.D → SPX/ES1! → GOLD → DXY → TOTAL → TOTAL2 → TOTAL3 → USOIL/CL1!
+   - Para cada: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
+   - Preencher tabela de correlações e definir regime: `Risk-On | Risk-Off | Misto`
+   - **Só depois** analisar BTC/ETH/Altcoin
+   - Ver seção "📊 Análise Macro Obrigatória" para detalhes completos
 
 ### DEPOIS de responder qualquer pedido:
 1. **Sempre** — Extrair insight da interação → append em `wiki/brain/insights.md`
@@ -76,14 +82,78 @@ Esta regra é obrigatória e não pode ser pulada. O macro contexto define o vi�
 | 7 | **TOTAL3** | `TOTAL3` | Market cap excluindo BTC e ETH. Apetite real por risco em altcoins menores. |
 | 8 | **Petróleo** | `USOIL` ou `CL1!` | Proxy de inflação e custo energético. Alta persistente = hawkish = risco para BTC. |
 
-### Workflow do Scan Macro
+### Workflow do Scan Macro — Passos EXATOS (NÃO pular nenhum)
 
-Para cada ativo acima:
-1. `chart_set_symbol` → mudar para o ticker
-2. `chart_set_timeframe` → checar **D** (diário) para tendência e **H4** para momentum
-3. `quote_get` → preço atual
-4. `data_get_study_values` → RSI, MACD (tendência e momentum)
-5. Anotar: **tendência** (alta/baixa/lateral), **nível chave próximo**, **sinal relevante**
+**⛔ NÃO é permitido usar apenas `quote_get` sem mudar o chart. DEVE executar `chart_set_symbol` para cada ativo.**
+
+Executar na ordem EXATA abaixo. Cada bloco é uma chamada MCP real:
+
+**Passo 1 — USDT.D:**
+```
+chart_set_symbol({symbol: \"USDT.D\"})
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 2 — S&P 500 (ou ES1! se mercado fechado):**
+```
+chart_set_symbol({symbol: \"SPX\"})   // ou ES1! se fora do horário
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 3 — Ouro:**
+```
+chart_set_symbol({symbol: \"GOLD\"})
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 4 — DXY:**
+```
+chart_set_symbol({symbol: \"DXY\"})
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 5 — TOTAL:**
+```
+chart_set_symbol({symbol: \"TOTAL\"})
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 6 — TOTAL2:**
+```
+chart_set_symbol({symbol: \"TOTAL2\"})
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 7 — TOTAL3:**
+```
+chart_set_symbol({symbol: \"TOTAL3\"})
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 8 — Petróleo:**
+```
+chart_set_symbol({symbol: \"USOIL\"})   // ou CL1! se indisponível
+chart_set_timeframe({timeframe: \"D\"})
+quote_get()
+data_get_study_values()
+```
+
+**Depois dos 8 passos:** Montar a tabela de correlações, definir regime, e SÓ ENTÃO voltar para o ativo solicitado (BTC/ETH).
+Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave próximo**, **sinal relevante**
 
 ### Tabela de Correlações (preencher em cada sessão)
 

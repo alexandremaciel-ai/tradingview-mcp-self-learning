@@ -43,9 +43,9 @@ if [ -z "$APP" ] || [ ! -f "$APP" ]; then
   exit 1
 fi
 
-# Kill any existing TradingView
-pkill -f "TradingView" 2>/dev/null
-sleep 1
+# Kill any existing TradingView (only the Electron app, not MCP server)
+pkill -f "TradingView.app/Contents" 2>/dev/null
+sleep 2
 
 echo "Found TradingView at: $APP"
 echo "Launching with --remote-debugging-port=$PORT ..."

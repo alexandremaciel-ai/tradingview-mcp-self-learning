@@ -159,6 +159,103 @@ export async function uiState() {
   return { success: true, ...state };
 }
 
+/**
+ * Check if TradingView is currently running (platform-aware).
+ * Returns { running: boolean, pids: number[], hasCdp: boolean }
+ */
+async function detectRunningTV(cdpPort) {
+  const platform = process.platform;
+  let running = false;
+  let pids = [];
+
+  try {
+    if (platform === 'win32') {
+      const out = execSync('tasklist /FI "IMAGENAME eq TradingView.exe" /NH', { timeout: 3000 }).toString();
+      const matches = out.match(/TradingView\.exe\s+(\d+)/g);
+      if (matches) {
+        pids = matches.map(m => parseInt(m.match(/(\d+)/)[1]));
+        running = pids.length > 0;
+      }
+    } else {
+      // Use pgrep to find TradingView binary processes only (not Node.js MCP server)
+      const out = execSync("pgrep -f 'TradingView.app/Contents/MacOS/TradingView|/opt/TradingView/|/.local/share/TradingView/' 2>/dev/null || true", { timeout: 3000 }).toString().trim();
+      if (out) {
+        pids = out.split('\n').map(Number).filter(Boolean);
+        running = pids.length > 0;
+      }
+    }
+  } catch { /* ignore */ }
+
+  // Check if CDP is actually responding on the port
+  let hasCdp = false;
+  try {
+    const http = await import('http');
+    hasCdp = await new Promise((resolve) => {
+      const req = http.get(`http://localhost:${cdpPort}/json/version`, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => resolve(data.includes('Browser')));
+      });
+      req.on('error', () => resolve(false));
+      req.setTimeout(2000, () => { req.destroy(); resolve(false); });
+    });
+  } catch { /* ignore */ }
+
+  return { running, pids, hasCdp };
+}
+
+/**
+ * Kill TradingView processes safely (does NOT kill Node.js/MCP server).
+ * Uses targeted patterns to match only the Electron binary.
+ */
+async function killTradingView(platform) {
+  try {
+    if (platform === 'win32') {
+      execSync('taskkill /F /IM TradingView.exe', { timeout: 5000 });
+    } else if (platform === 'darwin') {
+      // Kill only the TradingView Electron app and its Helper processes
+      // Does NOT match Node.js processes running from tradingview-mcp directories
+      execSync("pkill -f 'TradingView.app/Contents' 2>/dev/null || true", { timeout: 5000 });
+    } else {
+      // Linux: target known install paths
+      execSync("pkill -f '/opt/TradingView/\\|/.local/share/TradingView/' 2>/dev/null || true", { timeout: 5000 });
+    }
+  } catch { /* may not be running */ }
+
+  // Wait for processes to actually die (Electron needs time on macOS)
+  for (let i = 0; i < 6; i++) {
+    await new Promise(r => setTimeout(r, 500));
+    const { running } = await detectRunningTV(9222);
+    if (!running) return true;
+  }
+  // If still running after 3s, force kill
+  try {
+    if (platform !== 'win32') {
+      execSync("pkill -9 -f 'TradingView.app/Contents' 2>/dev/null || true", { timeout: 3000 });
+    }
+  } catch { /* ignore */ }
+  await new Promise(r => setTimeout(r, 1000));
+  return true;
+}
+
+/**
+ * Check if another process (not TradingView) is using the CDP port.
+ */
+async function checkPortConflict(cdpPort, platform) {
+  try {
+    if (platform === 'win32') {
+      const out = execSync(`netstat -ano | findstr :${cdpPort} | findstr LISTENING`, { timeout: 3000 }).toString();
+      if (out.trim()) return { conflict: true, detail: out.trim() };
+    } else {
+      const out = execSync(`lsof -i :${cdpPort} -sTCP:LISTEN 2>/dev/null || true`, { timeout: 3000 }).toString().trim();
+      if (out && !out.includes('TradingView')) {
+        return { conflict: true, detail: out };
+      }
+    }
+  } catch { /* ignore */ }
+  return { conflict: false };
+}
+
 export async function launch({ port, kill_existing } = {}) {
   const cdpPort = port || 9222;
   const killFirst = kill_existing !== false;
@@ -211,41 +308,94 @@ export async function launch({ port, kill_existing } = {}) {
     throw new Error(`TradingView not found on ${platform}. Searched: ${candidates.join(', ')}. Launch manually with: /path/to/TradingView --remote-debugging-port=${cdpPort}`);
   }
 
-  if (killFirst) {
-    try {
-      if (platform === 'win32') execSync('taskkill /F /IM TradingView.exe', { timeout: 5000 });
-      else execSync('pkill -f TradingView', { timeout: 5000 });
-      await new Promise(r => setTimeout(r, 1500));
-    } catch { /* may not be running */ }
+  // --- Check port conflict before doing anything ---
+  const portCheck = await checkPortConflict(cdpPort, platform);
+  if (portCheck.conflict) {
+    throw new Error(`Port ${cdpPort} is already in use by another process (not TradingView). Free it first.\nDetail: ${portCheck.detail}`);
   }
 
+  // --- Detect if TradingView is already running ---
+  const detection = await detectRunningTV(cdpPort);
+
+  if (detection.running && detection.hasCdp) {
+    // Already running WITH CDP — just return success
+    return {
+      success: true, platform, binary: tvPath, cdp_port: cdpPort,
+      cdp_url: `http://localhost:${cdpPort}`,
+      note: 'TradingView already running with CDP enabled. No restart needed.',
+      pids: detection.pids,
+    };
+  }
+
+  if (detection.running && !detection.hasCdp) {
+    // Running WITHOUT CDP — this is the critical case
+    if (!killFirst) {
+      // User said don't kill, but we can't add CDP to a running Electron app
+      // Auto-escalate: kill and restart (the only way to fix this)
+      const warning = 'TradingView is running WITHOUT CDP (--remote-debugging-port). ' +
+        'Electron apps are single-instance — cannot add CDP to a running app. ' +
+        'Auto-restarting with CDP enabled...';
+      await killTradingView(platform);
+      // Fall through to spawn below, but include the warning
+      var autoEscalated = warning;
+    } else {
+      await killTradingView(platform);
+    }
+  } else if (killFirst && detection.running) {
+    await killTradingView(platform);
+  }
+
+  // --- Spawn TradingView with CDP ---
   const child = spawn(tvPath, [`--remote-debugging-port=${cdpPort}`], { detached: true, stdio: 'ignore' });
   child.unref();
 
-  for (let i = 0; i < 15; i++) {
+  // --- Wait for CDP with better diagnostics ---
+  const http = await import('http');
+  for (let i = 0; i < 20; i++) {
     await new Promise(r => setTimeout(r, 1000));
     try {
-      const http = await import('http');
       const ready = await new Promise((resolve) => {
-        http.get(`http://localhost:${cdpPort}/json/version`, (res) => {
+        const req = http.get(`http://localhost:${cdpPort}/json/version`, (res) => {
           let data = '';
           res.on('data', (chunk) => data += chunk);
           res.on('end', () => resolve(data));
-        }).on('error', () => resolve(null));
+        });
+        req.on('error', () => resolve(null));
+        req.setTimeout(3000, () => { req.destroy(); resolve(null); });
       });
       if (ready) {
         const info = JSON.parse(ready);
-        return {
+        const result = {
           success: true, platform, binary: tvPath, pid: child.pid,
           cdp_port: cdpPort, cdp_url: `http://localhost:${cdpPort}`,
           browser: info.Browser, user_agent: info['User-Agent'],
         };
+        if (autoEscalated) result.warning = autoEscalated;
+        return result;
       }
     } catch { /* retry */ }
   }
 
+  // --- CDP still not ready — gather diagnostics ---
+  const postDetection = await detectRunningTV(cdpPort);
+  const diagnostics = {
+    tv_process_alive: postDetection.running,
+    tv_pids: postDetection.pids,
+    cdp_responding: postDetection.hasCdp,
+    spawned_pid: child.pid,
+    spawned_pid_alive: false,
+  };
+  try {
+    process.kill(child.pid, 0); // Check if spawned process is alive (signal 0 = test only)
+    diagnostics.spawned_pid_alive = true;
+  } catch { /* process died */ }
+
   return {
-    success: true, platform, binary: tvPath, pid: child.pid, cdp_port: cdpPort, cdp_ready: false,
-    warning: 'TradingView launched but CDP not responding yet. It may still be loading. Try tv_health_check in a few seconds.',
+    success: false, platform, binary: tvPath, pid: child.pid, cdp_port: cdpPort, cdp_ready: false,
+    warning: 'TradingView launched but CDP not responding after 20s.',
+    diagnostics,
+    hint: diagnostics.spawned_pid_alive
+      ? 'TradingView is running but CDP never started. Check if another TradingView instance grabbed the singleton lock.'
+      : 'The spawned TradingView process died. Check system logs or launch manually: ' + tvPath + ' --remote-debugging-port=' + cdpPort,
   };
 }

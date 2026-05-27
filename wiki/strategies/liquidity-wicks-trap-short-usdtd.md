@@ -15,8 +15,9 @@ Em bull market, pavios superiores são frequentemente buscados depois de correç
 2. Classificar a liquidez dominante: acima, abaixo ou equilibrada.
 3. Verificar se o movimento atual é breakout limpo ou short squeeze para buscar stops.
 4. Confirmar com USDT.D: queda favorece cripto; rompimento/acumulação altista pressiona BTC.
-5. Separar tese holder de trade tático.
-6. Em altcoins, assumir scalp/day trade por padrão quando BTC estiver macro frágil.
+5. **Confirmar com BTCUSDLONGS/BTCUSDSHORTS:** calcular ratio L/S e avaliar risco de squeeze. Se ratio > 5.0 = long squeeze risk. Se ratio < 1.0 = short squeeze risk.
+6. Separar tese holder de trade tático.
+7. Em altcoins, assumir scalp/day trade por padrão quando BTC estiver macro frágil.
 
 ## BTC — Zonas Críticas Dinâmicas
 
@@ -50,6 +51,7 @@ Toda análise deve declarar:
 
 - **Liquidez por pavios:** acima | abaixo | neutra
 - **USDT.D:** confirma | nega | indisponível
+- **BTCUSDLONGS/SHORTS:** Ratio [X.X] | Squeeze Risk: alto/médio/baixo [long/short]
 - **Regime:** bull | bear | transição
 - **Tipo de trade:** scalp | day trade | swing | holder
 
@@ -57,6 +59,7 @@ Toda análise deve declarar:
 
 - [[BTCUSD]]
 - [[ETHUSD]]
+- [[btcusdlongs-btcusdshorts]]
 - [[short-long-squeeze]]
 - [[bull-bear-traps]]
 - [[SMC]]

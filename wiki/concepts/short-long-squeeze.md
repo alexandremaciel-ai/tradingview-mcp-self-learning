@@ -73,18 +73,26 @@ Short Squeeze → muitas vezes resulta em Bull Trap subsequente (preço subiu po
 
 ## Integração com Derivativos
 
-Para analisar probabilidade de squeeze, usar o trio:
-1. **Open Interest** — tamanho das posições abertas (ver [[open-interest]])
-2. **Funding Rate** — quem está pagando quem (ver [[funding-rate]])
-3. **Long/Short Ratio** — proporção das posições (ver [[long-short-ratio]])
-4. **Liquidation HeatMap** — onde estão os stops (ver [[liquidation-heatmap]])
+Para analisar probabilidade de squeeze, usar o quarteto:
+1. **BTCUSDLONGS / BTCUSDSHORTS** — posicionamento real de margem na Bitfinex (ver [[btcusdlongs-btcusdshorts]])
+2. **Open Interest** — tamanho das posições abertas (ver [[open-interest]])
+3. **Funding Rate** — quem está pagando quem (ver [[funding-rate]])
+4. **Long/Short Ratio** — proporção das posições em perpétuos (ver [[long-short-ratio]])
+5. **Liquidation HeatMap** — onde estão os stops (ver [[liquidation-heatmap]])
+
+### Confirmação via BTCUSDLONGS/BTCUSDSHORTS
+- **Short Squeeze:** BTCUSDSHORTS subindo rapidamente + Ratio L/S < 1.0 + FR negativa → combustível máximo
+- **Long Squeeze:** BTCUSDLONGS em extremo + Ratio L/S > 5.0 + FR muito positiva → vulnerabilidade máxima
+- **Divergência preço × posições:** preço sobe mas Longs caem = smart money saindo (red flag)
 
 ---
 
 ## Backlinks
+- [[btcusdlongs-btcusdshorts]] — dados reais de posicionamento Bitfinex (ticker TradingView)
 - [[open-interest]] — monitorar OI para detectar condições de squeeze
 - [[funding-rate]] — FR extrema = mercado sobreexposto = squeeze iminente
 - [[long-short-ratio]] — desequilíbrio extremo = combustível para squeeze
 - [[liquidation-heatmap]] — localizar os clusters de liquidação alvo
 - [[bull-bear-traps]] — squeeze pode criar ou amplificar armadilhas
 - [[Wyckoff]] — Spring e UTAD frequentemente coincidem com squeezes
+

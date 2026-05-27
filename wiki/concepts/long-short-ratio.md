@@ -79,8 +79,10 @@ Combina LSR das duas maiores exchanges + média agregada em tempo real.
 - Dados com defasagem durante extrema volatilidade (limitação de API)
 
 ## Backlinks
+- [[btcusdlongs-btcusdshorts]] — posicionamento de margem real (Bitfinex) — complementar ao LSR de perpétuos
 - [[open-interest]] — LSR sem OI = análise incompleta
 - [[funding-rate]] — trio completo: LSR + OI + FR
 - [[liquidation-heatmap]] — LSR extremo + zonas amarelas = squeeze iminente
+- [[short-long-squeeze]] — contexto teórico de squeezes
 - [[research/2026-04-23-derivatives-onchain-concepts-batch6]]
 - [[research/2026-04-21-tv-community-indicators-batch4]] — primeiro registro do indicador Aggregated LSR

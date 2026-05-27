@@ -516,6 +516,8 @@ The wiki ships with foundational technical analysis concepts:
 | [ADX](wiki/concepts/ADX.md) | Trend strength filter with interpretation table |
 | [ATR](wiki/concepts/ATR.md) | Volatility-based position sizing and stop-loss |
 | [MTF Analysis](wiki/concepts/multi-timeframe-analysis.md) | 1D→4H→1H→15m→5m hierarchy and conflict rules |
+| [BTCUSDLONGS/SHORTS](wiki/concepts/btcusdlongs-btcusdshorts.md) | Bitfinex margin positioning for squeeze detection |
+| [Short/Long Squeeze](wiki/concepts/short-long-squeeze.md) | Cascade liquidation mechanics and setup conditions |
 
 ### Strategy
 

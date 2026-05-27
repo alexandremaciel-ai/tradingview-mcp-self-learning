@@ -53,11 +53,12 @@
 ### Checklist obrigatório antes de dar bias
 1. **Mapear pavios HTF:** identificar pavios longos relevantes no mensal, semanal e diário. Marcar se a liquidez dominante está acima ou abaixo do preço.
 2. **Contextualizar ciclo:** em bull market, pavios superiores tendem a ser buscados após correções; em bear market ou tendência primária fraca, pavios inferiores acumulados no semanal/mensal indicam alvo provável de captura de liquidez.
-3. **Detectar armadilha/squeeze:** se BTC rompe região crítica com aceleração curta, avaliar se é short squeeze para acionar stops antes de reversão, especialmente em zona de FVG mensal e sobrecompra diária.
+3. **Detectar armadilha/squeeze:** se BTC rompe região crítica com aceleração curta, avaliar se é short squeeze para acionar stops antes de reversão, especialmente em zona de FVG mensal e sobrecompra diária. **Confirmar com BTCUSDLONGS/BTCUSDSHORTS** — se Longs caindo + Shorts subindo antes do move = squeeze planejado por smart money.
 4. **Checar USDT.D:** sempre que possível analisar `USDT.D` como métrica inversa. Queda de USDT.D favorece BTC/cripto; rompimento ou acumulação altista em USDT.D confirma pressão vendedora em BTC.
-5. **Separar holder de trade:** posição spot comprada em zonas ótimas não deve ser encerrada por ruído intraday; setups de scalp/day trade não devem virar tese holder.
-6. **Altcoins:** se BTC está em risco macro ou tendência primária baixista, altcoins só entram como scalp/day trade em sobrevenda curta; evitar tese longa em altcoin já em tendência de baixa.
-7. **Macro vence micro:** não confiar em falso rompimento de LTB semanal sem confirmação por fechamento, volume, USDT.D e estrutura HTF.
+5. **Checar BTCUSDLONGS e BTCUSDSHORTS:** analisar os tickers `BTCUSDLONGS` e `BTCUSDSHORTS` (Bitfinex) para medir posicionamento real de margem. Longs subindo + Shorts caindo = acumulação bullish. Longs extremamente altos + Shorts em mínima = vulnerável a long squeeze. Shorts subindo rapidamente = mercado se preparando para queda ou short squeeze iminente.
+6. **Separar holder de trade:** posição spot comprada em zonas ótimas não deve ser encerrada por ruído intraday; setups de scalp/day trade não devem virar tese holder.
+7. **Altcoins:** se BTC está em risco macro ou tendência primária baixista, altcoins só entram como scalp/day trade em sobrevenda curta; evitar tese longa em altcoin já em tendência de baixa.
+8. **Macro vence micro:** não confiar em falso rompimento de LTB semanal sem confirmação por fechamento, volume, USDT.D e estrutura HTF.
 
 ### Regras específicas de BTC
 - **Zona de armadilha principal:** calcular em cada análise a região crítica atual por pavios HTF, FVG, resistência relevante, liquidez acima/abaixo e sobrecompra diária. Não usar valores fixos como padrão permanente.
@@ -68,10 +69,11 @@
 ### Como escrever a análise
 - Declarar explicitamente: `Liquidez por pavios: acima/abaixo/neutra`.
 - Declarar explicitamente: `USDT.D: confirma/nega/indisponível`.
+- Declarar explicitamente: `BTCUSDLONGS: [valor] [tendência] | BTCUSDSHORTS: [valor] [tendência] | Ratio L/S: [valor] | Squeeze Risk: alto/médio/baixo [tipo]`.
 - Se o trade for contra a leitura HTF dos pavios, rotular como `scalp contra-macro` e reduzir confiança.
 - Para altcoins, sempre responder se a operação é `scalp`, `day trade` ou `holder`; por padrão, altcoin em tendência de baixa não é holder.
 
-Referência wiki: [[liquidity-wicks-trap-short-usdtd]]
+Referência wiki: [[liquidity-wicks-trap-short-usdtd]] + [[btcusdlongs-btcusdshorts]]
 
 ---
 
@@ -92,6 +94,8 @@ Esta regra é obrigatória e não pode ser pulada. O macro contexto define o vi�
 | 6 | **TOTAL2** | `TOTAL2` | Market cap excluindo BTC. Saúde das altcoins. |
 | 7 | **TOTAL3** | `TOTAL3` | Market cap excluindo BTC e ETH. Apetite real por risco em altcoins menores. |
 | 8 | **Petróleo** | `USOIL` ou `CL1!` | Proxy de inflação e custo energético. Alta persistente = hawkish = risco para BTC. |
+| 9 | **BTC Longs** | `BTCUSDLONGS` | Posições long de margem na Bitfinex. Subindo = acumulação bullish. Extremo alto = risco de long squeeze. |
+| 10 | **BTC Shorts** | `BTCUSDSHORTS` | Posições short de margem na Bitfinex. Subindo rápido = preparação para queda ou combustível para short squeeze. |
 
 ### Workflow do Scan Macro — Passos EXATOS (NÃO pular nenhum)
 
@@ -163,7 +167,23 @@ quote_get()
 data_get_study_values()
 ```
 
-**Depois dos 8 passos:** Montar a tabela de correlações, definir regime, e SÓ ENTÃO voltar para o ativo solicitado (BTC/ETH).
+**Passo 9 — BTC Longs (Bitfinex):**
+```
+chart_set_symbol({symbol: "BTCUSDLONGS"})
+chart_set_timeframe({timeframe: "D"})
+quote_get()
+data_get_study_values()
+```
+
+**Passo 10 — BTC Shorts (Bitfinex):**
+```
+chart_set_symbol({symbol: "BTCUSDSHORTS"})
+chart_set_timeframe({timeframe: "D"})
+quote_get()
+data_get_study_values()
+```
+
+**Depois dos 10 passos:** Montar a tabela de correlações, calcular ratio BTCUSDLONGS/BTCUSDSHORTS, definir regime e risco de squeeze, e SÓ ENTÃO voltar para o ativo solicitado (BTC/ETH).
 Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave próximo**, **sinal relevante**
 
 ### Tabela de Correlações (preencher em cada sessão)
@@ -178,6 +198,9 @@ Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave pró
 | TOTAL2 | | | | direta |
 | TOTAL3 | | | | direta |
 | Petróleo | | | | inversa (inflação) |
+| BTCUSDLONGS | | | | direta (posicionamento) |
+| BTCUSDSHORTS | | | | inversa (posicionamento) |
+| **Ratio L/S** | | | | **> 5 = long squeeze risk / < 1 = short squeeze risk** |
 
 ### Regras de Leitura Macro
 
@@ -186,6 +209,13 @@ Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave pró
 3. **Divergência macro:** Se BTC sobe mas DXY também sobe e TOTAL2/3 caem → rally frágil, não confiar
 4. **Petróleo em alta forte:** Sinaliza pressão inflacionária → Fed hawkish → risco médio para cripto
 5. **TOTAL vs TOTAL2 vs TOTAL3:** Se TOTAL sobe mas TOTAL3 cai → dinheiro concentrado em BTC/ETH, altcoins em risco
+6. **BTCUSDLONGS vs BTCUSDSHORTS — Detecção de Squeeze:**
+   - **Long Squeeze Risk:** Longs em máxima histórica ou extremo relativo + Shorts em mínima + preço esticado para cima → risco alto de long squeeze
+   - **Short Squeeze Risk:** Shorts subindo rapidamente ou em extremo + Longs estáveis/caindo + preço próximo de resistência → short squeeze iminente
+   - **Ratio L/S > 5.0:** Mercado excessivamente long → vulnerável a long squeeze
+   - **Ratio L/S < 1.0:** Mais shorts que longs → combustível para short squeeze
+   - **Divergência preço × Longs:** Se preço sobe mas Longs caem → rally sem convicção, smart money saindo
+   - **Divergência preço × Shorts:** Se preço cai mas Shorts caem → vendedores desistindo, fundo próximo
 
 ### Como registrar na sessão
 - Declarar explicitamente: `Macro: Risk-On | Risk-Off | Misto`
@@ -272,12 +302,19 @@ Ref: [[trade-playbooks]]
 2. Executar checklist de entrada obrigatório (8 critérios, mínimo 6)
 3. Se nenhum playbook se aplica → declarar "Nenhum setup identificado"
 
-### Fase 8 — Liquidez e Correlações
-Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]]
+### Fase 8 — Liquidez, Correlações e Posicionamento de Margem
+Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
 2. USDT.D: confirma ou nega o bias?
 3. Funding Rate + Open Interest (se disponível)
-4. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+4. **BTCUSDLONGS + BTCUSDSHORTS (obrigatório para BTC/ETH):**
+   - Consultar `BTCUSDLONGS` → valor atual, tendência (subindo/caindo/lateral), nível relativo (alto/médio/baixo)
+   - Consultar `BTCUSDSHORTS` → valor atual, tendência, nível relativo
+   - Calcular Ratio L/S = BTCUSDLONGS / BTCUSDSHORTS
+   - Avaliar risco de squeeze: `Long Squeeze Risk` (ratio > 5 + longs em extremo) ou `Short Squeeze Risk` (ratio < 1 + shorts subindo)
+   - Cruzar com Funding Rate: FR muito positiva + Longs extremos = dupla confirmação de long squeeze risk
+   - Cruzar com OI: OI alto + Ratio extremo = squeeze de alta probabilidade
+5. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Longs/Shorts: [ratio] [squeeze risk]`
 
 ### Fase 9 — Declaração de Bias Final
 1. Sintetizar todas as fases acima em um bias claro: **LONG / SHORT / NEUTRO**
@@ -294,6 +331,7 @@ A análise DEVE conter explicitamente:
 - `Indicadores: RSI [valor] [direção] [RSI×SMA: acima/abaixo] | StochRSI [%K/%D] [cross: bull/bear] | MACD [posição vs zero] [cross: up/down] [hist: crescente/decrescente] | ADX [valor] [DI+/DI-]`
 - `Playbook: [1/2/3/4] ou Nenhum | Checklist [X/8]`
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Longs/Shorts: BTCUSDLONGS [valor] [tendência] | BTCUSDSHORTS [valor] [tendência] | Ratio [X.X] | Squeeze Risk: alto/médio/baixo [long/short]`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 ---

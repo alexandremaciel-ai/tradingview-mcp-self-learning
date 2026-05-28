@@ -518,6 +518,10 @@ The wiki ships with foundational technical analysis concepts:
 | [MTF Analysis](wiki/concepts/multi-timeframe-analysis.md) | 1D→4H→1H→15m→5m hierarchy and conflict rules |
 | [BTCUSDLONGS/SHORTS](wiki/concepts/btcusdlongs-btcusdshorts.md) | Bitfinex margin positioning for squeeze detection |
 | [Short/Long Squeeze](wiki/concepts/short-long-squeeze.md) | Cascade liquidation mechanics and setup conditions |
+| [BTC Cycle Analysis](wiki/concepts/btc-cycle-analysis.md) | Complete macro cycle framework — tops, bottoms, scoring system |
+| [Puell Multiple](wiki/concepts/puell-multiple.md) | Miner revenue metric for cycle phase identification |
+| [Pi Cycle Top](wiki/concepts/pi-cycle-top.md) | 111DMA vs 350DMA×2 crossover for cycle top detection |
+| [Hash Ribbons](wiki/concepts/hash-ribbons.md) | Mining capitulation indicator for cycle bottom signals |
 
 ### Strategy
 

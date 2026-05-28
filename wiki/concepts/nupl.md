@@ -41,6 +41,7 @@ NUPL = (Market Cap - Realized Cap) / Market Cap
 - Melhor combinado com SOPR (comportamento real de gastos) e MVRV-Z (valorização relativa)
 
 ## Backlinks
+- [[btc-cycle-analysis]] — framework de ciclo que usa NUPL como indicador de sentimento
 - [[mvrv-z-score]] — indicador complementar (valorização relativa ao "valor justo")
 - [[sopr]] — mede lucro realizado em transações (comportamento atual vs. NUPL = posição latente)
 - [[realized-price]] — Realized Cap é o denominador do NUPL

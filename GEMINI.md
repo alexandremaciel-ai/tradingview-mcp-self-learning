@@ -31,6 +31,12 @@
    - Aplicar frameworks: SMC (BOS/CHoCH/FVG/OB), Wyckoff (fases/Spring/UT), Fibonacci, MTF
    - Consultar `wiki/concepts/trade-playbooks.md` para match de setup
    - Ver seção "📋 Checklist de Análise Técnica Obrigatória" para o fluxo completo
+8. **⚠️ Se o pedido envolve análise de CICLO do BTC → APLICAR FRAMEWORK DE CICLO:**
+   - Ler `wiki/concepts/btc-cycle-analysis.md` — framework completo
+   - Executar diagnóstico de fase: indicadores on-chain > análise técnica > sentimento > tempo
+   - Preencher Score de Topo (X/10) e Score de Fundo (X/15)
+   - Se bear market confirmado → projetar zona de fundo com 6 métodos + confluência
+   - Ver seção "📊 Análise de Ciclo BTC" para o fluxo completo
 
 ### DEPOIS de responder qualquer pedido:
 1. **Sempre** — Extrair insight da interação → append em `wiki/brain/insights.md`
@@ -683,6 +689,39 @@ Workflow:
 1. Executar no sistema a tool nativa do MCP conectada: `wiki_search` passando a `query` desejada.
 2. Analisar o ranqueamento retornado e ler trechos (snippets) para orientar decisões avançadas.
 3. Sintetizar os resultados com backlinks
+
+### 9. CYCLE — Análise de Ciclo do Bitcoin
+Trigger: "Análise de ciclo" ou "Onde estamos no ciclo?" ou "Projeção de fundo/topo" ou quando macro scan indica transição de fase
+
+Ref: [[btc-cycle-analysis]]
+
+Workflow:
+1. **[BRAIN READ]** Ler brain + `wiki/concepts/btc-cycle-analysis.md`
+2. **[MACRO SCAN]** Executar scan macro completo (10 passos obrigatórios)
+3. **[PRICE ACTION SEMANAL/MENSAL]**
+   a. `chart_set_symbol({symbol: "BTCUSD"})` → `chart_set_timeframe({timeframe: "W"})` → `data_get_study_values()` → `capture_screenshot()`
+   b. `chart_set_timeframe({timeframe: "M"})` → `data_get_ohlcv({summary: true})` → `capture_screenshot()`
+   c. Verificar: RSI semanal (divergências), MACD semanal (cruzamento vs zero), volume (climático?)
+4. **[200W SMA]** Verificar posição do preço vs 200W SMA — se preço NÃO tocou → fundo provavelmente NÃO ocorreu
+5. **[INDICADORES ON-CHAIN]** Ler indicadores comunitários no chart (se instalados):
+   - MVRV Z-Score: >7 = topo | <0 = fundo
+   - NUPL: >0.75 = euforia | <0 = capitulação
+   - Puell Multiple: >4 = topo | <0.5 = fundo
+   - Pi Cycle Top: 111DMA vs 350DMA×2 cruzaram?
+   - Hash Ribbons: capitulação ativa?
+   - Realized Price: preço acima ou abaixo?
+6. **[FIBONACCI LOG]** Traçar Fib do low do ciclo anterior ao ATH atual (escala log)
+7. **[SCORING]** Preencher:
+   - Score de Topo: [X/10]
+   - Score de Fundo: [X/15]
+8. **[PROJEÇÃO]** Se bear confirmado → calcular zona de fundo com 6 métodos:
+   - Fractal drawdown | 200W SMA | Realized Price | Fibonacci log | Temporal | Confluência técnica
+   - Identificar zona onde 3+ métodos convergem
+9. **[OUTPUT]** Gerar diagnóstico completo conforme template:
+   - Fase atual | Scores | Indicadores | Projeção (se aplicável) | Estratégia de acumulação
+10. **[BRAIN WRITE]** Registrar em `wiki/sessions/YYYY-MM-DD-BTC-CYCLE.md`
+11. Append previsão em `brain/predictions-log.md`
+12. Append em `wiki/log.md`: `## [YYYY-MM-DD] cycle | BTC | Fase: [X]`
 
 ---
 

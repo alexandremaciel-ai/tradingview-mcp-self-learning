@@ -49,6 +49,7 @@ Ferramenta de análise on-chain desenvolvida por **Murad Mahmudov e David Puell*
 O Realized Price é a base do MVRV: quando o preço está muito acima da Realized Price, o Z-Score sobe. [[realized-price]]
 
 ## Backlinks
+- [[btc-cycle-analysis]] — framework de ciclo que usa MVRV Z-Score como indicador primário
 - [[realized-price]] — Realized Price é o denominador do MVRV
 - [[nupl]] — indicador complementar de ciclo (mede lucro não realizado)
 - [[sopr]] — métrica de curto prazo (lucro realizado em transações)

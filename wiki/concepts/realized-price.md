@@ -53,6 +53,7 @@ Realized Price = Realized Cap / Oferta Circulante
 | **SOPR** | Preço no gasto / Preço na aquisição (mesma lógica aplicada a outputs) |
 
 ## Backlinks
+- [[btc-cycle-analysis]] — framework de ciclo que usa Realized Price como suporte fundamental de fundo
 - [[mvrv-z-score]] — usa Realized Cap para calcular "valor justo"
 - [[nupl]] — usa Realized Cap como base do lucro não realizado
 - [[sopr]] — versão por output individual do mesmo conceito

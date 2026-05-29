@@ -287,6 +287,12 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]]
    - Zona: sobrecompra (>80) / sobrevenda (<20)
    - **Direção:** linhas subindo/descendo dentro da zona
    - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
+   **⚠️ Regra RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):**
+   - RSI (D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only
+   - StochRSI (1H/15M) define TIMING → cruzamento em zona extrema = gatilho de entrada
+   - **NUNCA operar StochRSI contra a direção do RSI HTF**
+   - StochRSI overbought + RSI HTF bullish = continuação (NÃO shortear)
+   - StochRSI oversold + RSI HTF bearish = continuação bearish (NÃO longear)
 3. **MACD (12/26/9):**
    - **Posição relativa à linha zero:** acima = lado comprador / abaixo = lado vendedor
    - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish

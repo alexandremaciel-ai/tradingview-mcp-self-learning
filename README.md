@@ -531,6 +531,12 @@ The default strategy — [Conservative Trend Follower v2.0](wiki/strategies/cons
 - HTF conflict resolution (4H bearish + ADX > 25 = hard block)
 - Performance tracking table (populated after sessions)
 
+Additional strategies:
+| Strategy | Description |
+|----------|-------------|
+| [Liquidity Wicks + USDT.D](wiki/strategies/liquidity-wicks-trap-short-usdtd.md) | HTF wick mapping, trap detection, USDT.D correlation |
+| [RSI + StochRSI Combined](wiki/strategies/rsi-stochrsi-combined.md) | RSI (D/4H) for direction, StochRSI (1H/15M) for entry timing |
+
 ### How the Wiki Grows
 
 1. **You analyze a chart** → a session file is created in `wiki/sessions/`

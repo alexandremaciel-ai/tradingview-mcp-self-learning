@@ -107,8 +107,29 @@
 
 ---
 
+## 7. Estratégia Combinada RSI + StochRSI
+
+> **O RSI diz "para onde". O StochRSI diz "quando".**
+
+A abordagem profissional para BTC combina ambos:
+
+1. **RSI (D/4H) → Direção:** RSI > 50 = Long only. RSI < 50 = Short only. Divergência = alerta de reversão.
+2. **StochRSI (1H/15M) → Timing:** %K cruza %D em zona extrema (<20 ou >80) = gatilho de entrada.
+3. **Nunca operar StochRSI isolado** — em tendência forte, StochRSI fica "preso" em zona extrema por horas.
+
+**Armadilhas críticas:**
+- StochRSI overbought + RSI HTF bullish = **continuação**, não reversão
+- StochRSI oversold + RSI HTF bearish = **continuação bearish**, não fundo
+
+Ver estratégia completa: [[rsi-stochrsi-combined]]
+
+---
+
 ## Backlinks
+- [[rsi-stochrsi-combined]] — estratégia combinada RSI + StochRSI para BTC
 - [[SMC]] — FVG + divergência RSI = confluência máxima
 - [[multi-timeframe-analysis]]
 - [[trade-playbooks]]
 - [[fibonacci-structural]] — Golden Zone + divergência = entrada sniper
+- [[btc-cycle-analysis]] — RSI semanal divergências em topos/fundos de ciclo
+

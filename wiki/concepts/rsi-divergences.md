@@ -97,6 +97,15 @@
 - **Reset de oversold em tendência de alta:** continuação bullish (comprar o dip)
 - **Reset de overbought em tendência de baixa:** continuação bearish (vender o rally)
 
+### Divergências StochRSI
+> StochRSI divergências são mais rápidas e ruidosas que RSI — usar apenas como gatilho em TF baixos (1H/15M), nunca como sinal isolado.
+
+- **Divergência Bullish:** Preço LL + StochRSI %K HL em zona <20 → gatilho de compra rápido
+- **Divergência Bearish:** Preço HH + StochRSI %K LH em zona >80 → gatilho de venda rápido
+- **Oculta Bullish:** Preço HL + StochRSI LL → continuação de alta
+- **Oculta Bearish:** Preço LH + StochRSI HH → continuação de baixa
+- **⚠️ Regra:** StochRSI divergência SÓ vale se RSI HTF confirma a direção. Divergência StochRSI contra o RSI diário = ignorar.
+
 ---
 
 ## 5. Integração com MTF

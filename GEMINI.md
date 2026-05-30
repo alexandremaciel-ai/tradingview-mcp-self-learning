@@ -274,18 +274,19 @@ Ref: [[fibonacci-structural]] + [[price-action-patterns]]
 3. Confluência: Golden Zone + FVG + OB = entrada sniper
 4. Padrões de candle: Engulfing, Pin Bar, Doji em zonas de confluência
 
-### Fase 6 — Indicadores Técnicos (valor + direção + cruzamento)
-Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]]
+### Fase 6 — Indicadores Técnicos (valor + direção + cruzamento + divergências)
+Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-profile]]
 1. **RSI (14):**
    - Valor absoluto + zona (sobrecompra >70 / sobrevenda <30 / neutro)
    - **Direção da linha RSI:** subindo, descendo, achatando
    - **Cruzamento RSI × SMA(RSI):** RSI cruza SMA para cima = momentum bullish; para baixo = bearish
-   - Divergências clássicas e ocultas no 1H/4H (preço vs RSI)
+   - **Divergências clássicas e ocultas no 1H/4H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
    - RSI > 70 em TF maior = teto de retração (limita upside dos TFs menores)
 2. **RSI Estocástico (Stoch RSI):**
    - %K e %D: valores + cruzamento (%K cruza %D para cima = bullish, para baixo = bearish)
    - Zona: sobrecompra (>80) / sobrevenda (<20)
    - **Direção:** linhas subindo/descendo dentro da zona
+   - **Divergências StochRSI (1H/15M):** preço HH + %K LH em >80 = bearish | preço LL + %K HL em <20 = bullish
    - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
    **⚠️ Regra RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):**
    - RSI (D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only
@@ -298,11 +299,15 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]]
    - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish
    - **Onde ocorre o cruzamento:** acima de zero = mais forte bullish / abaixo = mais forte bearish
    - **Histograma:** crescente (momentum aumentando) / decrescente (enfraquecendo)
+   - **Divergências MACD (4H/D):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
    - **Direção das linhas:** MACD e Signal convergindo ou divergindo
    - Cross sem volume = sinal fraco → aguardar confirmação
 4. **ADX (14):** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar). DI+ > DI- = bullish / DI- > DI+ = bearish
 5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação
-6. **Volume Profile:** POC como magneto, HVN como suporte/resistência
+6. **Volume / OBV:**
+   - POC como magneto, HVN como suporte/resistência
+   - **Divergências Volume×Preço:** preço subindo + volume caindo = rally fraco (bearish) | preço caindo + volume caindo = queda enfraquecendo (bullish)
+   - **Divergências OBV:** preço HH + OBV LH = distribuição | preço LL + OBV HL = acumulação
 
 ### Fase 7 — Playbook Match
 Ref: [[trade-playbooks]]

@@ -40,8 +40,33 @@
 - Acumula volume na direção de cada fechamento de candle
 - OBV subindo + preço lateral = **acumulação** (próximo movimento bullish)
 - OBV caindo + preço lateral = **distribuição** (próximo movimento bearish)
-- Divergência OBV/preço = antecipa reversão antes do candle confirmar
 - Parâmetros: padrão (sem ajuste)
+
+### Divergências OBV (OBRIGATÓRIO buscar em toda análise)
+
+#### Divergência Bullish (Clássica)
+- Preço faz **fundo mais baixo** (LL)
+- OBV faz **fundo mais alto** (HL)
+- Significado: vendedores perdendo força, volume comprador acumulando por baixo
+- **Ação:** Sinal de reversão de alta → confirmar com suporte/FVG/OB
+
+#### Divergência Bearish (Clássica)
+- Preço faz **topo mais alto** (HH)
+- OBV faz **topo mais baixo** (LH)
+- Significado: compradores perdendo força, volume não confirma o rally
+- **Ação:** Sinal de reversão de baixa → confirmar com resistência/FVG/OB
+
+#### Divergência Oculta (Continuação)
+- **Oculta Bullish:** Preço faz HL, OBV faz LL → volume testou mínimo mas preço segurou = continuação de alta
+- **Oculta Bearish:** Preço faz LH, OBV faz HH → volume testou máximo mas preço não passou = continuação de baixa
+
+#### Volume × Preço (sem OBV)
+- **Preço subindo + Volume caindo** = rally sem convicção → divergência bearish de volume
+- **Preço caindo + Volume caindo** = queda perdendo força → divergência bullish de volume
+- **Preço subindo + Volume subindo** = confirmação saudável (sem divergência)
+- **Preço caindo + Volume subindo** = capitulação / venda climática → possível fundo
+
+> **Regra:** Volume divergindo do preço por 3+ candles consecutivos no 4H/D = sinal forte de reversão iminente.
 
 ---
 

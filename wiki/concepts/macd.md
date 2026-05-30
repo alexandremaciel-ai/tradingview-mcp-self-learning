@@ -78,6 +78,42 @@
 
 ---
 
+## 6. Divergências no MACD
+
+> Divergências no MACD são tão importantes quanto no RSI, mas frequentemente ignoradas.
+> O MACD diverge quando o histograma ou as linhas MACD/Signal não acompanham o preço.
+
+### Divergência Bearish (Clássica)
+- Preço faz **topo mais alto** (HH)
+- MACD faz **topo mais baixo** (linhas ou histograma)
+- Significado: momentum comprador exaurindo apesar do preço subir
+- **Ação:** Alerta de reversão → preparar short se confirmado por zona de resistência
+- **TF ideal:** 4H e Diário para swing. 1H para intraday.
+
+### Divergência Bullish (Clássica)
+- Preço faz **fundo mais baixo** (LL)
+- MACD faz **fundo mais alto** (linhas ou histograma)
+- Significado: momentum vendedor exaurindo apesar do preço cair
+- **Ação:** Alerta de reversão → preparar long se confirmado por zona de suporte
+- **TF ideal:** 4H e Diário para swing. 1H para intraday.
+
+### Divergência Oculta (Continuação)
+- **Oculta Bullish:** Preço faz HL, MACD faz LL → tendência de alta continua
+- **Oculta Bearish:** Preço faz LH, MACD faz HH → tendência de baixa continua
+- **Ação:** Reforça a direção da tendência vigente (entrar na continuação)
+
+### Onde observar
+- **Histograma:** divergência mais sensível (barras encurtando enquanto preço avança = primeiro alerta)
+- **Linhas MACD/Signal:** divergência mais confiável (mais lenta, menos falsos sinais)
+- **Regra:** Divergência no histograma é o primeiro alerta. Divergência nas linhas confirma.
+
+### Confluência com outros indicadores
+- MACD div. + RSI div. no mesmo TF = **dupla confirmação** → alta convicção
+- MACD div. + preço em FVG/OB = setup de reversão de alta qualidade
+- MACD div. sem confirmação RSI = sinal mais fraco → aguardar
+
+---
+
 ## Backlinks
 - [[rsi-divergences]] — divergência combinada MACD + RSI
 - [[conservative-trend-follower-v2]]

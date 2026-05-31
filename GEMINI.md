@@ -6,80 +6,77 @@
 
 ## ⚡ AUTO-PILOT — Regra Obrigatória (leia PRIMEIRO)
 
-**Este bloco se aplica a TODA interação neste projeto. Não é opcional. Não precisa ser pedido.**
+**Se aplica a TODA interação. Não é opcional.**
 
 ### ANTES de responder qualquer pedido:
-0. **🔌 PRIMEIRO: Testar conexão MCP com TradingView:**
-   - Executar `tv_health_check()` — verificar se o TradingView Desktop está conectado via CDP
-   - Se falhar → executar `tv_launch()` para tentar iniciar o TradingView
-   - **⛔ NÃO prosseguir com NENHUMA análise até obter conexão bem-sucedida**
-   - Se após 3 tentativas não conectar → informar o usuário e parar
-1. Ler `wiki/brain/insights.md` — aplicar aprendizados anteriores
-2. Ler `wiki/brain/mistakes.md` (últimos 10) — evitar repetir erros
-3. Se o pedido envolve um ativo → ler `wiki/assets/{SYMBOL}.md`
-4. Se o pedido envolve análise → ler `wiki/brain/predictions-log.md` para previsões abertas
-5. Se previsão aberta existe para o ativo → comparar com estado atual → fechar como ✅/❌
-6. **⚠️ Se o pedido envolve BTC, ETH ou qualquer Altcoin → EXECUTAR SCAN MACRO PRIMEIRO:**
-   - Varrer na ordem: USDT.D → SPX/ES1! → GOLD → DXY → TOTAL → TOTAL2 → TOTAL3 → USOIL/CL1!
-   - Para cada: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
-   - Preencher tabela de correlações e definir regime: `Risk-On | Risk-Off | Misto`
-   - **Só depois** analisar BTC/ETH/Altcoin
-   - Ver seção "📊 Análise Macro Obrigatória" para detalhes completos
-7. **⚠️ Se o pedido envolve análise técnica → APLICAR CONHECIMENTO DA WIKI:**
-   - Ler `wiki/brain/indicators.md` — calibrar peso de cada indicador
-   - Ler `wiki/brain/patterns.md` — aplicar padrões recorrentes já validados
-   - Aplicar frameworks: SMC (BOS/CHoCH/FVG/OB), Wyckoff (fases/Spring/UT), Fibonacci, MTF
-   - Consultar `wiki/concepts/trade-playbooks.md` para match de setup
-   - Ver seção "📋 Checklist de Análise Técnica Obrigatória" para o fluxo completo
-8. **⚠️ Se o pedido envolve análise de CICLO do BTC → APLICAR FRAMEWORK DE CICLO:**
-   - Ler `wiki/concepts/btc-cycle-analysis.md` — framework completo
-   - Executar diagnóstico de fase: indicadores on-chain > análise técnica > sentimento > tempo
-   - Preencher Score de Topo (X/10) e Score de Fundo (X/15)
-   - Se bear market confirmado → projetar zona de fundo com 6 métodos + confluência
-   - Ver seção "📊 Análise de Ciclo BTC" para o fluxo completo
+0. **🔌 Testar conexão:** `tv_health_check()` → se falhar → `tv_launch()` → 3 tentativas max
+1. Ler `wiki/brain/insights.md` + `wiki/brain/mistakes.md` (últimos 10)
+2. Se envolve ativo → ler `wiki/assets/{SYMBOL}.md`
+3. Se envolve análise → ler `wiki/brain/predictions-log.md` → fechar previsões abertas
+4. **⚠️ CLASSIFICAR O PEDIDO** na tabela abaixo → seguir o pipeline da classe:
+
+| Classe | Quando | Macro Scan | Checklist | Extras |
+|--------|--------|------------|-----------|--------|
+| `BTC` | Análise solo de Bitcoin | **Completo** (10 passos) | Fases 1-9 completas | BTCUSDLONGS/SHORTS obrigatório |
+| `BTC+ETH` | BTC e ETH juntos | Completo **1×** | BTC completo → ETH relativo (+ ETH/BTC pair) | Declarar ETH outperform/underperform |
+| `ALTCOIN` | SOL, ADA, DOGE, etc. | **Reduzido**: USDT.D + BTC.D + TOTAL3 + BTC bias | Fases 1-6, 8-9. Wyckoff só se vol > $50M | Tag obrigatória: `scalp/swing/holder` |
+| `EQUITIES` | AAPL, TSLA, SPX, ações | **TradFi**: DXY + SPX + VIX + setor (XLK/XLF) | Fases 1-6, 9. Sem USDT.D/Longs/Shorts | Checar earnings/eventos. Sem Funding Rate |
+| `WATCHLIST` | "scan da lista", vários ativos | Completo **1×** no início | Compacto por ativo: quote + indicators + bias | Output: tabela resumo. 1 sessão total |
+| `DAILY` | "daily", "morning scan" | Completo **1×** | Macro → BTC rápido (D+4H) → Watchlist → Previsões | Dashboard compacto |
+| `CYCLE` | "ciclo do BTC", "topo/fundo" | Completo + on-chain | Ver operação #9 CYCLE | Score Topo/Fundo |
+
+5. **Se análise técnica →** ler brain (indicators, patterns) + aplicar checklist da classe
+6. **Se CYCLE →** ler `wiki/concepts/btc-cycle-analysis.md` + scoring
 
 ### DEPOIS de responder qualquer pedido:
-1. **Sempre** — Extrair insight da interação → append em `wiki/brain/insights.md`
-2. **Se bias definido** — Registrar previsão em `wiki/brain/predictions-log.md`
-3. **Se indicador surpreendeu** — Atualizar `wiki/brain/indicators.md`
-4. **Se padrão já visto antes** — Atualizar `wiki/brain/patterns.md`
-5. **Se erro confirmado** — Append em `wiki/brain/mistakes.md`
-6. **Sempre** — Append em `wiki/log.md`
+1. **Sempre** — Insight → `brain/insights.md` + append `wiki/log.md`
+2. **Se bias definido** — Previsão → `brain/predictions-log.md`
+3. **Se indicador surpreendeu** — Atualizar `brain/indicators.md`
+4. **Se padrão repetido** — Atualizar `brain/patterns.md`
+5. **Se erro** — Append `brain/mistakes.md`
 
-> Se algum brain file não existir, criar cópia de `wiki/brain/_templates/{nome}.md`.
-> Se `wiki/index.md` não existir, criar de `wiki/index.initial.md`.
-> Se `wiki/log.md` não existir, criar de `wiki/log.initial.md`.
+> Brain files inexistentes → copiar de `wiki/brain/_templates/`. Index/log → criar de `.initial.md`.
 
 ---
 
-## Estratégia Obrigatória — Liquidez por Pavios, Trap Short e USDT.D
+## Regras por Classe de Ativo
 
-**Este bloco deve ser usado em TODA análise de BTC, ETH e Altcoins.** Não substitui RSI/MACD/Fib/SMC; entra como camada de confluência macro e micro antes de definir bias.
+Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btcusdlongs-btcusdshorts]]
 
-### Checklist obrigatório antes de dar bias
-1. **Mapear pavios HTF:** identificar pavios longos relevantes no mensal, semanal e diário. Marcar se a liquidez dominante está acima ou abaixo do preço.
-2. **Contextualizar ciclo:** em bull market, pavios superiores tendem a ser buscados após correções; em bear market ou tendência primária fraca, pavios inferiores acumulados no semanal/mensal indicam alvo provável de captura de liquidez.
-3. **Detectar armadilha/squeeze:** se BTC rompe região crítica com aceleração curta, avaliar se é short squeeze para acionar stops antes de reversão, especialmente em zona de FVG mensal e sobrecompra diária. **Confirmar com BTCUSDLONGS/BTCUSDSHORTS** — se Longs caindo + Shorts subindo antes do move = squeeze planejado por smart money.
-4. **Checar USDT.D:** sempre que possível analisar `USDT.D` como métrica inversa. Queda de USDT.D favorece BTC/cripto; rompimento ou acumulação altista em USDT.D confirma pressão vendedora em BTC.
-5. **Checar BTCUSDLONGS e BTCUSDSHORTS:** analisar os tickers `BTCUSDLONGS` e `BTCUSDSHORTS` (Bitfinex) para medir posicionamento real de margem. Longs subindo + Shorts caindo = acumulação bullish. Longs extremamente altos + Shorts em mínima = vulnerável a long squeeze. Shorts subindo rapidamente = mercado se preparando para queda ou short squeeze iminente.
-6. **Separar holder de trade:** posição spot comprada em zonas ótimas não deve ser encerrada por ruído intraday; setups de scalp/day trade não devem virar tese holder.
-7. **Altcoins:** se BTC está em risco macro ou tendência primária baixista, altcoins só entram como scalp/day trade em sobrevenda curta; evitar tese longa em altcoin já em tendência de baixa.
-8. **Macro vence micro:** não confiar em falso rompimento de LTB semanal sem confirmação por fechamento, volume, USDT.D e estrutura HTF.
+### Classe BTC / BTC+ETH (crypto majors)
+- Pavios HTF: mapear liquidez acima/abaixo (M/W/D). Declarar: `Liquidez por pavios: acima/abaixo/neutra`
+- USDT.D: métrica inversa obrigatória. Declarar: `USDT.D: confirma/nega`
+- BTCUSDLONGS/SHORTS: obrigatório. Declarar: `Ratio L/S: [X.X] | Squeeze Risk: alto/médio/baixo`
+- Macro vence micro: não confiar em rompimento sem confirmação por fechamento + volume + USDT.D
+- BTC+ETH: analisar BTC primeiro → ETH como relativo (ETH/BTC pair + força relativa)
 
-### Regras específicas de BTC
-- **Zona de armadilha principal:** calcular em cada análise a região crítica atual por pavios HTF, FVG, resistência relevante, liquidez acima/abaixo e sobrecompra diária. Não usar valores fixos como padrão permanente.
-- **Setup short preferencial:** procurar venda apenas após varredura/rompimento da zona crítica atual + falha/absorção/rejeição, com confirmação M15/H1. Alvos devem ser recalculados pela liquidez inferior vigente.
-- **Suportes anteriores:** se uma zona já segurou antes, não assumir que segurará novamente. Reavaliar pelo contexto atual de pavios, volume, USDT.D e liquidez abaixo.
-- **Exemplo histórico/contextual:** 80,000-82,000 foi apenas uma zona citada para a semana de 2026-05-03; não é regra universal.
+### Classe ALTCOIN
+- Macro reduzido: apenas USDT.D + BTC.D + TOTAL3 + bias BTC rápido
+- Checar par ALTCOIN/BTC (força relativa). Se par caindo = altcoin underperformando
+- Tag obrigatória: `scalp | swing | holder`. Altcoin em tendência de baixa = NÃO é holder
+- Wyckoff: só aplicar se volume diário > $50M. Abaixo = estrutura manipulável
+- Se BTC em risco macro → altcoins só como scalp/day trade
 
-### Como escrever a análise
-- Declarar explicitamente: `Liquidez por pavios: acima/abaixo/neutra`.
-- Declarar explicitamente: `USDT.D: confirma/nega/indisponível`.
-- Declarar explicitamente: `BTCUSDLONGS: [valor] [tendência] | BTCUSDSHORTS: [valor] [tendência] | Ratio L/S: [valor] | Squeeze Risk: alto/médio/baixo [tipo]`.
-- Se o trade for contra a leitura HTF dos pavios, rotular como `scalp contra-macro` e reduzir confiança.
-- Para altcoins, sempre responder se a operação é `scalp`, `day trade` ou `holder`; por padrão, altcoin em tendência de baixa não é holder.
+### Classe EQUITIES (ações, índices)
+- Macro TradFi: DXY + SPX + VIX + ETF do setor (XLK, XLF, XLE, XLV)
+- **NÃO usar:** USDT.D, TOTAL, BTCUSDLONGS/SHORTS, Funding Rate
+- Checar: earnings iminentes (7 dias) → alertar risco de gap
+- Horário: pré-market (05-10:30), regular (10:30-17:00), after-hours. Sinais em regular = mais confiáveis
+- Playbook 4 (squeeze crypto) **não se aplica**. Usar: Playbooks 1-3 + cautela com gaps
 
-Referência wiki: [[liquidity-wicks-trap-short-usdtd]] + [[btcusdlongs-btcusdshorts]]
+### Classe WATCHLIST (scan de múltiplos ativos)
+- Macro: rodar **1× completo** no início
+- Cada ativo: pipeline compacto (quote + study_values + bias em 1 parágrafo)
+- Output: tabela `Ativo | Preço | Bias | Confiança | Setup? | Nota`
+- Destacar "Top 3 setups" com melhor confluência
+- 1 sessão: `YYYY-MM-DD-WATCHLIST.md` (não 1 por ativo)
+
+### Classe DAILY (overview diário)
+- Macro: 1× completo
+- BTC: análise rápida (D + 4H, não MTF completo de 5 TFs)
+- Verificar previsões abertas → fechar expiradas (>48h)
+- Se `wiki/watchlist.md` existir → scan compacto da lista
+- Output: dashboard `Macro | BTC Bias | Alertas | Watchlist | Previsões`
 
 ---
 
@@ -339,17 +336,31 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 3. Se bias contradiz macro → rotular como `contra-macro` e reduzir confiança
 4. Se nenhum framework converge → declarar `NEUTRO — sem confluência`
 
-### Como escrever na sessão
-A análise DEVE conter explicitamente:
-- `MTF: W/D/4H/1H → [resumo de cada TF]`
-- `SMC: BOS/CHoCH [direção] | FVG [zona] | OB [zona]`
-- `Wyckoff: Fase [X] | Evento [Y] ou N/A`
-- `Fibonacci: Golden Zone [zona] | Confluência [sim/não]`
-- `Indicadores: RSI [valor] [direção] [RSI×SMA: acima/abaixo] | StochRSI [%K/%D] [cross: bull/bear] | MACD [posição vs zero] [cross: up/down] [hist: crescente/decrescente] | ADX [valor] [DI+/DI-]`
-- `Playbook: [1/2/3/4] ou Nenhum | Checklist [X/8]`
-- `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
-- `Longs/Shorts: BTCUSDLONGS [valor] [tendência] | BTCUSDSHORTS [valor] [tendência] | Ratio [X.X] | Squeeze Risk: alto/médio/baixo [long/short]`
+### Como escrever na sessão (adaptar por classe)
+
+**Todas as classes:**
+- `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
+- `MTF: W/D/4H/1H → [resumo]` (DAILY: só D+4H)
+- `Indicadores: RSI [valor] [direção] | StochRSI [%K/%D] [cross] | MACD [vs zero] [cross] [hist] | ADX [valor]`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
+
+**BTC / BTC+ETH — adicionar:**
+- `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Longs/Shorts: BTCUSDLONGS [valor] | BTCUSDSHORTS [valor] | Ratio [X.X] | Squeeze Risk: [nível]`
+- (BTC+ETH) `ETH/BTC: [valor] [outperform/underperform] [%]`
+
+**ALTCOIN — adicionar:**
+- `Setor: DeFi/AI/L2/meme/infra | Par/BTC: [subindo/caindo] | BTC.D: [valor] [tendência]`
+- `Tipo: scalp | swing | holder`
+
+**EQUITIES — adicionar:**
+- `VIX: [valor] [tendência] | Setor ETF: [ticker] [tendência] | Earnings: [data ou N/A]`
+
+**WATCHLIST — usar tabela:**
+- `| Ativo | Preço | Bias | Confiança | Setup? | Nota |`
+
+**DAILY — usar dashboard:**
+- `Macro: Risk-On/Off/Misto | BTC: [bias] | Alertas: [N] | Previsões abertas: [N]`
 
 ---
 
@@ -572,14 +583,13 @@ Categorias de erro: `falso-sinal` | `bias-errado` | `timing` | `indicador` | `ht
 ## Operações Disponíveis
 
 ### 1. INGEST — Análise de gráfico com registro
-Trigger: "Analyze the current graph and record it on the wiki" ou qualquer pedido de análise de chart
+Trigger: qualquer pedido de análise de chart ou ativo
 
 Workflow:
-1. **[BRAIN READ]** Executar ciclo READ (insights, mistakes, asset, predictions)
-2. **[MACRO SCAN]** Se o ativo é BTC, ETH ou Altcoin → executar scan macro obrigatório:
-   - Varrer USDT.D, S&P500/ES1!, Ouro, DXY, TOTAL, TOTAL2, TOTAL3, Petróleo
-   - Preencher tabela de correlações macro na sessão
-   - Definir regime: `Risk-On | Risk-Off | Misto`
+1. **[CLASSIFICAR]** Determinar classe do pedido (ver tabela AUTO-PILOT)
+2. **[BRAIN READ]** Executar ciclo READ (insights, mistakes, asset, predictions)
+3. **[MACRO SCAN]** Executar scan conforme a classe:
+   - BTC/BTC+ETH: completo (10 passos) | ALTCOIN: reduzido (4 passos) | EQUITIES: TradFi | WATCHLIST/DAILY: 1× completo
 3. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
 4. Analisar com contexto do brain + macro (aplicar insights, evitar erros passados)
 5. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template:

@@ -30,7 +30,8 @@
 |--------|--------|------------|-----------|--------|
 | `BTC` | Análise solo de Bitcoin | **Completo** (10 passos) | Fases 1-9 completas | BTCUSDLONGS/SHORTS obrigatório |
 | `BTC+ETH` | BTC e ETH juntos | Completo **1×** | BTC completo → ETH relativo (+ ETH/BTC pair) | Declarar ETH outperform/underperform |
-| `ALTCOIN` | SOL, ADA, DOGE, etc. | **Reduzido**: USDT.D + BTC.D + TOTAL3 + BTC bias | Fases 1-6, 8-9. Wyckoff só se vol > $50M | Tag obrigatória: `scalp/swing/holder` |
+| `BTC+ALTCOIN` | BTC + altcoin específica (BTC+SOL, BTC+ADA) | **Parcial** (7 passos): USDT.D + BTC.D + TOTAL3 + BTC + Longs/Shorts + par | BTC: Fases 1-6,8-9 → Altcoin: Fases 1-6,8-9 | ALTCOIN/BTC pair obrigatório. Wyckoff só se vol > $50M |
+| `ALTCOIN` | SOL, ADA, DOGE, etc. | **Reduzido** (5 passos): USDT.D + BTC.D + TOTAL3 + BTC bias + par | Fases 1-6, 8-9. Wyckoff só se vol > $50M | Tag obrigatória: `scalp/swing/holder` |
 | `EQUITIES` | AAPL, TSLA, SPX, ações | **TradFi**: DXY + SPX + VIX + setor (XLK/XLF) | Fases 1-6, 9. Sem USDT.D/Longs/Shorts | Checar earnings/eventos. Sem Funding Rate |
 | `WATCHLIST` | "scan da lista", vários ativos | Completo **1×** no início | Compacto por ativo: quote + indicators + bias | Output: tabela resumo. 1 sessão total |
 | `DAILY` | "daily", "morning scan" | Completo **1×** | Macro → BTC rápido (D+4H) → Watchlist → Previsões | Dashboard compacto |
@@ -64,6 +65,15 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btcusdlongs-btcusdshorts]]
 - Macro vence micro: não confiar em rompimento sem confirmação por fechamento + volume + USDT.D
 - BTC+ETH: analisar BTC primeiro → ETH como relativo (ETH/BTC pair + força relativa)
 
+### Classe BTC+ALTCOIN
+- Macro parcial (Workflow C): USDT.D + BTC.D + TOTAL3 + BTC chart + BTCUSDLONGS/SHORTS + par ALTCOIN/BTC
+- Executar BTC completo primeiro → analisar altcoin como relativo ao BTC
+- ALTCOIN/BTC pair obrigatório: se par caindo = altcoin underperformando BTC mesmo que preço suba
+- Ratio L/S obrigatório: avaliar squeeze risk em BTC antes de operar a altcoin
+- Wyckoff na altcoin: só aplicar se volume diário > $50M
+- Tag obrigatória: `scalp | swing`. Nunca `holder` em análise BTC+ALTCOIN
+- Declarar: `BTC Bias: LONG/SHORT/NEUTRO | {ALT}/BTC: outperform/underperform | Ratio L/S: [X.X]`
+
 ### Classe ALTCOIN
 - Macro reduzido: apenas USDT.D + BTC.D + TOTAL3 + bias BTC rápido
 - Checar par ALTCOIN/BTC (força relativa). Se par caindo = altcoin underperformando
@@ -94,49 +104,128 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btcusdlongs-btcusdshorts]]
 
 ---
 
-## 📊 Análise Macro Obrigatória — Pré-Requisito para BTC/ETH
+## 📊 Análise Macro Obrigatória — Pré-Requisito para Qualquer Análise
 
-**ANTES de analisar BTC ou ETH, o agente DEVE executar um scan macro completo.**
+**ANTES de analisar qualquer ativo, o agente DEVE identificar o contexto de mercado e executar o scan correspondente à classe.**
 Esta regra é obrigatória e não pode ser pulada. O macro contexto define o viés primário.
 
-### Ativos do Scan Macro (ordem obrigatória)
+### Step 0 — Detector de Contexto de Mercado (SEMPRE PRIMEIRO)
 
-| # | Ativo | Ticker TradingView | Por quê |
-|---|-------|-------------------|--------|
-| 1 | **USDT.D** | `USDT.D` | Métrica inversa direta de BTC. Queda = risk-on cripto. Alta = risk-off. |
-| 2 | **S&P 500** | `SPX` (cash) ou `ES1!` (futuros, se mercado fechado) | Correlação positiva com BTC em ciclos risk-on. Divergência sinaliza regime shift. |
-| 3 | **Ouro** | `GOLD` ou `XAUUSD` | Safe haven. Alta do ouro + alta BTC = liquidez abundante. Alta do ouro + queda BTC = flight to safety. |
-| 4 | **DXY** | `DXY` | Dólar forte = pressão vendedora em BTC e commodities. Inversamente correlacionado. |
-| 5 | **TOTAL** | `TOTAL` | Market cap total cripto. Tendência primária do setor. |
-| 6 | **TOTAL2** | `TOTAL2` | Market cap excluindo BTC. Saúde das altcoins. |
-| 7 | **TOTAL3** | `TOTAL3` | Market cap excluindo BTC e ETH. Apetite real por risco em altcoins menores. |
-| 8 | **Petróleo** | `USOIL` ou `CL1!` | Proxy de inflação e custo energético. Alta persistente = hawkish = risco para BTC. |
-| 9 | **BTC Longs** | `BTCUSDLONGS` | Posições long de margem na Bitfinex. Subindo = acumulação bullish. Extremo alto = risco de long squeeze. |
-| 10 | **BTC Shorts** | `BTCUSDSHORTS` | Posições short de margem na Bitfinex. Subindo rápido = preparação para queda ou combustível para short squeeze. |
+Antes de qualquer scan, declarar explicitamente o contexto temporal:
 
-### Workflow do Scan Macro — Passos EXATOS
+| | Status |
+|--|--------|
+| **Horário BRT + Dia** | [HH:MM] \| [Seg/Ter/Qua/Qui/Sex/Sáb/Dom] |
+| **NYSE** | ABERTA (Seg-Sex 10:30–17:00 BRT / inverno 11:30–18:00) ou FECHADA |
+| **CME** | ABERTO (quase 24h) ou FECHADO (Sex 18h BRT → Dom 19h BRT) |
+| **Forex/DXY** | DISPONÍVEL (Seg 00h – Sex ~22h BRT) ou CONGELADO (fim de semana) |
+
+**Protocolo de fim de semana (Sáb 00h – Dom 19h BRT):**
+- CME, NYSE e Forex **fechados** → SPX, DXY, GOLD, USOIL = **dados congelados do fechamento de sexta**
+- Declarar: `⚠️ Mercados TradFi fechados — macro TradFi baseada no último fechamento de sexta. Cripto é o único mercado em tempo real.`
+- Reduzir o peso de SPX/DXY/GOLD/Petróleo nas conclusões macro (dados sem liquidez nova)
+- Focar nos dados ao vivo: USDT.D + TOTAL + TOTAL2 + TOTAL3 + BTCUSDLONGS/SHORTS
+
+### Tabela de Fallbacks por Estado de Mercado
 
 **⛔ DEVE executar `chart_set_symbol` para cada ativo. NÃO usar apenas `quote_get`.**
 
-Para CADA ativo abaixo, executar na ordem: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
+| Ativo | Ticker Normal | NYSE Fechada (pré/pós-market) | Fim de Semana |
+|-------|---------------|-------------------------------|---------------|
+| **S&P 500** | `SPX` | `ES1!` | ⚠️ `ES1!` (congelado desde sexta) |
+| **Ouro** | `GOLD` | `XAUUSD` | ⚠️ `XAUUSD` (congelado) |
+| **Petróleo** | `USOIL` | `CL1!` | ⚠️ sem dado ao vivo — usar com cautela |
+| **Dólar** | `DXY` | `DXY` | ⚠️ `DXY` (congelado) |
+| **Cripto** | tickers normais | tickers normais | ✅ tempo real |
 
-| Passo | Ticker | Fallback |
-|-------|--------|----------|
-| 1 | `USDT.D` | — |
-| 2 | `SPX` | `ES1!` (mercado fechado) |
-| 3 | `GOLD` | `XAUUSD` |
-| 4 | `DXY` | — |
-| 5 | `TOTAL` | — |
-| 6 | `TOTAL2` | — |
-| 7 | `TOTAL3` | — |
-| 8 | `USOIL` | `CL1!` |
-| 9 | `BTCUSDLONGS` | — |
-| 10 | `BTCUSDSHORTS` | — |
+> Anotar sempre na sessão qual ticker foi usado e por quê (ex: `S&P: ES1! [NYSE fechada]`)
 
-**Depois dos 10 passos:** Montar tabela de correlações, calcular ratio L/S, definir regime e squeeze risk, SÓ ENTÃO voltar para o ativo solicitado.
-Anotar para cada: **tendência** (alta/baixa/lateral), **nível chave**, **sinal relevante**
+---
 
-### Tabela de Correlações (preencher em cada sessão)
+### Workflow A — Classe BTC / BTC+ETH (10 passos — COMPLETO)
+
+**Aplicar quando:** Classe = `BTC` | `BTC+ETH` | `DAILY` | `CYCLE`
+
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
+
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `USDT.D` | — | Sempre disponível |
+| 2 | `SPX` | `ES1!` | NYSE fechada ou fim de semana → ES1! |
+| 3 | `GOLD` | `XAUUSD` | |
+| 4 | `DXY` | — | Congelado no fim de semana |
+| 5 | `TOTAL` | — | Sempre disponível |
+| 6 | `TOTAL2` | — | Sempre disponível |
+| 7 | `TOTAL3` | — | Sempre disponível |
+| 8 | `USOIL` | `CL1!` | Sem dado ao vivo no fim de semana |
+| 9 | `BTCUSDLONGS` | — | Sempre disponível |
+| 10 | `BTCUSDSHORTS` | — | Sempre disponível |
+
+**Depois:** Montar tabela de correlações completa (10 linhas), calcular ratio L/S, definir regime e squeeze risk, SÓ ENTÃO analisar BTC/ETH.
+
+---
+
+### Workflow B — Classe ALTCOIN (5 passos — REDUZIDO)
+
+**Aplicar quando:** Classe = `ALTCOIN` (análise solo de altcoin)
+
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
+
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `USDT.D` | — | Obrigatório — métrica inversa cripto |
+| 2 | `BTC.D` | — | Dominância BTC vs altcoins |
+| 3 | `TOTAL3` | — | Market cap altcoins menores |
+| 4 | `BTCUSD` | — | Bias BTC (chart, não só quote) |
+| 5 | `{ALT}BTC` | — | Par altcoin vs BTC (ex: SOLBTC, ADABTC, DOGEBTC) |
+
+**Depois:** Montar tabela reduzida (5 linhas), declarar BTC bias, SÓ ENTÃO analisar a altcoin.
+
+---
+
+### Workflow C — Classe BTC+ALTCOIN (7 passos — PARCIAL)
+
+**Aplicar quando:** Classe = `BTC+ALTCOIN` (BTC + altcoin específica juntos)
+
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
+
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `USDT.D` | — | Obrigatório |
+| 2 | `BTC.D` | — | Dominância |
+| 3 | `TOTAL3` | — | Altcoins |
+| 4 | `BTCUSD` | — | Chart completo do BTC |
+| 5 | `BTCUSDLONGS` | — | Posicionamento |
+| 6 | `BTCUSDSHORTS` | — | Posicionamento |
+| 7 | `{ALT}BTC` | — | Par altcoin vs BTC (força relativa) |
+
+**Depois:** Calcular ratio L/S (obrigatório), definir BTC bias, SÓ ENTÃO → analisar BTC → depois a altcoin como relativo.
+
+---
+
+### Workflow D — Classe EQUITIES (5 passos — TRADFI)
+
+**Aplicar quando:** Classe = `EQUITIES`
+
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
+
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `DXY` | — | Força do dólar |
+| 2 | `SPX` | `ES1!` (NYSE fechada) | Ver Step 0 |
+| 3 | `VIX` | — | Volatilidade / medo-ganância |
+| 4 | ETF do setor | `XLK` tech \| `XLF` financeiro \| `XLE` energia \| `XLV` saúde \| `XLB` materiais \| `XLY` consumo \| `XLRE` imóveis | Conforme o setor do ativo |
+| 5 | `GOLD` | `XAUUSD` | Safe haven / apetite de risco |
+
+**⛔ NÃO usar:** USDT.D, TOTAL, TOTAL2, TOTAL3, BTCUSDLONGS, BTCUSDSHORTS
+
+**Depois:** Montar tabela TradFi (5 linhas), declarar regime SPX/DXY/VIX, SÓ ENTÃO analisar o ativo.
+
+---
+
+### Tabelas de Correlações
+
+**Macro Completa — Workflow A (BTC / BTC+ETH):**
 
 | Ativo | Preço | Tendência D | Sinal | Correlação BTC |
 |-------|-------|-------------|-------|----------------|
@@ -152,6 +241,39 @@ Anotar para cada: **tendência** (alta/baixa/lateral), **nível chave**, **sinal
 | BTCUSDSHORTS | | | | inversa (posicionamento) |
 | **Ratio L/S** | | | | **> 5 = long squeeze risk / < 1 = short squeeze risk** |
 
+**Macro Reduzida — Workflow B (ALTCOIN):**
+
+| Ativo | Preço | Tendência D | Sinal |
+|-------|-------|-------------|-------|
+| USDT.D | | | |
+| BTC.D | | | |
+| TOTAL3 | | | |
+| BTC Bias | | | |
+| {ALT}/BTC par | | | |
+
+**Macro Parcial — Workflow C (BTC+ALTCOIN):**
+
+| Ativo | Preço | Tendência D | Sinal |
+|-------|-------|-------------|-------|
+| USDT.D | | | |
+| BTC.D | | | |
+| TOTAL3 | | | |
+| BTC Bias | | | |
+| BTCUSDLONGS | | | |
+| BTCUSDSHORTS | | | |
+| {ALT}/BTC par | | | |
+| **Ratio L/S** | | | |
+
+**Macro TradFi — Workflow D (EQUITIES):**
+
+| Ativo | Preço | Tendência D | Sinal |
+|-------|-------|-------------|-------|
+| DXY | | | |
+| SPX / ES1! | | | |
+| VIX | | | |
+| ETF Setor | | | |
+| GOLD | | | |
+
 ### Regras de Leitura Macro
 
 1. **Risk-On confirmado:** DXY caindo + S&P subindo + USDT.D caindo + TOTAL subindo → BTC bullish
@@ -166,11 +288,14 @@ Anotar para cada: **tendência** (alta/baixa/lateral), **nível chave**, **sinal
    - **Ratio L/S < 1.0:** Mais shorts que longs → combustível para short squeeze
    - **Divergência preço × Longs:** Se preço sobe mas Longs caem → rally sem convicção, smart money saindo
    - **Divergência preço × Shorts:** Se preço cai mas Shorts caem → vendedores desistindo, fundo próximo
+7. **Fim de semana:** Dados TradFi congelados → reduzir peso de SPX/DXY/GOLD/Petróleo. Rotular como `macro-parcial (dados sex)`.
 
 ### Como registrar na sessão
-- Declarar explicitamente: `Macro: Risk-On | Risk-Off | Misto`
+- Declarar: `Contexto: [hora] | NYSE: ABERTA/FECHADA | CME: ABERTO/FECHADO | Workflow: A/B/C/D`
+- Declarar: `Macro: Risk-On | Risk-Off | Misto`
 - Declarar: `DXY: bullish/bearish/neutro | S&P: bullish/bearish/neutro`
 - Se análise cripto contradiz o macro → reduzir confiança e rotular como `contra-macro`
+- Se fim de semana → rotular macro TradFi como `macro-parcial (dados sex)`
 
 ---
 
@@ -302,6 +427,12 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
 - `Longs/Shorts: BTCUSDLONGS [valor] | BTCUSDSHORTS [valor] | Ratio [X.X] | Squeeze Risk: [nível]`
 - (BTC+ETH) `ETH/BTC: [valor] [outperform/underperform] [%]`
+
+**BTC+ALTCOIN — adicionar:**
+- `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Longs/Shorts: Ratio [X.X] | Squeeze Risk: [nível]`
+- `{ALT}/BTC: [valor] [outperform/underperform] [%]`
+- `Tipo: scalp | swing`
 
 **ALTCOIN — adicionar:**
 - `Setor: DeFi/AI/L2/meme/infra | Par/BTC: [subindo/caindo] | BTC.D: [valor] [tendência]`

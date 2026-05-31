@@ -13,6 +13,17 @@
 1. Ler `wiki/brain/insights.md` + `wiki/brain/mistakes.md` (últimos 10)
 2. Se envolve ativo → ler `wiki/assets/{SYMBOL}.md`
 3. Se envolve análise → ler `wiki/brain/predictions-log.md` → fechar previsões abertas
+
+### Protocolo de Aplicação do Brain (executar junto com os passos 1-3):
+- **mistakes.md:** Para cada um dos últimos 5 erros, perguntar: "Este cenário pode se repetir nesta análise?"
+  → Se sim: declarar explicitamente "⚠️ Prevenção ativa: [erro X] → [ação preventiva]"
+- **insights.md:** Identificar os 3 insights mais aplicáveis ao ativo/TF atual
+  → Declarar: "💡 Aplicando: [insight X]"
+- **patterns.md:** Verificar se algum padrão VALIDADO ou CONSOLIDADO está potencialmente ativo
+  → Declarar: "🔄 Padrão monitorado: [nome] (N confirmações)"
+- **predictions-log.md:** Se ativo tem previsão ⏳ aberta → FECHAR/ATUALIZAR antes de continuar
+  → Se previsão > 48h sem atualização → marcar ⚪ expirada automaticamente
+
 4. **⚠️ CLASSIFICAR O PEDIDO** na tabela abaixo → seguir o pipeline da classe:
 
 | Classe | Quando | Macro Scan | Checklist | Extras |
@@ -34,6 +45,9 @@
 3. **Se indicador surpreendeu** — Atualizar `brain/indicators.md`
 4. **Se padrão repetido** — Atualizar `brain/patterns.md`
 5. **Se erro** — Append `brain/mistakes.md`
+6. **Se indicador testado nesta sessão** → atualizar campos de performance (Sessões de uso / Acertos / Falhas) em `brain/indicators.md`
+7. **Se padrão atingiu 2, 3 ou 4 confirmações** → promover Status: OBSERVAÇÃO → VALIDADO → CONSOLIDADO em `brain/patterns.md`
+8. **Previsões > 48h sem atualização** → marcar ⚪ expirada automaticamente em `brain/predictions-log.md`
 
 > Brain files inexistentes → copiar de `wiki/brain/_templates/`. Index/log → criar de `.initial.md`.
 
@@ -232,6 +246,13 @@ Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave pró
 **TODA análise de ativo DEVE seguir este checklist completo. Não é opcional.**
 O agente DEVE ler os conceitos relevantes da wiki e aplicar cada framework sistematicamente.
 Pular frameworks é PROIBIDO. Se um framework não se aplica, declarar explicitamente "N/A" com justificativa.
+
+### Fase 0 — Pre-Analysis Self-Check (OBRIGATÓRIO antes de iniciar qualquer análise técnica)
+1. **Erros prevenidos:** Listar até 3 erros de `mistakes.md` relevantes para este ativo/setup → declarar prevenção ativa para cada um
+2. **Insights ativados:** Listar até 3 insights de `insights.md` mais aplicáveis → citar explicitamente no raciocínio
+3. **Padrões ativos:** Verificar `patterns.md` → se padrão VALIDADO ou CONSOLIDADO presente → declarar monitoramento
+4. **Previsões abertas:** Se ativo tem previsão ⏳ → atualizar/fechar antes de prosseguir com a análise
+5. **Sessão anterior:** Referenciar a sessão mais recente do mesmo ativo → declarar o que mudou estruturalmente
 
 ### Fase 1 — Leitura de Contexto (antes de olhar o chart)
 1. Ler `wiki/brain/insights.md` — aplicar insights validados
@@ -593,12 +614,20 @@ Workflow:
 3. Chamar: `chart_get_state` → `data_get_study_values` → `quote_get` → `data_get_pine_lines` → `data_get_pine_labels` → `capture_screenshot`
 4. Analisar com contexto do brain + macro (aplicar insights, evitar erros passados)
 5. Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template:
+   - **OBRIGATÓRIO:** Seção "Brain Read Summary" preenchida (erros prevenidos, insights ativados, padrões monitorados)
    - **OBRIGATÓRIO:** Seção "Contexto Macro" preenchida (se BTC/ETH/Altcoin)
    - **OBRIGATÓRIO:** Seção "Setups Identificados" deve ser preenchida
      (mesmo que com "Nenhum setup reconhecido nesta sessão")
    - **OBRIGATÓRIO:** Seção "Plano de Operação" com entrada/stop/TP/R:R
+   - **OBRIGATÓRIO:** Seção "Comparação com Sessão Anterior" preenchida
    - **OBRIGATÓRIO:** Seção "Resultado" inicializada com `⏳ aberta`
-6. **Se setup identificado:**
+   - **OBRIGATÓRIO:** Seção "Aprendizados desta Sessão" preenchida ao final
+6. **Setup Match Check (antes de criar/atualizar setup):**
+   - Verificar `wiki/setups/index.md` → o setup atual corresponde a algum existente?
+   - Se **sim** → linkar ao setup existente e atualizar "Histórico de Ocorrências"
+   - Se **não** e setup apareceu em 2+ sessões anteriores → criar `wiki/setups/{nome}.md`
+   - Se **não** e é primeira ocorrência → registrar como "candidato" em `wiki/setups/index.md` sem criar arquivo
+7. **Se setup identificado e match confirmado:**
    a. Criar ou atualizar `wiki/setups/{nome}.md` (usar `_template.md`)
    b. Adicionar nova linha na tabela "Histórico de Ocorrências" com data, ativo, TF
    c. Recalcular seção "Estatísticas" (Total, Win, Loss, Win Rate, R:R Médio)
@@ -636,13 +665,14 @@ Workflow:
    c. Atualizar `wiki/setups/index.md` com métricas recalculadas
 6. Se ❌ errou:
    - Identificar causa raiz
-   - Append em `brain/mistakes.md` com categoria e lição
-   - Atualizar `brain/indicators.md` se indicador falhou
+   - Append em `brain/mistakes.md` com categoria, lição **e campo "Prevenção"** (check para próximo setup similar)
+   - Atualizar `brain/indicators.md`: incrementar "Falhas" + recalcular Hit Rate do indicador que falhou
 7. Se ✅ acertou:
    - Reforçar insight em `brain/insights.md`
-   - Atualizar confiabilidade em `brain/indicators.md`
-8. Atualizar `brain/patterns.md` se padrão se confirmou/negou
-9. Append em `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`
+   - Atualizar `brain/indicators.md`: incrementar "Acertos" + recalcular Hit Rate dos indicadores usados
+8. Atualizar `brain/patterns.md` se padrão se confirmou/negou → promover Status se atingiu threshold
+9. Preencher seção "Aprendizados desta Sessão" na sessão original se ainda não preenchida
+10. Append em `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`
 
 ### 4. LINT — Health-check periódico
 Trigger: "Faça o lint da wiki" ou "Health-check da wiki"

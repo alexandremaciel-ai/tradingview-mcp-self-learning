@@ -5,6 +5,7 @@
 
 ## Como Usar
 O LLM lê os **últimos 10 erros** antes de cada análise para não repeti-los.
+Para cada erro, verificar: "Este cenário pode se repetir nesta análise?" → declarar prevenção ativa.
 
 ## Categorias de Erro
 - **falso-sinal** — setup identificado que não se concretizou
@@ -14,6 +15,19 @@ O LLM lê os **últimos 10 erros** antes de cada análise para não repeti-los.
 - **htf-ignorado** — ignorou conflito de higher timeframe
 - **overtrading** — muitas entradas sem confirmação adequada
 - **sl-apertado** — stop loss muito próximo, estopado antes do movimento
+
+---
+
+## Formato de Entrada
+
+```markdown
+### [YYYY-MM-DD] {tipo}
+- **O que aconteceu:** 
+- **Por quê falhou:**
+- **Lição:**
+- **Prevenção:** _(check a executar antes de entrar em setup similar)_
+- **Sessão:** [[link]]
+```
 
 ---
 

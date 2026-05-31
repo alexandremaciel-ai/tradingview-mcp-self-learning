@@ -7,6 +7,18 @@
 - **Timeframe principal:** {TF}
 - **Hora:** {HH:MM} BRT
 
+## Brain Read Summary (OBRIGATÓRIO — preencher antes de iniciar análise técnica)
+- **Erros prevenidos:** _(erros de mistakes.md aplicáveis a este setup)_
+  - ⚠️ [categoria] [YYYY-MM-DD]: [resumo do erro] → Prevenção: [ação tomada]
+  - _(ou "Nenhum erro relevante nos últimos 10 registros")_
+- **Insights ativados:** _(insights de insights.md aplicados nesta análise)_
+  - 💡 [resumo do insight aplicado]
+  - _(ou "Nenhum insight diretamente aplicável")_
+- **Padrões monitorados:** _(padrões de patterns.md potencialmente ativos)_
+  - 🔄 [nome do padrão] (Status: OBSERVAÇÃO/VALIDADO/CONSOLIDADO)
+  - _(ou "Nenhum padrão ativo identificado")_
+- **Previsão anterior fechada:** _(link para sessão anterior ou "nenhuma aberta para este ativo")_
+
 ## Contexto Macro (preenchido pelo MACRO SCAN)
 <!-- OBRIGATÓRIO para BTC/ETH/Altcoins. Preenchido automaticamente antes da análise do ativo. -->
 - **Regime:** Risk-On | Risk-Off | Misto
@@ -93,6 +105,12 @@ _{links para wiki/setups/ ou "Nenhum setup reconhecido nesta sessão"}_
 - **TP2:** $___
 - **R:R planejado:** ___:1
 
+## Comparação com Sessão Anterior
+- **Sessão anterior:** [[YYYY-MM-DD-SYMBOL-TF]] ou "primeira sessão deste ativo"
+- **Previsão anterior:** _(o que foi previsto na sessão anterior)_
+- **O que mudou:** _(diferença estrutural, de indicadores ou de contexto macro)_
+- **Previsão anterior acertou?** ✅ / ❌ / ⚪ / ⏳
+
 ## Ação
 - [ ] Setup válido para entrada
 - [ ] Aguardar confirmação
@@ -107,6 +125,12 @@ _{links para wiki/setups/ ou "Nenhum setup reconhecido nesta sessão"}_
 - **P&L estimado:** ___% do capital
 - **Tempo na operação:** ___ horas
 - **Setup utilizado:** [[nome-do-setup]] ou _nenhum_
+
+## Aprendizados desta Sessão (OBRIGATÓRIO — preencher ao escrever o brain)
+- **Insight gerado:** _(o que aprendi nesta sessão que ainda não estava em insights.md — ou "nenhum novo")_
+- **Padrão confirmado/negado:** _(nome do padrão + resultado — ou "nenhum padrão testado")_
+- **Indicador que surpreendeu:** _(indicador + como se comportou diferente do esperado — ou "nenhum")_
+- **Setup promovido para wiki/setups/?** _(sim → [[link]] | candidato → motivo | não → motivo)_
 
 ## Screenshot
 <!-- screenshot: {YYYY-MM-DD}-{SYMBOL}-{TF}.png -->

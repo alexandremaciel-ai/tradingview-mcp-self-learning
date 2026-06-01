@@ -54,53 +54,17 @@
 
 ---
 
-## Regras por Classe de Ativo
+## Regras Especiais por Classe
 
-Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btcusdlongs-btcusdshorts]]
+**BTC:** Macro vence micro — não confiar em rompimento sem fechamento + volume + USDT.D confirmando.
 
-### Classe BTC / BTC+ETH (crypto majors)
-- Pavios HTF: mapear liquidez acima/abaixo (M/W/D). Declarar: `Liquidez por pavios: acima/abaixo/neutra`
-- USDT.D: métrica inversa obrigatória. Declarar: `USDT.D: confirma/nega`
-- BTCUSDLONGS/SHORTS: obrigatório. Declarar: `Ratio L/S: [X.X] | Squeeze Risk: alto/médio/baixo`
-- Macro vence micro: não confiar em rompimento sem confirmação por fechamento + volume + USDT.D
-- BTC+ETH: analisar BTC primeiro → ETH como relativo (ETH/BTC pair + força relativa)
+**ALTCOIN:** Se BTC em risco macro → altcoins só como scalp/day trade. Wyckoff: só se vol diário > $50M.
 
-### Classe BTC+ALTCOIN
-- Macro parcial (Workflow C): USDT.D + BTC.D + TOTAL3 + BTC chart + BTCUSDLONGS/SHORTS + par ALTCOIN/BTC
-- Executar BTC completo primeiro → analisar altcoin como relativo ao BTC
-- ALTCOIN/BTC pair obrigatório: se par caindo = altcoin underperformando BTC mesmo que preço suba
-- Ratio L/S obrigatório: avaliar squeeze risk em BTC antes de operar a altcoin
-- Wyckoff na altcoin: só aplicar se volume diário > $50M
-- Tag obrigatória: `scalp | swing`. Nunca `holder` em análise BTC+ALTCOIN
-- Declarar: `BTC Bias: LONG/SHORT/NEUTRO | {ALT}/BTC: outperform/underperform | Ratio L/S: [X.X]`
+**EQUITIES:** Checar earnings iminentes (7 dias) → alertar risco de gap. Horário: pré-market (05h–10:30h BRT), regular (10:30–17:00h), after-hours — sinais em regular = mais confiáveis. Playbook 4 (squeeze crypto) **não se aplica** — usar Playbooks 1-3.
 
-### Classe ALTCOIN
-- Macro reduzido: apenas USDT.D + BTC.D + TOTAL3 + bias BTC rápido
-- Checar par ALTCOIN/BTC (força relativa). Se par caindo = altcoin underperformando
-- Tag obrigatória: `scalp | swing | holder`. Altcoin em tendência de baixa = NÃO é holder
-- Wyckoff: só aplicar se volume diário > $50M. Abaixo = estrutura manipulável
-- Se BTC em risco macro → altcoins só como scalp/day trade
+**WATCHLIST:** Macro 1× no início. Output: tabela `Ativo | Preço | Bias | Confiança | Setup? | Nota`. Destacar "Top 3". 1 sessão: `YYYY-MM-DD-WATCHLIST.md`.
 
-### Classe EQUITIES (ações, índices)
-- Macro TradFi: DXY + SPX + VIX + ETF do setor (XLK, XLF, XLE, XLV)
-- **NÃO usar:** USDT.D, TOTAL, BTCUSDLONGS/SHORTS, Funding Rate
-- Checar: earnings iminentes (7 dias) → alertar risco de gap
-- Horário: pré-market (05-10:30), regular (10:30-17:00), after-hours. Sinais em regular = mais confiáveis
-- Playbook 4 (squeeze crypto) **não se aplica**. Usar: Playbooks 1-3 + cautela com gaps
-
-### Classe WATCHLIST (scan de múltiplos ativos)
-- Macro: rodar **1× completo** no início
-- Cada ativo: pipeline compacto (quote + study_values + bias em 1 parágrafo)
-- Output: tabela `Ativo | Preço | Bias | Confiança | Setup? | Nota`
-- Destacar "Top 3 setups" com melhor confluência
-- 1 sessão: `YYYY-MM-DD-WATCHLIST.md` (não 1 por ativo)
-
-### Classe DAILY (overview diário)
-- Macro: 1× completo
-- BTC: análise rápida (D + 4H, não MTF completo de 5 TFs)
-- Verificar previsões abertas → fechar expiradas (>48h)
-- Se `wiki/watchlist.md` existir → scan compacto da lista
-- Output: dashboard `Macro | BTC Bias | Alertas | Watchlist | Previsões`
+**DAILY:** Macro 1× completo. BTC rápido (D+4H). Fechar previsões expiradas (>48h). Output: dashboard `Macro | BTC Bias | Alertas | Watchlist | Previsões`.
 
 ---
 
@@ -144,90 +108,22 @@ Antes de qualquer scan, declarar explicitamente o contexto temporal:
 
 **Aplicar quando:** Classe = `BTC` | `BTC+ETH` | `DAILY` | `CYCLE`
 
-Executar na ordem EXATA abaixo. Cada bloco é uma chamada MCP real:
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
-**Passo 1 — USDT.D:**
-```
-chart_set_symbol({symbol: "USDT.D"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `USDT.D` | — | Sempre disponível |
+| 2 | `SPX` | `ES1!` | NYSE fechada ou fim de semana → ES1! |
+| 3 | `GOLD` | `XAUUSD` | |
+| 4 | `DXY` | — | Congelado no fim de semana |
+| 5 | `TOTAL` | — | Sempre disponível |
+| 6 | `TOTAL2` | — | Sempre disponível |
+| 7 | `TOTAL3` | — | Sempre disponível |
+| 8 | `USOIL` | `CL1!` | Sem dado ao vivo no fim de semana |
+| 9 | `BTCUSDLONGS` | — | Sempre disponível |
+| 10 | `BTCUSDSHORTS` | — | Sempre disponível |
 
-**Passo 2 — S&P 500 (ou ES1! se mercado fechado):**
-```
-chart_set_symbol({symbol: "SPX"})   // ou ES1! se fora do horário
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 3 — Ouro:**
-```
-chart_set_symbol({symbol: "GOLD"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 4 — DXY:**
-```
-chart_set_symbol({symbol: "DXY"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 5 — TOTAL:**
-```
-chart_set_symbol({symbol: "TOTAL"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 6 — TOTAL2:**
-```
-chart_set_symbol({symbol: "TOTAL2"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 7 — TOTAL3:**
-```
-chart_set_symbol({symbol: "TOTAL3"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 8 — Petróleo:**
-```
-chart_set_symbol({symbol: "USOIL"})   // ou CL1! se indisponível
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 9 — BTC Longs (Bitfinex):**
-```
-chart_set_symbol({symbol: "BTCUSDLONGS"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 10 — BTC Shorts (Bitfinex):**
-```
-chart_set_symbol({symbol: "BTCUSDSHORTS"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Depois dos 10 passos:** Montar a tabela de correlações completa, calcular ratio BTCUSDLONGS/BTCUSDSHORTS, definir regime e risco de squeeze, e SÓ ENTÃO analisar BTC/ETH.
-Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave próximo**, **sinal relevante**
+**Depois:** Montar tabela de correlações completa (10 linhas), calcular ratio L/S, definir regime e squeeze risk, SÓ ENTÃO analisar BTC/ETH.
 
 ---
 
@@ -235,49 +131,17 @@ Para cada ativo anotar: **tendência** (alta/baixa/lateral), **nível chave pró
 
 **Aplicar quando:** Classe = `ALTCOIN` (análise solo de altcoin)
 
-Executar na ordem abaixo. Cada bloco é uma chamada MCP real:
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
-**Passo 1 — USDT.D:**
-```
-chart_set_symbol({symbol: "USDT.D"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `USDT.D` | — | Obrigatório — métrica inversa cripto |
+| 2 | `BTC.D` | — | Dominância BTC vs altcoins |
+| 3 | `TOTAL3` | — | Market cap altcoins menores |
+| 4 | `BTCUSD` | — | Bias BTC (chart, não só quote) |
+| 5 | `{ALT}BTC` | — | Par altcoin vs BTC (ex: SOLBTC, ADABTC, DOGEBTC) |
 
-**Passo 2 — BTC.D (Dominância do BTC):**
-```
-chart_set_symbol({symbol: "BTC.D"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 3 — TOTAL3:**
-```
-chart_set_symbol({symbol: "TOTAL3"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 4 — BTCUSD (bias rápido):**
-```
-chart_set_symbol({symbol: "BTCUSD"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 5 — Par ALTCOIN/BTC (força relativa):**
-```
-chart_set_symbol({symbol: "{ALT}BTC"})   // ex: SOLBTC, ADABTC, DOGEBTC
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Depois dos 5 passos:** Montar tabela de correlações reduzida (5 linhas), declarar BTC bias, SÓ ENTÃO analisar a altcoin.
+**Depois:** Montar tabela reduzida (5 linhas), declarar BTC bias, SÓ ENTÃO analisar a altcoin.
 
 ---
 
@@ -285,65 +149,19 @@ data_get_study_values()
 
 **Aplicar quando:** Classe = `BTC+ALTCOIN` (BTC + altcoin específica juntos)
 
-Executar na ordem abaixo. Cada bloco é uma chamada MCP real:
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
-**Passo 1 — USDT.D:**
-```
-chart_set_symbol({symbol: "USDT.D"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `USDT.D` | — | Obrigatório |
+| 2 | `BTC.D` | — | Dominância |
+| 3 | `TOTAL3` | — | Altcoins |
+| 4 | `BTCUSD` | — | Chart completo do BTC |
+| 5 | `BTCUSDLONGS` | — | Posicionamento |
+| 6 | `BTCUSDSHORTS` | — | Posicionamento |
+| 7 | `{ALT}BTC` | — | Par altcoin vs BTC (força relativa) |
 
-**Passo 2 — BTC.D (Dominância):**
-```
-chart_set_symbol({symbol: "BTC.D"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 3 — TOTAL3:**
-```
-chart_set_symbol({symbol: "TOTAL3"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 4 — BTCUSD (chart completo):**
-```
-chart_set_symbol({symbol: "BTCUSD"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 5 — BTC Longs (Bitfinex):**
-```
-chart_set_symbol({symbol: "BTCUSDLONGS"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 6 — BTC Shorts (Bitfinex):**
-```
-chart_set_symbol({symbol: "BTCUSDSHORTS"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 7 — Par ALTCOIN/BTC (força relativa):**
-```
-chart_set_symbol({symbol: "{ALT}BTC"})   // ex: SOLBTC, ADABTC
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Depois dos 7 passos:** Calcular ratio L/S (obrigatório), definir BTC bias, SÓ ENTÃO → analisar BTC completo → depois a altcoin como relativo ao BTC.
+**Depois:** Calcular ratio L/S (obrigatório), definir BTC bias, SÓ ENTÃO → analisar BTC → depois a altcoin como relativo.
 
 ---
 
@@ -351,104 +169,21 @@ data_get_study_values()
 
 **Aplicar quando:** Classe = `EQUITIES`
 
-Executar na ordem abaixo. Cada bloco é uma chamada MCP real:
+Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
-**Passo 1 — DXY:**
-```
-chart_set_symbol({symbol: "DXY"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
+| Passo | Ticker | Fallback | Observação |
+|-------|--------|----------|------------|
+| 1 | `DXY` | — | Força do dólar |
+| 2 | `SPX` | `ES1!` (NYSE fechada) | Ver Step 0 |
+| 3 | `VIX` | — | Volatilidade / medo-ganância |
+| 4 | ETF do setor | `XLK` tech \| `XLF` financeiro \| `XLE` energia \| `XLV` saúde \| `XLB` materiais \| `XLY` consumo \| `XLRE` imóveis | Conforme o setor do ativo |
+| 5 | `GOLD` | `XAUUSD` | Safe haven / apetite de risco |
 
-**Passo 2 — S&P 500 (ou ES1! se NYSE fechada):**
-```
-chart_set_symbol({symbol: "SPX"})   // ou ES1! — ver Step 0
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
+**⛔ NÃO usar:** USDT.D, TOTAL, TOTAL2, TOTAL3, BTCUSDLONGS, BTCUSDSHORTS
 
-**Passo 3 — VIX:**
-```
-chart_set_symbol({symbol: "VIX"})
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 4 — ETF do Setor:**
-```
-chart_set_symbol({symbol: "XLK"})   // XLK=tech | XLF=financeiro | XLE=energia | XLV=saúde | XLB=materiais | XLY=consumo | XLRE=imóveis
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**Passo 5 — GOLD (safe haven):**
-```
-chart_set_symbol({symbol: "GOLD"})   // ou XAUUSD se NYSE fechada
-chart_set_timeframe({timeframe: "D"})
-quote_get()
-data_get_study_values()
-```
-
-**⛔ NÃO usar:** USDT.D, TOTAL, TOTAL2, TOTAL3, BTCUSDLONGS, BTCUSDSHORTS — são métricas de cripto
-
-**Depois dos 5 passos:** Montar tabela TradFi (5 linhas), declarar regime SPX/DXY/VIX, SÓ ENTÃO analisar o ativo.
+**Depois:** Montar tabela TradFi (5 linhas), declarar regime SPX/DXY/VIX, SÓ ENTÃO analisar o ativo.
 
 ---
-
-### Tabelas de Correlações
-
-**Macro Completa — Workflow A (BTC / BTC+ETH):**
-
-| Ativo | Preço | Tendência D | Sinal | Correlação BTC |
-|-------|-------|-------------|-------|----------------|
-| USDT.D | | | | inversa |
-| S&P 500 / ES1! | | | | positiva |
-| Ouro | | | | contextual |
-| DXY | | | | inversa |
-| TOTAL | | | | direta |
-| TOTAL2 | | | | direta |
-| TOTAL3 | | | | direta |
-| Petróleo | | | | inversa (inflação) |
-| BTCUSDLONGS | | | | direta (posicionamento) |
-| BTCUSDSHORTS | | | | inversa (posicionamento) |
-| **Ratio L/S** | | | | **> 5 = long squeeze risk / < 1 = short squeeze risk** |
-
-**Macro Reduzida — Workflow B (ALTCOIN):**
-
-| Ativo | Preço | Tendência D | Sinal |
-|-------|-------|-------------|-------|
-| USDT.D | | | |
-| BTC.D | | | |
-| TOTAL3 | | | |
-| BTC Bias | | | |
-| {ALT}/BTC par | | | |
-
-**Macro Parcial — Workflow C (BTC+ALTCOIN):**
-
-| Ativo | Preço | Tendência D | Sinal |
-|-------|-------|-------------|-------|
-| USDT.D | | | |
-| BTC.D | | | |
-| TOTAL3 | | | |
-| BTC Bias | | | |
-| BTCUSDLONGS | | | |
-| BTCUSDSHORTS | | | |
-| {ALT}/BTC par | | | |
-| **Ratio L/S** | | | |
-
-**Macro TradFi — Workflow D (EQUITIES):**
-
-| Ativo | Preço | Tendência D | Sinal |
-|-------|-------|-------------|-------|
-| DXY | | | |
-| SPX / ES1! | | | |
-| VIX | | | |
-| ETF Setor | | | |
-| GOLD | | | |
 
 ### Regras de Leitura Macro
 
@@ -481,19 +216,13 @@ data_get_study_values()
 O agente DEVE ler os conceitos relevantes da wiki e aplicar cada framework sistematicamente.
 Pular frameworks é PROIBIDO. Se um framework não se aplica, declarar explicitamente "N/A" com justificativa.
 
-### Fase 0 — Pre-Analysis Self-Check (OBRIGATÓRIO antes de iniciar qualquer análise técnica)
-1. **Erros prevenidos:** Listar até 3 erros de `mistakes.md` relevantes para este ativo/setup → declarar prevenção ativa para cada um
-2. **Insights ativados:** Listar até 3 insights de `insights.md` mais aplicáveis → citar explicitamente no raciocínio
-3. **Padrões ativos:** Verificar `patterns.md` → se padrão VALIDADO ou CONSOLIDADO presente → declarar monitoramento
-4. **Previsões abertas:** Se ativo tem previsão ⏳ → atualizar/fechar antes de prosseguir com a análise
-5. **Sessão anterior:** Referenciar a sessão mais recente do mesmo ativo → declarar o que mudou estruturalmente
-
 ### Fase 1 — Leitura de Contexto (antes de olhar o chart)
 1. Ler `wiki/brain/insights.md` — aplicar insights validados
 2. Ler `wiki/brain/mistakes.md` — evitar erros já cometidos
 3. Ler `wiki/brain/indicators.md` — calibrar peso de RSI, MACD, EMA, ADX, CHoCH/BOS
 4. Ler `wiki/brain/patterns.md` — aplicar padrões recorrentes
 5. Ler `wiki/assets/{SYMBOL}.md` — contexto histórico do ativo
+6. Referenciar sessão anterior do mesmo ativo → declarar o que mudou estruturalmente
 
 ### Fase 2 — Multi-Timeframe (top-down obrigatório)
 Ref: [[multi-timeframe-analysis]]
@@ -647,15 +376,6 @@ Use `study_filter` parameter to target a specific indicator by name substring (e
 - `data_get_ohlcv` without summary → all bars (use `count` to limit, default 100)
 - `quote_get` → single latest price snapshot
 
-### "Analyze my chart" (full report workflow)
-1. `quote_get` → current price
-2. `data_get_study_values` → all indicator readings
-3. `data_get_pine_lines` → key price levels from custom indicators
-4. `data_get_pine_labels` → labeled levels with context (e.g., "Settlement", "ASN O/U")
-5. `data_get_pine_tables` → session stats, analytics tables
-6. `data_get_ohlcv` with `summary: true` → price action summary
-7. `capture_screenshot` → visual confirmation
-
 ### "Change the chart"
 - `chart_set_symbol` → switch ticker (e.g., "AAPL", "ES1!", "NYMEX:CL1!")
 - `chart_set_timeframe` → switch resolution (e.g., "1", "5", "15", "60", "D", "W")
@@ -673,17 +393,6 @@ Use `study_filter` parameter to target a specific indicator by name substring (e
 6. `pine_save` → save to TradingView cloud
 7. `pine_new` → create blank indicator/strategy/library
 8. `pine_open` → load a saved script by name
-
-### "Practice trading with replay"
-1. `replay_start` with `date: "2025-03-01"` → enter replay mode
-2. `replay_step` → advance one bar
-3. `replay_autoplay` → auto-advance (set speed with `speed` param in ms)
-4. `replay_trade` with `action: "buy"/"sell"/"close"` → execute trades
-5. `replay_status` → check position, P&L, current date
-6. `replay_stop` → return to realtime
-
-### "Screen multiple symbols"
-- `batch_run` with `symbols: ["ES1!", "NQ1!", "YM1!"]` and `action: "screenshot"` or `"get_ohlcv"`
 
 ### "Draw on the chart"
 - `draw_shape` → horizontal_line, trend_line, rectangle, text (pass point + optional point2)
@@ -719,19 +428,6 @@ These tools can return large payloads. Follow these rules to avoid context bloat
 6. **Use `capture_screenshot`** for visual context instead of pulling large datasets — a screenshot is ~300KB but gives you the full visual picture
 7. **Call `chart_get_state` once** at the start to get entity IDs, then reference them — don't re-call repeatedly
 8. **Cap your OHLCV requests** — `count: 20` for quick analysis, `count: 100` for deeper work, `count: 500` only when specifically needed
-
-### Output Size Estimates (compact mode)
-| Tool | Typical Output |
-|------|---------------|
-| `quote_get` | ~200 bytes |
-| `data_get_study_values` | ~500 bytes (all indicators) |
-| `data_get_pine_lines` | ~1-3 KB per study (deduplicated levels) |
-| `data_get_pine_labels` | ~2-5 KB per study (capped at 50) |
-| `data_get_pine_tables` | ~1-4 KB per study (formatted rows) |
-| `data_get_pine_boxes` | ~1-2 KB per study (deduplicated zones) |
-| `data_get_ohlcv` (summary) | ~500 bytes |
-| `data_get_ohlcv` (100 bars) | ~8 KB |
-| `capture_screenshot` | ~300 bytes (returns file path, not image data) |
 
 ## Tool Conventions
 
@@ -785,28 +481,7 @@ O diretório `wiki/brain/` é o núcleo de autoaprendizado:
 
 ---
 
-## REGRA ZERO — Ciclo Automático de Aprendizado
-
-**TODA interação com chart/análise segue este ciclo. Não é opcional.**
-
-### ANTES de analisar (READ):
-1. Ler `wiki/brain/insights.md` — aplicar top insights à análise atual
-2. Ler `wiki/brain/mistakes.md` (últimos 10) — evitar repetir erros
-3. Ler `wiki/assets/{SYMBOL}.md` — contexto histórico do ativo
-4. Ler `wiki/brain/predictions-log.md` — verificar se há previsão aberta para o ativo
-5. Se previsão aberta existe → comparar previsão com estado atual → fechar como ✅/❌
-6. Ler `wiki/brain/indicators.md` — calibrar peso de cada indicador
-7. Ler `wiki/brain/patterns.md` — aplicar padrões recorrentes já validados
-8. Consultar `wiki/concepts/` relevantes: SMC, Wyckoff, fibonacci, MTF, trade-playbooks
-9. Consultar `wiki/strategies/` — aplicar estratégias ativas (conservative-trend-follower, liquidity-wicks)
-
-### DEPOIS de analisar (WRITE):
-1. **Sempre** — Extrair insight da análise → append em `brain/insights.md`
-2. **Se bias definido** — Registrar previsão em `brain/predictions-log.md`
-3. **Se indicador surpreendeu** — Atualizar `brain/indicators.md`
-4. **Se padrão visto antes** — Atualizar `brain/patterns.md`
-5. **Se erro identificado** (via feedback) — Append em `brain/mistakes.md`
-6. **Sempre** — Append em `wiki/log.md`
+## Formatos de Escrita do Brain
 
 ### Formato de Insight (brain/insights.md)
 ```markdown
@@ -1015,19 +690,6 @@ Workflow:
 12. Append em `wiki/log.md`: `## [YYYY-MM-DD] cycle | BTC | Fase: [X]`
 
 ---
-
-## Prioridade de Contexto (o que ler primeiro)
-
-Quando o contexto é limitado, carregar nesta ordem:
-
-1. `wiki/brain/insights.md` — SEMPRE (resumo compacto do que já sabe)
-2. `wiki/brain/mistakes.md` — SEMPRE (últimos 10, evitar repetir)
-3. `wiki/assets/{SYMBOL}.md` — quando analisando um ativo específico
-4. `wiki/brain/predictions-log.md` — quando analisando ativo com previsão aberta
-5. `wiki/brain/indicators.md` — quando interpretando indicadores
-6. `wiki/brain/patterns.md` — quando buscando recorrências
-7. `wiki/strategies/` — quando avaliando entrada
-8. `wiki/concepts/` — quando conceito específico é relevante
 
 ## Convenções de Backlinks
 - Use `[[nome-do-arquivo]]` (sem extensão, sem path)

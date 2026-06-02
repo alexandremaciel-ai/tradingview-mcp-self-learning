@@ -262,16 +262,18 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
    - Valor absoluto + zona (sobrecompra >70 / sobrevenda <30 / neutro)
    - **Direção da linha RSI:** subindo, descendo, achatando
    - **Cruzamento RSI × SMA(RSI):** RSI cruza SMA para cima = momentum bullish; para baixo = bearish
-   - **Divergências clássicas e ocultas no 1H/4H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
-   - RSI > 70 em TF maior = teto de retração (limita upside dos TFs menores)
+   - **Semanal (W) — OBRIGATÓRIO:** ler RSI macro (valor + zona + direção). Define o teto/piso de momentum do ciclo e limita o upside/downside dos TFs menores. Divergência semanal = sinal de reversão de alto peso.
+   - **Divergências clássicas e ocultas no W/D/4H/1H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
+   - RSI > 70 em TF maior (W/D) = teto de retração (limita upside dos TFs menores)
 2. **RSI Estocástico (Stoch RSI):**
    - %K e %D: valores + cruzamento (%K cruza %D para cima = bullish, para baixo = bearish)
    - Zona: sobrecompra (>80) / sobrevenda (<20)
    - **Direção:** linhas subindo/descendo dentro da zona
+   - **Semanal (W) — OBRIGATÓRIO:** ler StochRSI macro (%K/%D + zona). Reset semanal de oversold/overbought = sinal de virada de ciclo; confirma ou nega o timing dos TFs menores.
    - **Divergências StochRSI (1H/15M):** preço HH + %K LH em >80 = bearish | preço LL + %K HL em <20 = bullish
    - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
    **⚠️ Regra RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):**
-   - RSI (D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only
+   - RSI (W/D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only (W tem o maior peso)
    - StochRSI (1H/15M) define TIMING → cruzamento em zona extrema = gatilho de entrada
    - **NUNCA operar StochRSI contra a direção do RSI HTF**
    - StochRSI overbought + RSI HTF bullish = continuação (NÃO shortear)
@@ -281,7 +283,8 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
    - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish
    - **Onde ocorre o cruzamento:** acima de zero = mais forte bullish / abaixo = mais forte bearish
    - **Histograma:** crescente (momentum aumentando) / decrescente (enfraquecendo)
-   - **Divergências MACD (4H/D):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
+   - **Semanal (W) — OBRIGATÓRIO:** ler MACD macro (posição vs zero + cruzamento + histograma). Cruzamento semanal vs linha zero = mudança de regime de momentum do ciclo; tem prioridade sobre os TFs menores.
+   - **Divergências MACD (W/D/4H):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
    - **Direção das linhas:** MACD e Signal convergindo ou divergindo
    - Cross sem volume = sinal fraco → aguardar confirmação
 4. **ADX (14):** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar). DI+ > DI- = bullish / DI- > DI+ = bearish
@@ -329,7 +332,7 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 **Todas as classes:**
 - `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
 - `MTF: W/D/4H/1H → [resumo]` (DAILY: só D+4H)
-- `Indicadores: RSI [valor] [direção] | StochRSI [%K/%D] [cross] | MACD [vs zero] [cross] [hist] | ADX [valor]`
+- `Indicadores: RSI [W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [W/D/4H vs zero+cross+hist] | ADX [valor]`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 **BTC / BTC+ETH — adicionar:**

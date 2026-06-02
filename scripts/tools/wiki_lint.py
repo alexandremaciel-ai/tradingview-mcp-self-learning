@@ -49,6 +49,7 @@ WIKILINK_RE = re.compile(r'\[\[([^\]\|#]+)(?:[#\|][^\]]*)?\]\]')
 # Anexos (imagens/arquivos) não são páginas da wiki — ignorados na checagem de links
 ATTACHMENT_EXTS = ('.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.pdf', '.csv', '.xlsx')
 # Arquivos que não devem ser tratados como FONTES de links (placeholders)
+# Obs: a pasta brain/_templates/ é ignorada por inteiro via skip_dirs (links de exemplo)
 SKIP_SOURCE_SUFFIXES = ('_template.md', '.initial.md')
 # Cabeçalho de previsão: ### [AAAA-MM-DD ...] ...
 PRED_HEADER_RE = re.compile(r'^###\s+\[(\d{4}-\d{2}-\d{2})[^\]]*\]\s*(.*)$')
@@ -105,7 +106,7 @@ def _link_resolves(target, known_names):
 def find_broken_links(known_names):
     """Procura wikilinks na wiki cujo alvo não existe em lugar nenhum do repo."""
     broken = {}  # alvo -> lista de arquivos que o citam
-    for path in all_md_files(WIKI_DIR, skip_dirs=('lint',)):
+    for path in all_md_files(WIKI_DIR, skip_dirs=('lint', '_templates')):
         if path.endswith(SKIP_SOURCE_SUFFIXES):
             continue
         try:
@@ -126,7 +127,7 @@ def find_broken_links(known_names):
 def find_referenced_names():
     """Conjunto de todos os alvos de wikilink citados na wiki (lowercase)."""
     refs = set()
-    for path in all_md_files(WIKI_DIR, skip_dirs=('lint',)):
+    for path in all_md_files(WIKI_DIR, skip_dirs=('lint', '_templates')):
         if path.endswith(SKIP_SOURCE_SUFFIXES):
             continue
         try:

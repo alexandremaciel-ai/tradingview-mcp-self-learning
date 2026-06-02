@@ -15,6 +15,7 @@ Para cada erro, verificar: "Este cenário pode se repetir nesta análise?" → d
 - **htf-ignorado** — ignorou conflito de higher timeframe
 - **overtrading** — muitas entradas sem confirmação adequada
 - **sl-apertado** — stop loss muito próximo, estopado antes do movimento
+- **psicologico** — revenge trade, FOMO, medo, quebra de disciplina (ver [[trading-psychology]])
 
 ---
 

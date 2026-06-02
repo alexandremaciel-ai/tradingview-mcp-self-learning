@@ -23,6 +23,7 @@
   → Declarar: "🔄 Padrão monitorado: [nome] (N confirmações)"
 - **predictions-log.md:** Se ativo tem previsão ⏳ aberta → FECHAR/ATUALIZAR antes de continuar
   → Se previsão > 48h sem atualização → marcar ⚪ expirada automaticamente
+- **metrics.md:** Consultar `brain/metrics.md` (circuit breaker + calibração de confiança). Se 🔴 ativo (3 losses seguidos / DD 5% no dia) → rebaixar recomendação para "somente observação / paper" e declarar `⛔ Disciplina: [estado]`. Ref: [[trading-psychology]]
 
 4. **⚠️ CLASSIFICAR O PEDIDO** na tabela abaixo → seguir o pipeline da classe:
 
@@ -318,9 +319,12 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 
 ### Fase 9 — Declaração de Bias Final
 1. Sintetizar todas as fases acima em um bias claro: **LONG / SHORT / NEUTRO**
-2. Declarar confiança: **alta / média / baixa**
-3. Se bias contradiz macro → rotular como `contra-macro` e reduzir confiança
-4. Se nenhum framework converge → declarar `NEUTRO — sem confluência`
+2. **Calcular o Confluence Score (0–10)** — ver [[confluence-score]]. Listar critérios que pontuaram e penalidades aplicadas (ex: `Score 7/10 = 1,3,5,6,7,8 ✓ | −2 contra-macro`)
+3. Declarar confiança DERIVADA do score: **≥8 = alta | 6–7 = média | 4–5 = baixa | <4 = NEUTRO** (não usar "feeling")
+4. Aplicar a tabela score→ação para o TAMANHO: ≥8 cheia | 6–7 reduzida | 4–5 só observar/paper | <4 não operar
+5. Se bias contradiz macro → rotular `contra-macro` e aplicar penalidade −2 no score
+6. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
+7. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
 
 ### Como escrever na sessão (adaptar por classe)
 
@@ -572,8 +576,9 @@ Workflow:
 5. **Ranquear insights** em `brain/insights.md` (mover mais validados para cima)
 6. Identificar conceitos mencionados em `raw/clippings/` mas sem página `wiki/concepts/` própria
 7. **Regenerar `wiki/library.md`** — garantir que todos os clippings estejam linkados no Graph View
-8. Criar `wiki/lint/YYYY-MM-DD.md` com relatório
-9. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
+8. **Rodar `python scripts/tools/wiki_lint.py`** → gera `wiki/lint/YYYY-MM-DD.md` (wikilinks quebrados, previsões expiradas, setups sem stats) e atualiza contadores do `index.md`
+9. **Rodar `python scripts/tools/metrics_engine.py`** → recalcula `brain/metrics.md` e as métricas globais de `setups/index.md`
+10. Append em `wiki/log.md`: `## [YYYY-MM-DD] lint | {N} issues encontrados`
 
 ### 5. UPDATE STRATEGY — Revisão de estratégia com métricas
 Trigger: "Atualize a estratégia com base nos resultados recentes"
@@ -616,7 +621,7 @@ Trigger: "Gere a revisão semanal" ou "Visualize os resultados"
 Workflow:
 1. Analisar as sessões do período solicitado (ex: últimos 7 dias)
 2. Extrair métricas (win rate, total profit, drawdown, key insights)
-3. Executar o script Python `scripts/tools/plot_accuracy.py` para gerar o gráfico na pasta `wiki/outputs/charts/`
+3. Executar `scripts/tools/plot_accuracy.py` + `scripts/tools/plot_metrics.py` (calibração de confiança e win rate por lado/regime) para gerar os gráficos em `wiki/outputs/charts/`
 4. Criar uma apresentação usando formato Marp (`wiki/outputs/YYYY-MM-DD-review.md`)
 5. Append em `wiki/log.md`
 

@@ -1,21 +1,38 @@
 # Brain — Log de Previsões
 
-> Cada análise que gera um bias (LONG/SHORT) é registrada aqui.
+> Cada análise que gera um bias (LONG/SHORT/SPOT) é registrada aqui.
 > O LLM verifica previsões anteriores ao analisar o mesmo ativo.
+> Os **campos parseáveis** abaixo são lidos por `scripts/tools/metrics_engine.py` — manter os nomes exatos.
 
-## Formato
+## Formato (campos parseáveis obrigatórios)
 
 ```markdown
-### [YYYY-MM-DD HH:MM] SYMBOL TF — BIAS
-- **Preço na previsão:** $XX,XXX
-- **Alvo:** $XX,XXX
-- **Invalidação:** $XX,XXX
+### [YYYY-MM-DD HH:MM BRT] SYMBOL TF — BIAS
+- **Preço na análise:** $XX,XXX
+- **Contexto:** _(1-2 linhas de macro/estrutura)_
+- **Tese:** _(o racional do trade)_
+- **Lado:** long | short | spot
+- **Tipo:** scalp | swing | holder
+- **Setup:** [[nome-do-setup]] | —
+- **Playbook:** 1 | 2 | 3 | 4 | —
+- **Confluence Score:** N/10        ← ver [[confluence-score]]
 - **Confiança:** alta | média | baixa
+- **Regime:** risk-on | risk-off | misto
+- **Entrada:** $XX,XXX (zona) | **SL:** $XX,XXX | **TPs:** $A / $B / $C
+- **R:R plan:** X.X
+- **R:R real:** _(preenchido no feedback)_
+- **Invalidação:** _(condição que mata a tese)_
 - **Indicadores base:** [lista]
 - **Status:** ⏳ aberta | ✅ acertou | ❌ errou | ⚪ expirou
 - **Resultado:** _(preenchido no feedback)_
 - **Lição:** _(preenchida no feedback)_
 ```
+
+### Convenções de parsing
+- **Status** é detectado pelo emoji (⏳/✅/❌/⚪) — o texto após o emoji é livre.
+- **Lado** ausente → inferido do header (LONG/BULLISH = long; SHORT/BEARISH = short).
+- Toda previsão ❌ DEVE gerar entrada em [[mistakes]] com `Categoria` + `Prevenção`.
+- Previsão ⏳ há mais de 48h sem atualização → marcar ⚪ expirou (o `wiki_lint.py` sinaliza).
 
 ---
 

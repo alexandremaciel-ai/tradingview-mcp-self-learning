@@ -90,6 +90,7 @@ wiki/brain/mistakes.md
 wiki/brain/predictions-log.md
 wiki/brain/indicators.md
 wiki/brain/patterns.md
+wiki/brain/metrics.md
 
 # ── Wiki Sessions — personal analysis sessions ──────────────
 wiki/sessions/*.md
@@ -132,3 +133,7 @@ wiki/research/*
 wiki/search-index.md
 !wiki/outputs/.gitkeep
 !wiki/research/.gitkeep
+
+# ── Python bytecode (tooling) ───────────────────────────────
+__pycache__/
+*.pyc

@@ -51,7 +51,7 @@
 7. **Se padrão atingiu 2, 3 ou 4 confirmações** → promover Status: OBSERVAÇÃO → VALIDADO → CONSOLIDADO em `brain/patterns.md`
 8. **Previsões > 48h sem atualização** → marcar ⚪ expirada automaticamente em `brain/predictions-log.md`
 
-> Brain files inexistentes → copiar de `wiki/brain/_templates/`. Index/log → criar de `.initial.md`.
+> Brain files inexistentes → copiar de `wiki/brain/_templates/`. Arquivos locais ausentes → criar do seed `.initial.md`: `index.md`, `log.md`, `setups/index.md`, `watchlist.md`, `library.md` (todos gitignored — só os `.initial.md` são versionados).
 
 ---
 
@@ -626,7 +626,7 @@ Workflow:
    - Setups com win rate > 60% → candidato a aumento de posição
    - Indicadores que falharam consistentemente → reduzir peso no checklist
    - Padrões validados pelo brain → adicionar como filtro ou regra
-7. **Atualizar tabela "Performance Histórica"** na estratégia com dados reais
+7. **Métricas numéricas reais** (win rate, drawdown, Sharpe, R:R) → gravar SOMENTE em `brain/metrics.md` + `wiki/setups/index.md` (ambos gitignored). ⚠️ NÃO escrever números de performance pessoal nos arquivos `wiki/strategies/*.md` (são versionados/públicos): manter a tabela "Performance Histórica" como placeholder qualitativo apontando para `[[metrics]]`.
 8. Atualizar `wiki/setups/index.md` seção "Métricas Globais"
 9. Versionar: incrementar data de "Última revisão" na estratégia
 10. Append em `wiki/log.md`: `## [YYYY-MM-DD] update-strategy | {resumo dos ajustes}`

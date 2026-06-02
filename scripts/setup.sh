@@ -140,11 +140,20 @@ if [ -d "$INSTALL_DIR/wiki/brain/_templates" ]; then
       cp "$tmpl" "$target"
     fi
   done
-  # Copy initial index and log if not present
-  [ ! -f "$INSTALL_DIR/wiki/index.md" ] && [ -f "$INSTALL_DIR/wiki/index.initial.md" ] && \
-    cp "$INSTALL_DIR/wiki/index.initial.md" "$INSTALL_DIR/wiki/index.md"
-  [ ! -f "$INSTALL_DIR/wiki/log.md" ] && [ -f "$INSTALL_DIR/wiki/log.initial.md" ] && \
-    cp "$INSTALL_DIR/wiki/log.initial.md" "$INSTALL_DIR/wiki/log.md"
+  # Copy initial files from their seeds if not present (all local-only, gitignored)
+  #   <name>.initial.md  ->  <name>.md
+  seed_pairs=(
+    "wiki/index.initial.md:wiki/index.md"
+    "wiki/log.initial.md:wiki/log.md"
+    "wiki/setups/index.initial.md:wiki/setups/index.md"
+    "wiki/watchlist.initial.md:wiki/watchlist.md"
+    "wiki/library.initial.md:wiki/library.md"
+  )
+  for pair in "${seed_pairs[@]}"; do
+    seed="$INSTALL_DIR/${pair%%:*}"
+    target="$INSTALL_DIR/${pair##*:}"
+    [ ! -f "$target" ] && [ -f "$seed" ] && cp "$seed" "$target"
+  done
   success "Wiki brain initialized (local only — not tracked by git)"
 fi
 

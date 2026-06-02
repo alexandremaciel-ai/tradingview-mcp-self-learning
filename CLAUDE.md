@@ -71,8 +71,7 @@
 
 ## 📊 Análise Macro Obrigatória — Pré-Requisito para Qualquer Análise
 
-**ANTES de analisar qualquer ativo, o agente DEVE identificar o contexto de mercado e executar o scan correspondente à classe.**
-Esta regra é obrigatória e não pode ser pulada. O macro contexto define o viés primário.
+**ANTES de analisar qualquer ativo, o agente DEVE identificar o contexto de mercado e executar o scan da classe.** Regra obrigatória — o macro contexto define o viés primário.
 
 ### Step 0 — Detector de Contexto de Mercado (SEMPRE PRIMEIRO)
 
@@ -134,8 +133,6 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 
 **Aplicar quando:** Classe = `ALTCOIN` (análise solo de altcoin)
 
-Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
-
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
 | 1 | `USDT.D` | — | Obrigatório — métrica inversa cripto |
@@ -151,8 +148,6 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 ### Workflow C — Classe BTC+ALTCOIN (7 passos — PARCIAL)
 
 **Aplicar quando:** Classe = `BTC+ALTCOIN` (BTC + altcoin específica juntos)
-
-Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
@@ -171,8 +166,6 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 ### Workflow D — Classe EQUITIES (5 passos — TRADFI)
 
 **Aplicar quando:** Classe = `EQUITIES`
-
-Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
@@ -206,18 +199,15 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 
 ### Como registrar na sessão
 - Declarar: `Contexto: [hora] | NYSE: ABERTA/FECHADA | CME: ABERTO/FECHADO | Workflow: A/B/C/D`
-- Declarar: `Macro: Risk-On | Risk-Off | Misto`
-- Declarar: `DXY: bullish/bearish/neutro | S&P: bullish/bearish/neutro`
-- Se análise cripto contradiz o macro → reduzir confiança e rotular como `contra-macro`
-- Se fim de semana → rotular macro TradFi como `macro-parcial (dados sex)`
+- Declarar: `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
+- Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`
+- Fim de semana → rotular macro TradFi como `macro-parcial (dados sex)`
 
 ---
 
 ## 📋 Checklist de Análise Técnica Obrigatória
 
-**TODA análise de ativo DEVE seguir este checklist completo. Não é opcional.**
-O agente DEVE ler os conceitos relevantes da wiki e aplicar cada framework sistematicamente.
-Pular frameworks é PROIBIDO. Se um framework não se aplica, declarar explicitamente "N/A" com justificativa.
+**TODA análise DEVE seguir este checklist completo — ler os conceitos da wiki e aplicar cada framework sistematicamente. Pular frameworks é PROIBIDO. Se um não se aplica, declarar "N/A" com justificativa.**
 
 ### Fase 1 — Leitura de Contexto (antes de olhar o chart)
 1. Ler `wiki/brain/insights.md` — aplicar insights validados

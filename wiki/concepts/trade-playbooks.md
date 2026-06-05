@@ -11,7 +11,7 @@
 Todos os critérios devem ser atendidos antes de executar qualquer playbook:
 
 ```
-□ [1] Viés macro alinhado (Mensal/Semanal confirma a direção do trade)
+□ [1] Viés macro alinhado (Mensal M = ciclo + Semanal W = regime confirmam a direção do trade)
 □ [2] EMA 200 no 4H/1H confirma a direção (acima → Long | abaixo → Short)
 □ [3] Zona de entrada identificada (FVG, Order Block, Fibonacci, POC)
 □ [4] Armadilha de liquidez detectada (Stop Hunt, Bull/Bear Trap) se aplicável
@@ -29,7 +29,7 @@ Todos os critérios devem ser atendidos antes de executar qualquer playbook:
 
 **Contexto:** macro bullish, preço puxando para reteste de zona de suporte.
 
-1. Macro bullish (Mensal/Semanal HH/HL) + 4H acima da EMA 200
+1. Macro bullish (Mensal M + Semanal W HH/HL) + 4H acima da EMA 200
 2. Aguardar retração para **Golden Zone Fibonacci 0.618–0.786** do último impulso
 3. Confirmar: FVG Bullish ou Bullish OB na zona + divergência bullish no RSI do 1H
 4. Gatilho: BOS bullish no 15M (fechamento acima do último HH do 15M)
@@ -42,7 +42,7 @@ Todos os critérios devem ser atendidos antes de executar qualquer playbook:
 
 **Contexto:** macro bearish, preço repicando para reteste de zona de resistência.
 
-1. Macro bearish (Mensal/Semanal LH/LL) + 4H abaixo da EMA 200
+1. Macro bearish (Mensal M + Semanal W LH/LL) + 4H abaixo da EMA 200
 2. Aguardar repique para **Golden Zone Fibonacci 0.618–0.786** do último impulso de queda
 3. Confirmar: FVG Bearish ou Bearish OB na zona + divergência bearish no RSI do 1H
 4. Gatilho: BOS bearish no 15M (fechamento abaixo do último LL do 15M)

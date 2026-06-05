@@ -36,7 +36,7 @@
 ## Checklist de Entrada Obrigatório (V.V.I.R. + SMC)
 
 ```
-□ [1] Viés macro alinhado (Mensal/Semanal confirma a direção)
+□ [1] Viés macro alinhado (Mensal M = ciclo + Semanal W = regime confirmam a direção)
 □ [2] EMA 200 no 4H confirma a direção
 □ [3] Zona de entrada identificada (FVG, OB, Fibonacci Golden Zone, POC)
 □ [4] Armadilha de liquidez detectada se aplicável (EQH/EQL, PDH/PDL)

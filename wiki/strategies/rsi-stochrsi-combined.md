@@ -10,8 +10,8 @@
 
 | Indicador | Papel | Timeframe Ideal | Força | Fraqueza |
 |-----------|-------|-----------------|-------|----------|
-| **RSI (14)** | Confirmar tendência + identificar divergências macro | D / 4H | Suave, confiável, filtra ruído | Lento, fica "preso" em sobrecompra/venda por tempo prolongado |
-| **StochRSI** | Gatilho de entrada/saída + timing preciso | 1H / 15M | Ultra-rápido, marca topos/fundos locais | Ruidoso, gera sinais falsos em alta volatilidade |
+| **RSI (14)** | Confirmar tendência de ciclo/regime + divergências macro | M / W / D / 4H | Suave, confiável, filtra ruído (M/W = ciclo/regime, D/4H = operacional) | Lento, fica "preso" em sobrecompra/venda por tempo prolongado |
+| **StochRSI** | Gatilho de entrada/saída + timing preciso | 1H / 15M | Ultra-rápido, marca topos/fundos locais | Ruidoso, gera sinais falsos em alta volatilidade. _Mensal é lento demais — não usar como gatilho_ |
 
 > **Regra de ouro:** O RSI diz **"para onde"**. O StochRSI diz **"quando"**.
 > Nunca entrar apenas com StochRSI sem confirmação direcional do RSI.
@@ -20,9 +20,11 @@
 
 ## Workflow Operacional — Passo a Passo
 
-### Passo 1: RSI no Timeframe Maior (D / 4H) — Direção
+### Passo 1: RSI no Timeframe Maior (M / W / D / 4H) — Direção
 
-Verificar no gráfico diário ou 4H:
+> **Hierarquia de direção:** o RSI **Mensal** define a direção de **ciclo** e o **Semanal** o regime — ambos prevalecem sobre o D/4H. Operar contra o RSI M/W é counter-trend e exige R:R ≥ 2 e gestão apertada. M/W são obrigatórios no macro (CYCLE/swing/classes).
+
+Verificar primeiro M/W (ciclo/regime), depois descer para o diário ou 4H (direção operacional):
 
 | Leitura RSI | Direção | Interpretação | Operações Permitidas |
 |-------------|---------|---------------|---------------------|
@@ -143,8 +145,8 @@ StochRSI 15M: %K cruza %D para baixo em >80
 
 | Indicador | Período | Timeframe Ideal | Configuração TV |
 |-----------|---------|-----------------|----------------|
-| RSI | 14 | D, 4H | Padrão + SMA(14) sobreposta |
-| StochRSI | 14, 14, 3, 3 | 1H, 15M | %K=3, %D=3, RSI Length=14, Stoch Length=14 |
+| RSI | 14 | M, W, D, 4H | Padrão + SMA(14) sobreposta (M/W = ciclo/regime, obrigatórios no macro) |
+| StochRSI | 14, 14, 3, 3 | 1H, 15M | %K=3, %D=3, RSI Length=14, Stoch Length=14 (sem M — lento demais como gatilho) |
 
 **Configuração no TradingView:**
 - RSI: Adicionar "Relative Strength Index" → marcar "RSI-based MA" para ver o cruzamento RSI×SMA
@@ -157,7 +159,8 @@ StochRSI 15M: %K cruza %D para baixo em >80
 Na Fase 6 do checklist obrigatório, a leitura combinada deve ser:
 
 ```
-RSI (14) D/4H: [valor] [direção: subindo/descendo/plano] [RSI×SMA: acima/abaixo]
+RSI (14) M/W/D/4H: [valores] [direção: subindo/descendo/plano] [RSI×SMA: acima/abaixo]
+  → Ciclo (M) e regime (W) + direção operacional (D/4H)
   → Direção confirmada: LONG ONLY / SHORT ONLY / NEUTRO
 StochRSI 1H/15M: %K=[valor] %D=[valor] [cross: bull/bear/neutro] [zona: OB/OS/neutro]
   → Gatilho: SIM (cruzamento em zona extrema) / NÃO (aguardar)

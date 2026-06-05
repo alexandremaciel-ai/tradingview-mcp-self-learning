@@ -51,7 +51,8 @@
 ## Análise Técnica (OBRIGATÓRIO — preencher cada item)
 
 ### MTF (Multi-Timeframe)
-- **Semanal:** _{tendência HH/HL ou LH/LL}_
+- **Mensal (M):** _{tendência de ciclo HH/HL ou LH/LL, RSI/MACD mensal, alvo mensal, teto/piso de ciclo}_ ← obrigatório no macro (CYCLE/swing/classes); recomendado em scalp
+- **Semanal:** _{regime, tendência HH/HL ou LH/LL}_
 - **Diário:** _{ciclo, sobrecompra/venda}_
 - **4H:** _{EMA 200 acima/abaixo, estrutura}_
 - **1H:** _{zona de entrada, FVG, OB}_
@@ -73,15 +74,16 @@
 - **Confluência:** _{Golden Zone + FVG + OB = sim/não}_
 - **Padrão de candle:** _{Engulfing/Pin Bar/Doji ou N/A}_
 
-### Indicadores (valor + direção + cruzamento)
-| Indicador | Valor | Direção | Cruzamento | Sinal |
-|-----------|-------|---------|------------|-------|
-| RSI (14) | | _{subindo/descendo/achatando}_ | _{RSI × SMA: acima/abaixo}_ | |
-| Stoch RSI %K/%D | | _{subindo/descendo}_ | _{%K × %D: bullish/bearish}_ | |
-| MACD | | _{convergindo/divergindo}_ | _{MACD × Signal: cross up/down}_ | _{acima/abaixo de zero}_ |
-| MACD Histograma | | _{crescente/decrescente}_ | | |
+### Indicadores (valor por TF + direção + cruzamento)
+<!-- RSI e MACD: ler M/W/D/4H/1H (M obrigatório no macro). StochRSI: W/1H/15M (sem M — lento demais como gatilho). -->
+| Indicador | Valor por TF | Direção | Cruzamento | Sinal |
+|-----------|--------------|---------|------------|-------|
+| RSI (14) | _{M:__ / W:__ / D:__ / 4H:__ / 1H:__}_ | _{subindo/descendo/achatando}_ | _{RSI × SMA: acima/abaixo · RSI × 50 no M}_ | _{divergência mensal?}_ |
+| Stoch RSI %K/%D | _{W:__ / 1H:__ / 15M:__}_ | _{subindo/descendo}_ | _{%K × %D: bullish/bearish}_ | |
+| MACD | _{M:__ / W:__ / D:__ / 4H:__}_ | _{convergindo/divergindo}_ | _{MACD × Signal: cross up/down · vs zero no M}_ | _{acima/abaixo de zero}_ |
+| MACD Histograma | _{M / W / D / 4H}_ | _{crescente/decrescente}_ | | |
 | ADX | | _{DI+ vs DI-}_ | | |
-| EMA 50/200 | | _{inclinação}_ | _{Golden/Death Cross}_ | |
+| EMA 50/200 | _{+ EMA mensal / 200W como ref. de ciclo}_ | _{inclinação}_ | _{Golden/Death Cross}_ | |
 
 ### Bias
 _{LONG / SHORT / NEUTRO}_

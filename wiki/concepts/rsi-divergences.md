@@ -52,8 +52,9 @@
 
 - **Período padrão:** RSI(14)
 - **Timeframes para divergências:** 1H e 4H (gatilho e confirmação)
-- **Timeframes para sobrecompra/venda macro:** Diário e Semanal
-- **Sobrecompra limita retração:** RSI sobrecomprado no Diário = limite da retração do Mensal
+- **Timeframes para sobrecompra/venda macro:** Diário, Semanal e **Mensal**
+- **Timeframe de ciclo:** RSI **Mensal** define teto/piso de ciclo e alvos mensais. Cruzamento mensal de 50 = virada macro. Divergência mensal = reversão de **CICLO** (peso máximo, acima da semanal) — confirmar com a semanal.
+- **Sobrecompra limita retração:** RSI sobrecomprado no Semanal = limite da retração do Mensal; RSI mensal em extremo = teto/piso de ciclo que limita TODOS os TFs abaixo
 
 ---
 
@@ -110,6 +111,7 @@
 
 ## 5. Integração com MTF
 
+- Divergência no **Mensal** = reversão de **CICLO** (peso máximo) — confirma com Semanal; marca topos/fundos de ciclo
 - Divergência no **4H** + confirmação no **1H** = setup de entrada de alta confiança
 - Divergência no **Diário** + confirmação no **4H** = swing trade de alta confiança
 - Divergência no **1H** contra tendência 4H = baixa convicção, evitar
@@ -122,7 +124,7 @@
 
 A abordagem profissional para BTC combina ambos:
 
-1. **RSI (D/4H) → Direção:** RSI > 50 = Long only. RSI < 50 = Short only. Divergência = alerta de reversão.
+1. **RSI (M/W/D/4H) → Direção:** RSI > 50 = Long only. RSI < 50 = Short only (M = direção de ciclo, W = regime, ambos acima do D/4H). Divergência = alerta de reversão.
 2. **StochRSI (1H/15M) → Timing:** %K cruza %D em zona extrema (<20 ou >80) = gatilho de entrada.
 3. **Nunca operar StochRSI isolado** — em tendência forte, StochRSI fica "preso" em zona extrema por horas.
 

@@ -65,13 +65,14 @@
 ## 4. Parâmetros
 
 - **Padrão:** 12/26/9 (fast EMA / slow EMA / signal)
-- **Timeframes ideais:** 4H e Diário para tendência; 1H para gatilho
+- **Timeframes ideais:** **Mensal e Semanal para ciclo/regime** (obrigatórios no macro); 4H e Diário para tendência; 1H para gatilho
 - **Uso no Conservative Trend Follower:** MACD é um dos 4 filtros de confirmação de momentum (junto com RSI)
 
 ---
 
 ## 5. Integração
 
+- **MACD Mensal:** cruzamento mensal vs linha zero = **virada de regime de CICLO** (prioridade sobre o semanal). MACD mensal abaixo de zero = ciclo bearish; divergência mensal = topo/fundo de ciclo
 - Usar MACD Semanal: virando vermelho = fluxo de risco global secando → bearish para BTC
 - MACD + RSI divergência = dupla confirmação de exaustão
 - MACD + EMA 200 (abaixo) = alinhamento completo para Short
@@ -103,6 +104,7 @@
 - **Ação:** Reforça a direção da tendência vigente (entrar na continuação)
 
 ### Onde observar
+- **TF de ciclo:** Mensal e Semanal para divergências de **topo/fundo de ciclo** (peso máximo). 4H/Diário para swing, 1H para intraday.
 - **Histograma:** divergência mais sensível (barras encurtando enquanto preço avança = primeiro alerta)
 - **Linhas MACD/Signal:** divergência mais confiável (mais lenta, menos falsos sinais)
 - **Regra:** Divergência no histograma é o primeiro alerta. Divergência nas linhas confirma.

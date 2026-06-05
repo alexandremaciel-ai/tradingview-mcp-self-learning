@@ -176,6 +176,19 @@ Mede capitulação de mineradores via cruzamento de hash rate (30DMA vs 60DMA).
 
 ## PARTE 3: Análise Técnica de Ciclo (Price Action)
 
+### 3.0 Estrutura Mensal de Ciclo (OBRIGATÓRIO — ler primeiro)
+
+> O **Mensal (M)** é o âncora do ciclo: define teto/piso de momentum macro e os **alvos mensais**. Leitura obrigatória em toda análise CYCLE, antes de descer ao semanal.
+
+Leitura sistemática do timeframe mensal (`chart_set_timeframe({timeframe: "M"})`):
+
+- **RSI Mensal:** valor + zona + cruzamento de 50. RSI mensal cruzando 50 para **baixo** = virada macro bearish do ciclo; para **cima** = virada macro bullish. Divergência mensal (preço HH + RSI LH em topo / preço LL + RSI HL em fundo) = sinal de reversão de **ciclo** (peso máximo, acima da semanal).
+- **P.RSI50 Mensal** (nível de preço onde o RSI mensal = 50): funciona como **teto/piso de ciclo** — em bear, o preço respeita o P.RSI50 mensal como resistência; em bull, como suporte.
+- **MACD Mensal:** posição vs zero + cruzamento + histograma. Cruzamento mensal vs linha zero = **mudança de regime de ciclo** (prioridade sobre o semanal).
+- **Candles mensais de reversão:** pavios longos (rejeição), candle bearish climático pós-ATH (sign of weakness) ou candle bullish climático pós-capitulação (sign of strength).
+- **Volume mensal climático:** spike de volume em candle mensal = clímax de distribuição (topo) ou capitulação (fundo).
+- **Estrutura mensal:** HH/HL (bull de ciclo) ou LH/LL (bear de ciclo). O primeiro LH/LL mensal após ATH = confirmação de topo de ciclo.
+
 ### 3.1 Sinais de Topo de Ciclo (Chart)
 
 - [ ] RSI semanal > 90 ou com divergência bearish (preço HH, RSI LH)
@@ -305,7 +318,7 @@ Zonas onde 3+ métodos convergem = maior probabilidade
 [ ] NUPL > 0.75 (Euforia)                               (+2)
 [ ] Puell Multiple > 4                                   (+1)
 [ ] Pi Cycle Top: 111DMA cruzou 350DMA×2                 (+2)
-[ ] RSI semanal > 90 ou divergência bearish              (+1)
+[ ] RSI semanal/mensal > 90 ou divergência bearish       (+1)  (mensal = peso máximo)
 [ ] Volume declinando com preço subindo (distribuição)   (+1)
 [ ] LTH em modo distribuição                             (+1)
 Score: [X/10]
@@ -320,8 +333,8 @@ Score: [X/10]
 [ ] Preço tocou ou caiu abaixo da 200W SMA               (+2)
 [ ] Preço tocou ou caiu abaixo do Realized Price          (+2)
 [ ] Hash Ribbons: capitulação terminando → compra         (+1)
-[ ] RSI semanal com divergência bullish                   (+1)
-[ ] MACD semanal cruzando para cima abaixo de zero        (+1)
+[ ] RSI semanal/mensal com divergência bullish            (+1)  (mensal = peso máximo)
+[ ] MACD semanal/mensal cruzando para cima abaixo de zero (+1)  (cross mensal = virada de ciclo)
 [ ] Wyckoff Spring identificado                           (+1)
 [ ] Volume climático de capitulação                       (+1)
 [ ] Fear & Greed < 20 por semanas                         (+1)
@@ -358,8 +371,11 @@ INDICADORES ON-CHAIN:
 - Hash Ribbons: [capitulação/recuperação/expansão]
 
 ANÁLISE TÉCNICA:
+- RSI Mensal: [valor] [vs 50: acima/abaixo] [divergência: sim/não] | P.RSI50 Mensal: $XX,XXX
+- MACD Mensal: [acima/abaixo zero] [cross: up/down]
 - RSI Semanal: [valor] [divergência: sim/não]
 - MACD Semanal: [acima/abaixo zero] [cross: up/down]
+- Estrutura Mensal: [HH/HL bull | LH/LL bear] [candle de reversão: sim/não]
 - Wyckoff: [fase] [evento: Spring/UT/N.A.]
 - Volume: [climático/declinando/normal]
 

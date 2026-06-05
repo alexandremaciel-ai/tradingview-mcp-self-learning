@@ -13,7 +13,7 @@ Some os pontos de cada critério ATENDIDO. Critério parcial não conta (binári
 
 | # | Critério | Pts | Como verificar |
 |---|----------|-----|----------------|
-| 1 | **MTF alinhado** | +2 | Mensal/Semanal e Diário apontam a mesma direção do trade ([[multi-timeframe-analysis]]) |
+| 1 | **MTF alinhado** | +2 | Mensal (ciclo) + Semanal (regime) + Diário apontam a mesma direção do trade ([[multi-timeframe-analysis]]) |
 | 2 | **EMA 200 (4H) confirma** | +1 | Preço acima → só long / abaixo → só short |
 | 3 | **Zona institucional** | +2 | Entrada em FVG, Order Block ou POC ([[SMC]] / [[volume-profile]]) |
 | 4 | **Golden Zone Fibonacci** | +1 | Entrada em 0.618–0.786 do impulso ([[fibonacci-structural]]) |

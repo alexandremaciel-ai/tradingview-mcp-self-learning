@@ -219,11 +219,13 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 
 ### Fase 2 — Multi-Timeframe (top-down obrigatório)
 Ref: [[multi-timeframe-analysis]]
-1. **Semanal/Mensal:** Tendência primária (HH/HL ou LH/LL), RSI macro, EMA 200
-2. **Diário:** Ciclo secundário, sobrecompra/venda estrutural
-3. **4H:** Filtro direcional (EMA 200 = above→Long only / below→Short only), ADX, estrutura
-4. **1H:** Zona de entrada, FVG, OB, divergências RSI
-5. **15M/5M:** Gatilho de execução, BOS de confirmação
+Ordem de leitura: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — limita o upside/downside de TODOS os TFs abaixo (inclusive o W).
+1. **Mensal (M) — macro de ciclo:** Tendência primária de ciclo (HH/HL ou LH/LL), RSI mensal, MACD mensal vs zero, EMA macro. Define teto/piso de ciclo e **alvos mensais**. **Obrigatório no macro (CYCLE/swing/classes BTC/BTC+ETH/ALTCOIN/EQUITIES); recomendado em scalp puro intraday.**
+2. **Semanal (W):** Regime de mercado (Bull/Bear dentro do ciclo), RSI/MACD semanal, EMA 200
+3. **Diário:** Ciclo secundário, sobrecompra/venda estrutural
+4. **4H:** Filtro direcional (EMA 200 = above→Long only / below→Short only), ADX, estrutura
+5. **1H:** Zona de entrada, FVG, OB, divergências RSI
+6. **15M/5M:** Gatilho de execução, BOS de confirmação
 
 ### Fase 3 — Smart Money Concepts (SMC)
 Ref: [[SMC]]
@@ -254,18 +256,20 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
    - Valor absoluto + zona (sobrecompra >70 / sobrevenda <30 / neutro)
    - **Direção da linha RSI:** subindo, descendo, achatando
    - **Cruzamento RSI × SMA(RSI):** RSI cruza SMA para cima = momentum bullish; para baixo = bearish
-   - **Semanal (W) — OBRIGATÓRIO:** ler RSI macro (valor + zona + direção). Define o teto/piso de momentum do ciclo e limita o upside/downside dos TFs menores. Divergência semanal = sinal de reversão de alto peso.
-   - **Divergências clássicas e ocultas no W/D/4H/1H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
-   - RSI > 70 em TF maior (W/D) = teto de retração (limita upside dos TFs menores)
+   - **Mensal (M) — OBRIGATÓRIO no macro:** ler RSI mensal (valor + zona + direção + cruzamento de 50). Define o teto/piso de momentum do **CICLO** e os **alvos mensais**; divergência mensal = reversão de ciclo (peso máximo, acima da semanal). Obrigatório em CYCLE/swing/classes; recomendado em scalp.
+   - **Semanal (W) — OBRIGATÓRIO:** ler RSI macro (valor + zona + direção). Define o regime e limita o upside/downside dos TFs menores. Divergência semanal = sinal de reversão de alto peso.
+   - **Divergências clássicas e ocultas no M/W/D/4H/1H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
+   - RSI > 70 em TF maior (M/W/D) = teto de retração (limita upside dos TFs menores)
 2. **RSI Estocástico (Stoch RSI):**
    - %K e %D: valores + cruzamento (%K cruza %D para cima = bullish, para baixo = bearish)
    - Zona: sobrecompra (>80) / sobrevenda (<20)
    - **Direção:** linhas subindo/descendo dentro da zona
    - **Semanal (W) — OBRIGATÓRIO:** ler StochRSI macro (%K/%D + zona). Reset semanal de oversold/overbought = sinal de virada de ciclo; confirma ou nega o timing dos TFs menores.
+   - _(StochRSI mensal é opcional/contextual — só como reset macro de ciclo, nunca como gatilho de timing. O timing permanece W/1H/15M.)_
    - **Divergências StochRSI (1H/15M):** preço HH + %K LH em >80 = bearish | preço LL + %K HL em <20 = bullish
    - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
    **⚠️ Regra RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):**
-   - RSI (W/D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only (W tem o maior peso)
+   - RSI (M/W/D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only (M = direção de ciclo, W = regime; ambos têm peso macro acima do D/4H)
    - StochRSI (1H/15M) define TIMING → cruzamento em zona extrema = gatilho de entrada
    - **NUNCA operar StochRSI contra a direção do RSI HTF**
    - StochRSI overbought + RSI HTF bullish = continuação (NÃO shortear)
@@ -275,12 +279,13 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
    - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish
    - **Onde ocorre o cruzamento:** acima de zero = mais forte bullish / abaixo = mais forte bearish
    - **Histograma:** crescente (momentum aumentando) / decrescente (enfraquecendo)
-   - **Semanal (W) — OBRIGATÓRIO:** ler MACD macro (posição vs zero + cruzamento + histograma). Cruzamento semanal vs linha zero = mudança de regime de momentum do ciclo; tem prioridade sobre os TFs menores.
-   - **Divergências MACD (W/D/4H):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
+   - **Mensal (M) — OBRIGATÓRIO no macro:** ler MACD mensal (posição vs zero + cruzamento + histograma). Cruzamento mensal vs linha zero = **virada de regime de CICLO**; tem prioridade sobre o semanal. Obrigatório em CYCLE/swing/classes; recomendado em scalp.
+   - **Semanal (W) — OBRIGATÓRIO:** ler MACD macro (posição vs zero + cruzamento + histograma). Cruzamento semanal vs linha zero = mudança de regime de momentum; tem prioridade sobre os TFs menores.
+   - **Divergências MACD (M/W/D/4H):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
    - **Direção das linhas:** MACD e Signal convergindo ou divergindo
    - Cross sem volume = sinal fraco → aguardar confirmação
 4. **ADX (14):** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar). DI+ > DI- = bullish / DI- > DI+ = bearish
-5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação
+5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação. **Macro de ciclo:** EMA mensal e 200W SMA como referência de teto/piso de ciclo (preço vs 200W define fundo de ciclo não tocado).
 6. **Volume / OBV:**
    - POC como magneto, HVN como suporte/resistência
    - **Divergências Volume×Preço:** preço subindo + volume caindo = rally fraco (bearish) | preço caindo + volume caindo = queda enfraquecendo (bullish)
@@ -323,8 +328,8 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 
 **Todas as classes:**
 - `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
-- `MTF: W/D/4H/1H → [resumo]` (DAILY: só D+4H)
-- `Indicadores: RSI [W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [W/D/4H vs zero+cross+hist] | ADX [valor]`
+- `MTF: M/W/D/4H/1H → [resumo]` (DAILY: D+4H, mas citar o M no contexto de ciclo)
+- `Indicadores: RSI [M/W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [M/W/D/4H vs zero+cross+hist] | ADX [valor]`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 **BTC / BTC+ETH — adicionar:**

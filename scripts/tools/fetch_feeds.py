@@ -19,10 +19,10 @@ NUNCA quebra — escreve `latest.md` com `status: indisponível`. A Fase 9 do ch
 então aplica a penalidade `dados-parciais` (−1 no Confluence Score) em vez de estimar.
 
 Uso:
-  COINALYZE_API_KEY=xxxx python scripts/tools/fetch_feeds.py
-  python scripts/tools/fetch_feeds.py              # sem key → só Fear&Greed + status
+  python scripts/tools/fetch_feeds.py              # carrega o .env do projeto automaticamente
+  COINALYZE_API_KEY=xxxx python scripts/tools/fetch_feeds.py   # env real vence o .env
 
-Config opcional por env:
+Config (lida de BASE_DIR/.env ou do ambiente — variável de ambiente tem precedência):
   COINALYZE_API_KEY   — chave grátis (https://coinalyze.net/account/api)
   COINALYZE_SYMBOLS   — símbolos perp (default "BTCUSDT_PERP.A,ETHUSDT_PERP.A")
 
@@ -43,6 +43,33 @@ LATEST = os.path.join(FEEDS_DIR, 'latest.md')
 COINALYZE_BASE = 'https://api.coinalyze.net/v1'
 FNG_URL = 'https://api.alternative.me/fng/?limit=1'
 TIMEOUT = 12
+
+def load_dotenv(path=None):
+    """Carrega BASE_DIR/.env em os.environ (stdlib puro, sem deps).
+
+    NÃO sobrescreve variáveis já presentes no ambiente — env real vence o .env,
+    mantendo válido o uso `COINALYZE_API_KEY=xxx python fetch_feeds.py`.
+    Degradação graciosa: sem .env (ou erro de leitura) segue sem alterar nada.
+    """
+    path = path or os.path.join(BASE_DIR, '.env')
+    if not os.path.isfile(path):
+        return
+    try:
+        with open(path, encoding='utf-8') as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                key, _, val = line.partition('=')
+                key = key.strip()
+                val = val.strip().strip('"').strip("'")
+                if key and key not in os.environ:
+                    os.environ[key] = val
+    except OSError:
+        return
+
+
+load_dotenv()
 
 API_KEY = os.environ.get('COINALYZE_API_KEY', '').strip()
 SYMBOLS = os.environ.get('COINALYZE_SYMBOLS', 'BTCUSDT_PERP.A,ETHUSDT_PERP.A').strip()

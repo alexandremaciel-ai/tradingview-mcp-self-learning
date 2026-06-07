@@ -256,8 +256,15 @@ echo -e "  1. Open Claude Code:  ${DIM}claude${RESET}"
 echo -e "  2. Verify connection: ${DIM}\"Use tv_health_check to verify TradingView is connected\"${RESET}"
 echo -e "  3. Start learning:    ${DIM}\"Analise o gráfico atual e registre na wiki\"${RESET}"
 echo ""
+# Seed the feeds cache now if the user already has a Coinalyze key (.env is auto-loaded by the script)
+if command -v python3 >/dev/null 2>&1 && [ -f "$INSTALL_DIR/.env" ] && grep -Eq '^COINALYZE_API_KEY=.+' "$INSTALL_DIR/.env" 2>/dev/null; then
+  if python3 "$INSTALL_DIR/scripts/tools/fetch_feeds.py" >/dev/null 2>&1; then
+    echo -e "  ${BOLD}Feeds:${RESET}         seeded → raw/feeds/latest.md"
+  fi
+fi
 echo -e "  ${BOLD}Optional — external feeds (funding/OI/Fear&Greed):${RESET}"
 echo -e "  ${DIM}cp .env.example .env  →  set COINALYZE_API_KEY  →  python3 scripts/tools/fetch_feeds.py${RESET}"
+echo -e "  ${DIM}(the script loads .env automatically; the auto-pilot refreshes it when the cache is stale)${RESET}"
 echo ""
 echo -e "  ${DIM}Wiki:     $INSTALL_DIR/wiki/index.md${RESET}"
 echo -e "  ${DIM}Docs:     $INSTALL_DIR/CLAUDE.md${RESET}"

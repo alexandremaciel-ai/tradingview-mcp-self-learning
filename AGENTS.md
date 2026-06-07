@@ -10,6 +10,7 @@
 
 ### ANTES de responder qualquer pedido:
 0. **🔌 Testar conexão:** `tv_health_check()` → se falhar → `tv_launch()` → 3 tentativas max
+0b. **📡 Feeds (classes cripto):** se `raw/feeds/latest.md` estiver `indisponível` **ou** com timestamp > 2h → rodar `python3 scripts/tools/fetch_feeds.py` (carrega o `.env` sozinho) e reler. Rede falhou → seguir com o cache + rótulo `dados-parciais`. EQUITIES pula (sem funding).
 1. Ler `wiki/brain/insights.md` (Top N quentes; histórico em `insights-archive/` só sob demanda) + `wiki/brain/mistakes.md` (últimos 10)
 2. Se envolve ativo → ler `wiki/assets/{SYMBOL}.md`
 3. Se envolve análise → ler `wiki/brain/predictions-log.md` → fechar previsões abertas
@@ -183,19 +184,13 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 
 ### Regras de Leitura Macro
 
-1. **Risk-On confirmado:** DXY caindo + S&P subindo + USDT.D caindo + TOTAL subindo → BTC bullish
-2. **Risk-Off confirmado:** DXY subindo + S&P caindo + USDT.D subindo + Ouro subindo → BTC bearish
-3. **Divergência macro:** Se BTC sobe mas DXY também sobe e TOTAL2/3 caem → rally frágil, não confiar
-4. **Petróleo em alta forte:** Sinaliza pressão inflacionária → Fed hawkish → risco médio para cripto
-5. **TOTAL vs TOTAL2 vs TOTAL3:** Se TOTAL sobe mas TOTAL3 cai → dinheiro concentrado em BTC/ETH, altcoins em risco
-6. **BTCUSDLONGS vs BTCUSDSHORTS — Detecção de Squeeze:**
-   - **Long Squeeze Risk:** Longs em máxima histórica ou extremo relativo + Shorts em mínima + preço esticado para cima → risco alto de long squeeze
-   - **Short Squeeze Risk:** Shorts subindo rapidamente ou em extremo + Longs estáveis/caindo + preço próximo de resistência → short squeeze iminente
-   - **Ratio L/S > 5.0:** Mercado excessivamente long → vulnerável a long squeeze
-   - **Ratio L/S < 1.0:** Mais shorts que longs → combustível para short squeeze
-   - **Divergência preço × Longs:** Se preço sobe mas Longs caem → rally sem convicção, smart money saindo
-   - **Divergência preço × Shorts:** Se preço cai mas Shorts caem → vendedores desistindo, fundo próximo
-7. **Fim de semana:** Dados TradFi congelados → reduzir peso de SPX/DXY/GOLD/Petróleo. Rotular como `macro-parcial (dados sex)`.
+1. **Risk-On:** DXY↓ + S&P↑ + USDT.D↓ + TOTAL↑ → BTC bullish.
+2. **Risk-Off:** DXY↑ + S&P↓ + USDT.D↑ + Ouro↑ → BTC bearish.
+3. **Divergência macro:** BTC↑ mas DXY↑ e TOTAL2/3↓ → rally frágil, não confiar.
+4. **Petróleo em alta forte:** pressão inflacionária → Fed hawkish → risco médio p/ cripto.
+5. **TOTAL vs TOTAL2 vs TOTAL3:** TOTAL↑ mas TOTAL3↓ → dinheiro em BTC/ETH, altcoins em risco.
+6. **BTCUSDLONGS vs SHORTS (squeeze):** Long Squeeze Risk = longs em extremo + shorts em mínima + preço esticado↑. Short Squeeze Risk = shorts subindo/extremo + longs estáveis/caindo + preço em resistência. Ratio L/S >5 = vulnerável a long squeeze; <1 = combustível p/ short squeeze. Divergências: preço↑ mas longs↓ = rally sem convicção (smart money saindo); preço↓ mas shorts↓ = vendedores desistindo, fundo próximo.
+7. **Fim de semana:** TradFi congelado → reduzir peso de SPX/DXY/GOLD/Petróleo. Rotular `macro-parcial (dados sex)`.
 
 ### Como registrar na sessão
 - Declarar: `Contexto: [hora] | NYSE: ABERTA/FECHADA | CME: ABERTO/FECHADO | Workflow: A/B/C/D`
@@ -252,44 +247,22 @@ Ref: [[fibonacci-structural]] + [[price-action-patterns]]
 
 ### Fase 6 — Indicadores Técnicos (valor + direção + cruzamento + divergências)
 Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-profile]]
-1. **RSI (14):**
-   - Valor absoluto + zona (sobrecompra >70 / sobrevenda <30 / neutro)
-   - **Direção da linha RSI:** subindo, descendo, achatando
-   - **Cruzamento RSI × SMA(RSI):** RSI cruza SMA para cima = momentum bullish; para baixo = bearish
-   - **Mensal (M) — OBRIGATÓRIO no macro:** ler RSI mensal (valor + zona + direção + cruzamento de 50). Define o teto/piso de momentum do **CICLO** e os **alvos mensais**; divergência mensal = reversão de ciclo (peso máximo, acima da semanal). Obrigatório em CYCLE/swing/classes; recomendado em scalp.
-   - **Semanal (W) — OBRIGATÓRIO:** ler RSI macro (valor + zona + direção). Define o regime e limita o upside/downside dos TFs menores. Divergência semanal = sinal de reversão de alto peso.
-   - **Divergências clássicas e ocultas no M/W/D/4H/1H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
-   - RSI > 70 em TF maior (M/W/D) = teto de retração (limita upside dos TFs menores)
-2. **RSI Estocástico (Stoch RSI):**
-   - %K e %D: valores + cruzamento (%K cruza %D para cima = bullish, para baixo = bearish)
-   - Zona: sobrecompra (>80) / sobrevenda (<20)
-   - **Direção:** linhas subindo/descendo dentro da zona
-   - **Semanal (W) — OBRIGATÓRIO:** ler StochRSI macro (%K/%D + zona). Reset semanal de oversold/overbought = sinal de virada de ciclo; confirma ou nega o timing dos TFs menores.
-   - _(StochRSI mensal é opcional/contextual — só como reset macro de ciclo, nunca como gatilho de timing. O timing permanece W/1H/15M.)_
-   - **Divergências StochRSI (1H/15M):** preço HH + %K LH em >80 = bearish | preço LL + %K HL em <20 = bullish
-   - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
-   **⚠️ Regra RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):**
-   - RSI (M/W/D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only (M = direção de ciclo, W = regime; ambos têm peso macro acima do D/4H)
-   - StochRSI (1H/15M) define TIMING → cruzamento em zona extrema = gatilho de entrada
-   - **NUNCA operar StochRSI contra a direção do RSI HTF**
-   - StochRSI overbought + RSI HTF bullish = continuação (NÃO shortear)
-   - StochRSI oversold + RSI HTF bearish = continuação bearish (NÃO longear)
-3. **MACD (12/26/9):**
-   - **Posição relativa à linha zero:** acima = lado comprador / abaixo = lado vendedor
-   - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish
-   - **Onde ocorre o cruzamento:** acima de zero = mais forte bullish / abaixo = mais forte bearish
-   - **Histograma:** crescente (momentum aumentando) / decrescente (enfraquecendo)
-   - **Mensal (M) — OBRIGATÓRIO no macro:** ler MACD mensal (posição vs zero + cruzamento + histograma). Cruzamento mensal vs linha zero = **virada de regime de CICLO**; tem prioridade sobre o semanal. Obrigatório em CYCLE/swing/classes; recomendado em scalp.
-   - **Semanal (W) — OBRIGATÓRIO:** ler MACD macro (posição vs zero + cruzamento + histograma). Cruzamento semanal vs linha zero = mudança de regime de momentum; tem prioridade sobre os TFs menores.
-   - **Divergências MACD (M/W/D/4H):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
-   - **Direção das linhas:** MACD e Signal convergindo ou divergindo
-   - Cross sem volume = sinal fraco → aguardar confirmação
-4. **ADX (14):** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar). DI+ > DI- = bullish / DI- > DI+ = bearish
-5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação. **Macro de ciclo:** EMA mensal e 200W SMA como referência de teto/piso de ciclo (preço vs 200W define fundo de ciclo não tocado).
-6. **Volume / OBV:**
-   - POC como magneto, HVN como suporte/resistência
-   - **Divergências Volume×Preço:** preço subindo + volume caindo = rally fraco (bearish) | preço caindo + volume caindo = queda enfraquecendo (bullish)
-   - **Divergências OBV:** preço HH + OBV LH = distribuição | preço LL + OBV HL = acumulação
+> **M e W em RSI/StochRSI/MACD são OBRIGATÓRIOS no macro** (CYCLE/swing/classes BTC/BTC+ETH/ALTCOIN/EQUITIES); recomendados em scalp. M tem peso de ciclo acima do W; W acima do D/4H.
+1. **RSI (14):** valor + zona (>70 OB / <30 OS) + direção da linha + cruzamento RSI×SMA(RSI) (up=bullish / down=bearish).
+   - **M (macro de ciclo):** valor+zona+direção+cruzamento de 50. Define teto/piso de momentum do CICLO e alvos mensais; divergência mensal = reversão de ciclo (peso máximo).
+   - **W (regime):** valor+zona+direção. Limita upside/downside dos TFs menores; divergência semanal = reversão de alto peso.
+   - **Divergências M/W/D/4H/1H:** bearish preço HH+RSI LH | bullish preço LL+RSI HL. RSI>70 em M/W/D = teto de retração.
+2. **Stoch RSI:** %K/%D valores + cruzamento (%K×%D up=bullish / down=bearish) + zona (>80 OB / <20 OS) + direção.
+   - **W (OBRIGATÓRIO):** %K/%D+zona. Reset semanal de OS/OB = virada de ciclo; confirma/nega o timing dos TFs menores. _(StochRSI mensal só contextual; timing fica em W/1H/15M.)_
+   - **Divergências (1H/15M):** preço HH+%K LH em >80 = bearish | preço LL+%K HL em <20 = bullish. Reset OS em alta / OB em baixa = continuação.
+   **⚠️ RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):** RSI (M/W/D/4H) define DIREÇÃO (>50 Long only / <50 Short only); StochRSI (1H/15M) define TIMING (cross em zona extrema). **NUNCA operar StochRSI contra o RSI HTF** (OB+RSI bull=continuação, não shortear; OS+RSI bear=continuação, não longear).
+3. **MACD (12/26/9):** posição vs zero (acima=comprador / abaixo=vendedor) + cruzamento×Signal (acima de zero=bullish mais forte) + histograma (crescente/decrescente).
+   - **M (macro):** cruzamento mensal vs zero = virada de regime de CICLO (prioridade sobre o semanal).
+   - **W:** cruzamento semanal vs zero = mudança de regime de momentum (prioridade sobre TFs menores).
+   - **Divergências M/W/D/4H:** preço HH+MACD LH=bearish | preço LL+MACD HL=bullish (hist. ou linhas). Cross sem volume = fraco → aguardar confirmação.
+4. **ADX (14):** >25 tendência forte (respeitar direção) | <20 range (aguardar). DI+>DI- bullish / DI->DI+ bearish.
+5. **EMA 50/200:** posição+cruzamento (Golden/Death Cross)+inclinação. Ciclo: EMA mensal e 200W SMA = teto/piso (preço vs 200W define fundo de ciclo não tocado).
+6. **Volume/OBV:** POC magneto, HVN S/R. Divergências Vol×Preço: preço↑+vol↓=rally fraco | preço↓+vol↓=queda enfraquecendo. OBV: preço HH+OBV LH=distribuição | preço LL+OBV HL=acumulação.
 
 ### Fase 7 — Playbook Match
 Ref: [[trade-playbooks]]
@@ -305,7 +278,7 @@ Ref: [[trade-playbooks]]
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
 2. USDT.D: confirma ou nega o bias?
-3. **Funding Rate + OI + LSR + Fear&Greed:** ler `raw/feeds/latest.md` (cache do `fetch_feeds.py`). Se ausente/`indisponível`/desatualizado → aplicar a penalidade `dados-parciais` da Fase 9 em vez de estimar
+3. **Funding Rate + OI + Fear&Greed:** **rodar `python3 scripts/tools/fetch_feeds.py` se o cache estiver `indisponível` ou com timestamp > 2h, depois ler** `raw/feeds/latest.md` (o script carrega o `.env` sozinho). Consumir os valores REAIS de funding/OI de BTC e ETH — não estimar. Só se o refresh FALHAR (rede/erro) → penalidade `dados-parciais` (Fase 9)
 4. **BTCUSDLONGS + BTCUSDSHORTS (obrigatório para BTC/ETH):**
    - Consultar `BTCUSDLONGS` → valor atual, tendência (subindo/caindo/lateral), nível relativo (alto/médio/baixo)
    - Consultar `BTCUSDSHORTS` → valor atual, tendência, nível relativo
@@ -320,7 +293,7 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 3. Declarar confiança DERIVADA do score: **≥8 = alta | 6–7 = média | 4–5 = baixa | <4 = NEUTRO** (não usar "feeling")
 4. Aplicar a tabela score→ação para o TAMANHO: ≥8 cheia | 6–7 reduzida | 4–5 só observar/paper | <4 não operar
 5. Se bias contradiz macro → rotular `contra-macro` e aplicar penalidade −2 no score
-6. Se `raw/feeds/latest.md` ausente/`indisponível`/desatualizado → **−1 no score** + rótulo `dados-parciais` (não assumir funding/OI/on-chain que não foram lidos)
+6. Se o refresh de feeds FALHOU (rede/erro) ou `raw/feeds/latest.md` segue `indisponível`/ausente → **−1 no score** + rótulo `dados-parciais` (não assumir funding/OI que não foram lidos). Dados puxados com sucesso → SEM penalidade
 7. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
 8. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
 
@@ -334,17 +307,20 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 
 **BTC / BTC+ETH — adicionar:**
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Derivativos: BTC FR [valor] OI [valor] | ETH FR [valor] OI [valor] | F&G [valor]` (de raw/feeds/latest.md)
 - `Longs/Shorts: BTCUSDLONGS [valor] | BTCUSDSHORTS [valor] | Ratio [X.X] | Squeeze Risk: [nível]`
 - (BTC+ETH) `ETH/BTC: [valor] [outperform/underperform] [%]`
 
 **BTC+ALTCOIN — adicionar:**
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Derivativos: BTC FR [valor] OI [valor] | F&G [valor]` (de raw/feeds/latest.md)
 - `Longs/Shorts: Ratio [X.X] | Squeeze Risk: [nível]`
 - `{ALT}/BTC: [valor] [outperform/underperform] [%]`
 - `Tipo: scalp | swing`
 
 **ALTCOIN — adicionar:**
 - `Setor: DeFi/AI/L2/meme/infra | Par/BTC: [subindo/caindo] | BTC.D: [valor] [tendência]`
+- `Sentimento: F&G [valor]` (de raw/feeds/latest.md; funding default cobre BTC/ETH)
 - `Tipo: scalp | swing | holder`
 
 **EQUITIES — adicionar:**
@@ -360,88 +336,26 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 
 ## Decision Tree — Which Tool When
 
-### "What's on my chart right now?"
-1. `chart_get_state` → symbol, timeframe, chart type, list of all indicators with entity IDs
-2. `data_get_study_values` → current numeric values from all visible indicators (RSI, MACD, BBands, EMAs, etc.)
-3. `quote_get` → real-time price, OHLC, volume for current symbol
-
-### "What levels/lines/labels are showing?"
-Custom Pine indicators draw with `line.new()`, `label.new()`, `table.new()`, `box.new()`. These are invisible to normal data tools. Use:
-
-1. `data_get_pine_lines` → horizontal price levels drawn by indicators (deduplicated, sorted high→low)
-2. `data_get_pine_labels` → text annotations with prices (e.g., "PDH 24550", "Bias Long ✓")
-3. `data_get_pine_tables` → table data formatted as rows (e.g., session stats, analytics dashboards)
-4. `data_get_pine_boxes` → price zones / ranges as {high, low} pairs
-
-Use `study_filter` parameter to target a specific indicator by name substring (e.g., `study_filter: "Profiler"`).
-
-### "Give me price data"
-- `data_get_ohlcv` with `summary: true` → compact stats (high, low, range, change%, avg volume, last 5 bars)
-- `data_get_ohlcv` without summary → all bars (use `count` to limit, default 100)
-- `quote_get` → single latest price snapshot
-
-### "Change the chart"
-- `chart_set_symbol` → switch ticker (e.g., "AAPL", "ES1!", "NYMEX:CL1!")
-- `chart_set_timeframe` → switch resolution (e.g., "1", "5", "15", "60", "D", "W")
-- `chart_set_type` → switch chart style (Candles, HeikinAshi, Line, Area, Renko, etc.)
-- `chart_manage_indicator` → add or remove studies (use full name: "Relative Strength Index", not "RSI")
-- `chart_scroll_to_date` → jump to a date (ISO format: "2025-01-15")
-- `chart_set_visible_range` → zoom to exact date range (unix timestamps)
-
-### "Work on Pine Script"
-1. `pine_set_source` → inject code into editor
-2. `pine_smart_compile` → compile with auto-detection + error check
-3. `pine_get_errors` → read compilation errors
-4. `pine_get_console` → read log.info() output
-5. `pine_get_source` → read current code back (WARNING: can be very large for complex scripts)
-6. `pine_save` → save to TradingView cloud
-7. `pine_new` → create blank indicator/strategy/library
-8. `pine_open` → load a saved script by name
-
-### "Draw on the chart"
-- `draw_shape` → horizontal_line, trend_line, rectangle, text (pass point + optional point2)
-- `draw_list` → see what's drawn
-- `draw_remove_one` → remove by ID
-- `draw_clear` → remove all
-
-### "Manage alerts"
-- `alert_create` → set price alert (condition: "crossing", "greater_than", "less_than")
-- `alert_list` → view active alerts
-- `alert_delete` → remove alerts
-
-### "Navigate the UI"
-- `ui_open_panel` → open/close pine-editor, strategy-tester, watchlist, alerts, trading
-- `ui_click` → click buttons by aria-label, text, or data-name
-- `layout_switch` → load a saved layout by name
-- `ui_fullscreen` → toggle fullscreen
-- `capture_screenshot` → take a screenshot (regions: "full", "chart", "strategy_tester")
-
-### "TradingView isn't running"
-- `tv_launch` → auto-detect and launch TradingView with CDP on Mac/Win/Linux
-- `tv_health_check` → verify connection is working
+- **Ler chart:** `chart_get_state` (symbol/TF/IDs dos indicadores — chamar 1×) → `data_get_study_values` (valores numéricos dos indicadores visíveis) → `quote_get` (snapshot de preço/OHLC/vol).
+- **Pine custom drawings** (line/label/table/box — invisíveis aos tools normais; indicador precisa estar visível): `data_get_pine_lines` (níveis), `data_get_pine_labels` (texto+preço), `data_get_pine_tables` (linhas), `data_get_pine_boxes` ({high,low}). Usar `study_filter` p/ alvejar um indicador.
+- **Price data:** `data_get_ohlcv` (sempre `summary: true`; `count` limita) | `quote_get` (último preço).
+- **Mudar chart:** `chart_set_symbol` | `chart_set_timeframe` | `chart_set_type` | `chart_manage_indicator` (nome completo) | `chart_scroll_to_date` | `chart_set_visible_range` | `indicator_set_inputs`.
+- **Pine Script:** `pine_set_source` → `pine_smart_compile` → `pine_get_errors`/`pine_get_console` | `pine_save`/`pine_new`/`pine_open`. ⚠️ evitar `pine_get_source` (200KB+).
+- **Desenhar:** `draw_shape` (horizontal_line/trend_line/rectangle/text) | `draw_list` | `draw_remove_one` | `draw_clear`.
+- **Alertas:** `alert_create` (crossing/greater_than/less_than) | `alert_list` | `alert_delete`.
+- **UI:** `ui_open_panel` | `ui_click` | `layout_switch` | `ui_fullscreen` | `capture_screenshot` (full/chart/strategy_tester).
+- **TV offline:** `tv_launch` | `tv_health_check`.
 
 ## Context Management Rules
 
-These tools can return large payloads. Follow these rules to avoid context bloat:
-
-1. **Always use `summary: true` on `data_get_ohlcv`** unless you specifically need individual bars
-2. **Always use `study_filter`** on pine tools when you know which indicator you want — don't scan all studies unnecessarily
-3. **Never use `verbose: true`** on pine tools unless the user specifically asks for raw drawing data with IDs/colors
-4. **Avoid calling `pine_get_source`** on complex scripts — it can return 200KB+. Only read if you need to edit the code.
-5. **Avoid calling `data_get_indicator`** on protected/encrypted indicators — their inputs are encoded blobs. Use `data_get_study_values` instead for current values.
-6. **Use `capture_screenshot`** for visual context instead of pulling large datasets — a screenshot is ~300KB but gives you the full visual picture
-7. **Call `chart_get_state` once** at the start to get entity IDs, then reference them — don't re-call repeatedly
-8. **Cap your OHLCV requests** — `count: 20` for quick analysis, `count: 100` for deeper work, `count: 500` only when specifically needed
+Evitar context bloat: (1) `data_get_ohlcv` sempre com `summary: true` salvo se precisar de barras individuais; (2) usar `study_filter` nos pine tools; (3) nunca `verbose: true` salvo pedido explícito; (4) evitar `pine_get_source` em scripts complexos (200KB+); (5) evitar `data_get_indicator` em indicadores protegidos — usar `data_get_study_values`; (6) preferir `capture_screenshot` (~300KB) a puxar datasets grandes; (7) `chart_get_state` só 1× no início; (8) cap OHLCV: `count: 20` rápida / `100` profunda / `500` só quando necessário.
 
 ## Tool Conventions
 
-- All tools return `{ success: true/false, ... }`
-- Entity IDs (from `chart_get_state`) are session-specific — don't cache across sessions
-- Pine indicators must be **visible** on chart for pine graphics tools to read their data
-- `chart_manage_indicator` requires **full indicator names**: "Relative Strength Index" not "RSI", "Moving Average Exponential" not "EMA", "Bollinger Bands" not "BB"
-- Screenshots save to `screenshots/` directory with timestamps
-- OHLCV capped at 500 bars, trades at 20 per request
-- Pine labels capped at 50 per study by default (pass `max_labels` to override)
+- Tools retornam `{ success: true/false, ... }`. Entity IDs (`chart_get_state`) são por sessão — não cachear.
+- Pine indicators precisam estar **visíveis** para os pine graphics tools lerem.
+- `chart_manage_indicator` exige **nome completo**: "Relative Strength Index" (não "RSI"), "Moving Average Exponential" (não "EMA"), "Bollinger Bands" (não "BB").
+- Screenshots → `screenshots/` com timestamp. OHLCV cap 500 barras, trades 20/req. Pine labels cap 50/study (override via `max_labels`).
 
 ## Architecture
 

@@ -126,6 +126,22 @@ def infer_regime(block):
     return 'indefinido'
 
 
+def infer_postclose(block):
+    """Para previsões ⚪: direção do preço na expiração.
+    'errada' = preço foi contra a tese → conta como loss no WR ajustado (anti-viés)."""
+    val = field(block, 'Pós-fecho')
+    if not val:
+        return None
+    t = val.lower()
+    if 'errad' in t or 'contra' in t:
+        return 'errada'
+    if 'cert' in t or 'a favor' in t or 'acert' in t:
+        return 'certa'
+    if 'neutr' in t:
+        return 'neutra'
+    return None
+
+
 def infer_playbook(block):
     val = field(block, 'Playbook')
     if val:
@@ -204,6 +220,7 @@ def parse_predictions():
             'setup': infer_setup(block),
             'rr_plan': parse_float(field(block, 'R:R plan')),
             'rr_real': infer_rr_real(block, status),
+            'postclose': infer_postclose(block),
             'weekend': d.weekday() >= 5,
         })
     return records
@@ -299,7 +316,13 @@ def build_report(records):
     wins, losses = wl(records)
     opn = sum(1 for r in records if r['status'] == 'open')
     exp = sum(1 for r in records if r['status'] == 'expired')
-    wr_global = winrate(wins, losses)
+    exp_wrong = sum(1 for r in records if r['status'] == 'expired' and r['postclose'] == 'errada')
+    exp_graded = sum(1 for r in records if r['status'] == 'expired' and r['postclose'] is not None)
+    wr_global = winrate(wins, losses)  # estrito: só ✅/❌
+    # ajustado: expiradas direcionalmente erradas contam como loss (combate o viés de seleção)
+    adj_den = wins + losses + exp_wrong
+    wr_adjusted = (wins / adj_den * 100.0) if adj_den else None
+    nontrigger = (exp / total * 100.0) if total else None
 
     cal_rows, brier, brier_n = calibration(records)
     max_streak, cur_streak = max_loss_streak(records)
@@ -312,7 +335,7 @@ def build_report(records):
     out.append('# Brain — Métricas e Calibração')
     out.append('')
     out.append(f'> Gerado por `scripts/tools/metrics_engine.py` em {now.strftime("%Y-%m-%d %H:%M")}.')
-    out.append('> Win rate considera apenas trades FECHADOS (✅/❌). Abertas (⏳) e expiradas/não-acionadas (⚪) são contadas à parte.')
+    out.append('> **WR estrito** = só ✅/❌. **WR ajustado** = também conta as ⚪ que foram direcionalmente erradas como loss — combate o viés de marcar perdas como "expiradas". A diferença entre os dois mede o quanto o número estrito está inflado. Abertas (⏳) ficam de fora dos dois.')
     out.append('')
 
     # Resumo
@@ -326,7 +349,11 @@ def build_report(records):
     out.append(f'| Losses ❌ | {losses} |')
     out.append(f'| Abertas ⏳ | {opn} |')
     out.append(f'| Expiradas/não-acionadas ⚪ | {exp} |')
-    out.append(f'| **Win Rate global** | **{fmt_wr(wr_global)}** |')
+    out.append(f'| ⚪ já graduadas (Pós-fecho) | {exp_graded} |')
+    out.append(f'| ⚪ direcionalmente erradas | {exp_wrong} |')
+    out.append(f'| **Win Rate ESTRITO** (só ✅/❌) | **{fmt_wr(wr_global)}** |')
+    out.append(f'| **Win Rate AJUSTADO** (⚪-erradas = loss) | **{fmt_wr(wr_adjusted)}** |')
+    out.append(f'| Taxa de não-acionamento (⚪/total) | {fmt_wr(nontrigger)} |')
     out.append(f'| R:R plan médio | {("—" if rr_plan is None else f"{rr_plan:.2f}")} |')
     out.append(f'| R:R real médio | {("—" if rr_real is None else f"{rr_real:.2f}")} |')
     out.append(f'| Maior sequência de losses | {max_streak} |')
@@ -387,6 +414,12 @@ def build_report(records):
         insights.append('- ⚠️ Confiança DESCALIBRADA: "alta" está acertando MENOS que "média". Revisar critérios de confiança.')
     if cb_active:
         insights.append('- 🔴 Circuit breaker ativo — reduzir tamanho/parar até resetar a série.')
+    if nontrigger is not None and nontrigger >= 40:
+        insights.append(f'- ⚠️ Não-acionamento alto ({fmt_wr(nontrigger)}): muitas previsões expiram sem virar trade — revisar timing/zonas de entrada.')
+    if exp - exp_graded > 0:
+        insights.append(f'- ⚪ {exp - exp_graded} expirada(s) ainda sem `Pós-fecho` — graduar a direção para o WR ajustado refletir a realidade.')
+    if wr_adjusted is not None and wr_global is not None and (wr_global - wr_adjusted) >= 10:
+        insights.append(f'- ⚠️ WR estrito ({fmt_wr(wr_global)}) está {wr_global - wr_adjusted:.0f}pp acima do ajustado ({fmt_wr(wr_adjusted)}) — viés: perdas viram "expiradas".')
     if not insights:
         insights.append('- Sem alertas automáticos. Continuar coletando amostras (win rate estabiliza com ≥20 trades fechados por grupo).')
     out += insights
@@ -394,7 +427,8 @@ def build_report(records):
 
     return '\n'.join(out) + '\n', {
         'total': total, 'wins': wins, 'losses': losses,
-        'wr_global': wr_global, 'rr_real': rr_real,
+        'wr_global': wr_global, 'wr_adjusted': wr_adjusted,
+        'nontrigger': nontrigger, 'rr_real': rr_real,
     }
 
 
@@ -436,7 +470,9 @@ def main():
     print('Métricas geradas:', os.path.relpath(OUT_FILE, BASE_DIR))
     print(f'  Previsões parseadas: {summary["total"]}')
     print(f'  Fechadas: {summary["wins"] + summary["losses"]} (W {summary["wins"]} / L {summary["losses"]})')
-    print(f'  Win Rate global: {fmt_wr(summary["wr_global"])}')
+    print(f'  Win Rate estrito:  {fmt_wr(summary["wr_global"])}')
+    print(f'  Win Rate ajustado: {fmt_wr(summary["wr_adjusted"])}')
+    print(f'  Não-acionamento:   {fmt_wr(summary["nontrigger"])}')
     print(f'  setups/index.md atualizado: {"sim" if setups_updated else "não"}')
 
 

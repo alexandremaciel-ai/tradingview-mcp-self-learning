@@ -201,6 +201,35 @@ def find_setups_without_stats():
     return issues
 
 
+def find_compliance_gaps(now):
+    """Sessões recentes (7d) sem WRITE correspondente no brain (indicators/patterns).
+    Expõe o gap de processo: análises feitas mas o ciclo de aprendizado não atualizado.
+    Heurística por mtime — best-effort (clone/checkout reseta mtime)."""
+    issues = []
+    sessions_dir = os.path.join(WIKI_DIR, 'sessions')
+    if not os.path.isdir(sessions_dir):
+        return issues
+    cutoff = now - timedelta(days=7)
+    recent = []
+    for f in os.listdir(sessions_dir):
+        if not f.endswith('.md') or f.startswith('_'):
+            continue
+        mt = datetime.fromtimestamp(os.path.getmtime(os.path.join(sessions_dir, f)))
+        if mt >= cutoff:
+            recent.append(mt)
+    if not recent:
+        return issues
+    newest_session = max(recent)
+    for brain_file in ('indicators.md', 'patterns.md'):
+        bpath = os.path.join(WIKI_DIR, 'brain', brain_file)
+        if not os.path.exists(bpath):
+            continue
+        bmt = datetime.fromtimestamp(os.path.getmtime(bpath))
+        if bmt < newest_session:
+            issues.append((brain_file, len(recent), (newest_session - bmt).days))
+    return issues
+
+
 def update_index(counts, now):
     """Atualiza contadores na tabela de estrutura e a data em index.md."""
     if not os.path.exists(INDEX_FILE):
@@ -231,11 +260,11 @@ def update_index(counts, now):
     return False
 
 
-def write_report(now, counts, broken, expired, setup_issues, orphans, index_updated):
+def write_report(now, counts, broken, expired, setup_issues, orphans, compliance, index_updated):
     os.makedirs(LINT_DIR, exist_ok=True)
     report_path = os.path.join(LINT_DIR, now.strftime('%Y-%m-%d') + '.md')
 
-    total_issues = len(broken) + len(expired) + len(setup_issues) + len(orphans)
+    total_issues = len(broken) + len(expired) + len(setup_issues) + len(orphans) + len(compliance)
 
     lines = []
     lines.append('# Wiki Lint — ' + now.strftime('%Y-%m-%d %H:%M'))
@@ -296,6 +325,18 @@ def write_report(now, counts, broken, expired, setup_issues, orphans, index_upda
         lines.append('Nenhum. ✅')
     lines.append('')
 
+    lines.append('## Compliance de Processo — WRITE do Brain (' + str(len(compliance)) + ')')
+    lines.append('')
+    if compliance:
+        lines.append('> Sessões recentes existem mas o ciclo WRITE não atualizou o brain. O autoaprendizado só funciona se cada análise alimentar indicators/patterns.')
+        lines.append('')
+        for brain_file, n_sessions, days in compliance:
+            lines.append('- ⚠️ `brain/' + brain_file + '` sem atualização há ' + str(days)
+                         + 'd, apesar de ' + str(n_sessions) + ' sessão(ões) nos últimos 7 dias.')
+    else:
+        lines.append('Nenhum. ✅')
+    lines.append('')
+
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines) + '\n')
     return report_path, total_issues
@@ -312,13 +353,14 @@ def main():
     orphans = find_orphan_concepts(referenced)
     expired = find_expired_predictions(now)
     setup_issues = find_setups_without_stats()
+    compliance = find_compliance_gaps(now)
 
     index_updated = False
     if not no_index:
         index_updated = update_index(counts, now)
 
     report_path, total = write_report(
-        now, counts, broken, expired, setup_issues, orphans, index_updated
+        now, counts, broken, expired, setup_issues, orphans, compliance, index_updated
     )
 
     rel = os.path.relpath(report_path, BASE_DIR)
@@ -327,6 +369,7 @@ def main():
     print('  Previsões expiradas: ' + str(len(expired)))
     print('  Setups sem stats:    ' + str(len(setup_issues)))
     print('  Conceitos órfãos:    ' + str(len(orphans)))
+    print('  Compliance brain:    ' + str(len(compliance)))
     print('  Index atualizado:    ' + ('sim' if index_updated else 'não'))
     print('Relatório: ' + rel)
 

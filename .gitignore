@@ -34,6 +34,7 @@ Desktop.ini
 .env.*
 .env.local
 .env.production
+!.env.example
 *.pem
 *.key
 *.cert
@@ -91,6 +92,9 @@ wiki/brain/predictions-log.md
 wiki/brain/indicators.md
 wiki/brain/patterns.md
 wiki/brain/metrics.md
+# Camadas frias da memória (geradas por archive_brain.py) — dados pessoais
+wiki/brain/insights-archive/
+wiki/brain/predictions-archive/
 
 # ── Wiki Sessions — personal analysis sessions ──────────────
 wiki/sessions/*.md
@@ -137,6 +141,7 @@ raw/ohlcv/*
 raw/pine-exports/*
 raw/clippings/*
 raw/papers/*
+raw/feeds/*
 !raw/**/.gitkeep
 
 # ── Wiki outputs & research (NEVER commit) ───────────────────

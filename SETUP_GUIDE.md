@@ -112,6 +112,27 @@ npm link
 
 Then `tv status`, `tv quote`, `tv pine compile`, etc. work from anywhere.
 
+### Step 7: External Data Feeds (Optional)
+
+The TradingView/CDP bridge cannot reliably read funding rate, open interest, long/short
+ratio or on-chain sentiment. The brain's **Fase 8** checklist requires them, so a small
+fetcher pulls them from free APIs into a local cache (`raw/feeds/latest.md`).
+
+1. Copy the env template and add your free Coinalyze key:
+   ```bash
+   cp .env.example .env
+   # edit .env → COINALYZE_API_KEY=...   (get one at https://coinalyze.net/account/api)
+   ```
+2. Refresh the cache (also works with no key — Fear & Greed still loads, derivatives degrade gracefully):
+   ```bash
+   set -a; [ -f .env ] && . ./.env; set +a   # load .env into the shell
+   python3 scripts/tools/fetch_feeds.py
+   ```
+3. Optional: schedule it (cron / launchd) every 15–30 min so the brain always reads fresh data.
+
+> **Fully optional.** Without it, the brain labels analyses `dados-parciais` and applies a
+> −1 penalty on the Confluence Score (Fase 9) instead of guessing — by design.
+
 ## Troubleshooting
 
 | Problem | Solution |

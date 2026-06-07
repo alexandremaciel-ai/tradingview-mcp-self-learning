@@ -24,6 +24,7 @@
 - **Invalidação:** _(condição que mata a tese)_
 - **Indicadores base:** [lista]
 - **Status:** ⏳ aberta | ✅ acertou | ❌ errou | ⚪ expirou
+- **Pós-fecho:** _(só p/ ⚪: errada | certa | neutra — direção do preço na expiração vs a tese)_
 - **Resultado:** _(preenchido no feedback)_
 - **Lição:** _(preenchida no feedback)_
 ```
@@ -33,6 +34,7 @@
 - **Lado** ausente → inferido do header (LONG/BULLISH = long; SHORT/BEARISH = short).
 - Toda previsão ❌ DEVE gerar entrada em [[mistakes]] com `Categoria` + `Prevenção`.
 - Previsão ⏳ há mais de 48h sem atualização → marcar ⚪ expirou (o `wiki_lint.py` sinaliza).
+- Ao marcar ⚪, preencher `Pós-fecho` (errada/certa/neutra) — `metrics_engine.py` conta as **erradas** como loss no **WR ajustado** (evita esconder perda como "expirada").
 
 ---
 

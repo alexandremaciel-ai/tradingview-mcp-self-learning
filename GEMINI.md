@@ -1,6 +1,6 @@
 # TradingView MCP — Gemini Instructions
 
-68 tools for reading and controlling a live TradingView Desktop chart via CDP (port 9222).
+79 tools for reading and controlling a live TradingView Desktop chart via CDP (port 9222).
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### ANTES de responder qualquer pedido:
 0. **🔌 Testar conexão:** `tv_health_check()` → se falhar → `tv_launch()` → 3 tentativas max
-1. Ler `wiki/brain/insights.md` + `wiki/brain/mistakes.md` (últimos 10)
+1. Ler `wiki/brain/insights.md` (Top N quentes; histórico em `insights-archive/` só sob demanda) + `wiki/brain/mistakes.md` (últimos 10)
 2. Se envolve ativo → ler `wiki/assets/{SYMBOL}.md`
 3. Se envolve análise → ler `wiki/brain/predictions-log.md` → fechar previsões abertas
 
@@ -71,8 +71,7 @@
 
 ## 📊 Análise Macro Obrigatória — Pré-Requisito para Qualquer Análise
 
-**ANTES de analisar qualquer ativo, o agente DEVE identificar o contexto de mercado e executar o scan correspondente à classe.**
-Esta regra é obrigatória e não pode ser pulada. O macro contexto define o viés primário.
+**ANTES de analisar qualquer ativo, o agente DEVE identificar o contexto de mercado e executar o scan da classe.** Regra obrigatória — o macro contexto define o viés primário.
 
 ### Step 0 — Detector de Contexto de Mercado (SEMPRE PRIMEIRO)
 
@@ -88,12 +87,12 @@ Antes de qualquer scan, declarar explicitamente o contexto temporal:
 **Protocolo de fim de semana (Sáb 00h – Dom 19h BRT):**
 - CME, NYSE e Forex **fechados** → SPX, DXY, GOLD, USOIL = **dados congelados do fechamento de sexta**
 - Declarar: `⚠️ Mercados TradFi fechados — macro TradFi baseada no último fechamento de sexta. Cripto é o único mercado em tempo real.`
-- Reduzir o peso de SPX/DXY/GOLD/Petróleo nas conclusões macro
+- Reduzir o peso de SPX/DXY/GOLD/Petróleo nas conclusões macro (dados sem liquidez nova)
 - Focar nos dados ao vivo: USDT.D + TOTAL + TOTAL2 + TOTAL3 + BTCUSDLONGS/SHORTS
 
 ### Tabela de Fallbacks por Estado de Mercado
 
-**⛔ NÃO é permitido usar apenas `quote_get` sem mudar o chart. DEVE executar `chart_set_symbol` para cada ativo.**
+**⛔ DEVE executar `chart_set_symbol` para cada ativo. NÃO usar apenas `quote_get`.**
 
 | Ativo | Ticker Normal | NYSE Fechada (pré/pós-market) | Fim de Semana |
 |-------|---------------|-------------------------------|---------------|
@@ -104,6 +103,8 @@ Antes de qualquer scan, declarar explicitamente o contexto temporal:
 | **Cripto** | tickers normais | tickers normais | ✅ tempo real |
 
 > Anotar sempre na sessão qual ticker foi usado e por quê (ex: `S&P: ES1! [NYSE fechada]`)
+
+---
 
 ### Workflow A — Classe BTC / BTC+ETH (10 passos — COMPLETO)
 
@@ -132,8 +133,6 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 
 **Aplicar quando:** Classe = `ALTCOIN` (análise solo de altcoin)
 
-Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
-
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
 | 1 | `USDT.D` | — | Obrigatório — métrica inversa cripto |
@@ -149,8 +148,6 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 ### Workflow C — Classe BTC+ALTCOIN (7 passos — PARCIAL)
 
 **Aplicar quando:** Classe = `BTC+ALTCOIN` (BTC + altcoin específica juntos)
-
-Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
@@ -169,8 +166,6 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 ### Workflow D — Classe EQUITIES (5 passos — TRADFI)
 
 **Aplicar quando:** Classe = `EQUITIES`
-
-Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`
 
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
@@ -204,18 +199,15 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 
 ### Como registrar na sessão
 - Declarar: `Contexto: [hora] | NYSE: ABERTA/FECHADA | CME: ABERTO/FECHADO | Workflow: A/B/C/D`
-- Declarar: `Macro: Risk-On | Risk-Off | Misto`
-- Declarar: `DXY: bullish/bearish/neutro | S&P: bullish/bearish/neutro`
-- Se análise cripto contradiz o macro → reduzir confiança e rotular como `contra-macro`
-- Se fim de semana → rotular macro TradFi como `macro-parcial (dados sex)`
+- Declarar: `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
+- Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`
+- Fim de semana → rotular macro TradFi como `macro-parcial (dados sex)`
 
 ---
 
 ## 📋 Checklist de Análise Técnica Obrigatória
 
-**TODA análise de ativo DEVE seguir este checklist completo. Não é opcional.**
-O agente DEVE ler os conceitos relevantes da wiki e aplicar cada framework sistematicamente.
-Pular frameworks é PROIBIDO. Se um framework não se aplica, declarar explicitamente "N/A" com justificativa.
+**TODA análise DEVE seguir este checklist completo — ler os conceitos da wiki e aplicar cada framework sistematicamente. Pular frameworks é PROIBIDO. Se um não se aplica, declarar "N/A" com justificativa.**
 
 ### Fase 1 — Leitura de Contexto (antes de olhar o chart)
 1. Ler `wiki/brain/insights.md` — aplicar insights validados
@@ -227,11 +219,13 @@ Pular frameworks é PROIBIDO. Se um framework não se aplica, declarar explicita
 
 ### Fase 2 — Multi-Timeframe (top-down obrigatório)
 Ref: [[multi-timeframe-analysis]]
-1. **Semanal/Mensal:** Tendência primária (HH/HL ou LH/LL), RSI macro, EMA 200
-2. **Diário:** Ciclo secundário, sobrecompra/venda estrutural
-3. **4H:** Filtro direcional (EMA 200 = above→Long only / below→Short only), ADX, estrutura
-4. **1H:** Zona de entrada, FVG, OB, divergências RSI
-5. **15M/5M:** Gatilho de execução, BOS de confirmação
+Ordem de leitura: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — limita o upside/downside de TODOS os TFs abaixo (inclusive o W).
+1. **Mensal (M) — macro de ciclo:** Tendência primária de ciclo (HH/HL ou LH/LL), RSI mensal, MACD mensal vs zero, EMA macro. Define teto/piso de ciclo e **alvos mensais**. **Obrigatório no macro (CYCLE/swing/classes BTC/BTC+ETH/ALTCOIN/EQUITIES); recomendado em scalp puro intraday.**
+2. **Semanal (W):** Regime de mercado (Bull/Bear dentro do ciclo), RSI/MACD semanal, EMA 200
+3. **Diário:** Ciclo secundário, sobrecompra/venda estrutural
+4. **4H:** Filtro direcional (EMA 200 = above→Long only / below→Short only), ADX, estrutura
+5. **1H:** Zona de entrada, FVG, OB, divergências RSI
+6. **15M/5M:** Gatilho de execução, BOS de confirmação
 
 ### Fase 3 — Smart Money Concepts (SMC)
 Ref: [[SMC]]
@@ -262,18 +256,20 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
    - Valor absoluto + zona (sobrecompra >70 / sobrevenda <30 / neutro)
    - **Direção da linha RSI:** subindo, descendo, achatando
    - **Cruzamento RSI × SMA(RSI):** RSI cruza SMA para cima = momentum bullish; para baixo = bearish
-   - **Semanal (W) — OBRIGATÓRIO:** ler RSI macro (valor + zona + direção). Define o teto/piso de momentum do ciclo e limita o upside/downside dos TFs menores. Divergência semanal = sinal de reversão de alto peso.
-   - **Divergências clássicas e ocultas no W/D/4H/1H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
-   - RSI > 70 em TF maior (W/D) = teto de retração (limita upside dos TFs menores)
+   - **Mensal (M) — OBRIGATÓRIO no macro:** ler RSI mensal (valor + zona + direção + cruzamento de 50). Define o teto/piso de momentum do **CICLO** e os **alvos mensais**; divergência mensal = reversão de ciclo (peso máximo, acima da semanal). Obrigatório em CYCLE/swing/classes; recomendado em scalp.
+   - **Semanal (W) — OBRIGATÓRIO:** ler RSI macro (valor + zona + direção). Define o regime e limita o upside/downside dos TFs menores. Divergência semanal = sinal de reversão de alto peso.
+   - **Divergências clássicas e ocultas no M/W/D/4H/1H** (preço vs RSI) — bearish: preço HH + RSI LH | bullish: preço LL + RSI HL
+   - RSI > 70 em TF maior (M/W/D) = teto de retração (limita upside dos TFs menores)
 2. **RSI Estocástico (Stoch RSI):**
    - %K e %D: valores + cruzamento (%K cruza %D para cima = bullish, para baixo = bearish)
    - Zona: sobrecompra (>80) / sobrevenda (<20)
    - **Direção:** linhas subindo/descendo dentro da zona
    - **Semanal (W) — OBRIGATÓRIO:** ler StochRSI macro (%K/%D + zona). Reset semanal de oversold/overbought = sinal de virada de ciclo; confirma ou nega o timing dos TFs menores.
+   - _(StochRSI mensal é opcional/contextual — só como reset macro de ciclo, nunca como gatilho de timing. O timing permanece W/1H/15M.)_
    - **Divergências StochRSI (1H/15M):** preço HH + %K LH em >80 = bearish | preço LL + %K HL em <20 = bullish
    - Reset de oversold em tendência de alta = continuação; reset de overbought em bear = continuação
    **⚠️ Regra RSI+StochRSI combinado (Ref: [[rsi-stochrsi-combined]]):**
-   - RSI (W/D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only (W tem o maior peso)
+   - RSI (M/W/D/4H) define DIREÇÃO → RSI > 50 = Long only / RSI < 50 = Short only (M = direção de ciclo, W = regime; ambos têm peso macro acima do D/4H)
    - StochRSI (1H/15M) define TIMING → cruzamento em zona extrema = gatilho de entrada
    - **NUNCA operar StochRSI contra a direção do RSI HTF**
    - StochRSI overbought + RSI HTF bullish = continuação (NÃO shortear)
@@ -283,12 +279,13 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
    - **Cruzamento MACD × Signal Line:** cross up = gatilho bullish / cross down = bearish
    - **Onde ocorre o cruzamento:** acima de zero = mais forte bullish / abaixo = mais forte bearish
    - **Histograma:** crescente (momentum aumentando) / decrescente (enfraquecendo)
-   - **Semanal (W) — OBRIGATÓRIO:** ler MACD macro (posição vs zero + cruzamento + histograma). Cruzamento semanal vs linha zero = mudança de regime de momentum do ciclo; tem prioridade sobre os TFs menores.
-   - **Divergências MACD (W/D/4H):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
+   - **Mensal (M) — OBRIGATÓRIO no macro:** ler MACD mensal (posição vs zero + cruzamento + histograma). Cruzamento mensal vs linha zero = **virada de regime de CICLO**; tem prioridade sobre o semanal. Obrigatório em CYCLE/swing/classes; recomendado em scalp.
+   - **Semanal (W) — OBRIGATÓRIO:** ler MACD macro (posição vs zero + cruzamento + histograma). Cruzamento semanal vs linha zero = mudança de regime de momentum; tem prioridade sobre os TFs menores.
+   - **Divergências MACD (M/W/D/4H):** preço HH + MACD LH = bearish | preço LL + MACD HL = bullish (hist. ou linhas)
    - **Direção das linhas:** MACD e Signal convergindo ou divergindo
    - Cross sem volume = sinal fraco → aguardar confirmação
 4. **ADX (14):** > 25 = tendência forte (respeitar direção). < 20 = range (aguardar). DI+ > DI- = bullish / DI- > DI+ = bearish
-5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação
+5. **EMA 50/200:** Posição do preço + cruzamento (Golden Cross / Death Cross) + direção da inclinação. **Macro de ciclo:** EMA mensal e 200W SMA como referência de teto/piso de ciclo (preço vs 200W define fundo de ciclo não tocado).
 6. **Volume / OBV:**
    - POC como magneto, HVN como suporte/resistência
    - **Divergências Volume×Preço:** preço subindo + volume caindo = rally fraco (bearish) | preço caindo + volume caindo = queda enfraquecendo (bullish)
@@ -308,14 +305,13 @@ Ref: [[trade-playbooks]]
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
 2. USDT.D: confirma ou nega o bias?
-3. Funding Rate + Open Interest (se disponível)
+3. **Funding Rate + OI + LSR + Fear&Greed:** ler `raw/feeds/latest.md` (cache do `fetch_feeds.py`). Se ausente/`indisponível`/desatualizado → aplicar a penalidade `dados-parciais` da Fase 9 em vez de estimar
 4. **BTCUSDLONGS + BTCUSDSHORTS (obrigatório para BTC/ETH):**
    - Consultar `BTCUSDLONGS` → valor atual, tendência (subindo/caindo/lateral), nível relativo (alto/médio/baixo)
    - Consultar `BTCUSDSHORTS` → valor atual, tendência, nível relativo
    - Calcular Ratio L/S = BTCUSDLONGS / BTCUSDSHORTS
    - Avaliar risco de squeeze: `Long Squeeze Risk` (ratio > 5 + longs em extremo) ou `Short Squeeze Risk` (ratio < 1 + shorts subindo)
-   - Cruzar com Funding Rate: FR muito positiva + Longs extremos = dupla confirmação de long squeeze risk
-   - Cruzar com OI: OI alto + Ratio extremo = squeeze de alta probabilidade
+   - Cruzar com Funding/OI (de `raw/feeds/latest.md`): FR muito positiva + Longs extremos, ou OI alto + Ratio extremo = squeeze de alta probabilidade
 5. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Longs/Shorts: [ratio] [squeeze risk]`
 
 ### Fase 9 — Declaração de Bias Final
@@ -324,15 +320,16 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 3. Declarar confiança DERIVADA do score: **≥8 = alta | 6–7 = média | 4–5 = baixa | <4 = NEUTRO** (não usar "feeling")
 4. Aplicar a tabela score→ação para o TAMANHO: ≥8 cheia | 6–7 reduzida | 4–5 só observar/paper | <4 não operar
 5. Se bias contradiz macro → rotular `contra-macro` e aplicar penalidade −2 no score
-6. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
-7. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
+6. Se `raw/feeds/latest.md` ausente/`indisponível`/desatualizado → **−1 no score** + rótulo `dados-parciais` (não assumir funding/OI/on-chain que não foram lidos)
+7. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
+8. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
 
 ### Como escrever na sessão (adaptar por classe)
 
 **Todas as classes:**
 - `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
-- `MTF: W/D/4H/1H → [resumo]` (DAILY: só D+4H)
-- `Indicadores: RSI [W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [W/D/4H vs zero+cross+hist] | ADX [valor]`
+- `MTF: M/W/D/4H/1H → [resumo]` (DAILY: D+4H, mas citar o M no contexto de ciclo)
+- `Indicadores: RSI [M/W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [M/W/D/4H vs zero+cross+hist] | ADX [valor]`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 **BTC / BTC+ETH — adicionar:**
@@ -488,38 +485,8 @@ O diretório `wiki/brain/` é o núcleo de autoaprendizado:
 
 ---
 
-## Formatos de Escrita do Brain
-
-### Formato de Insight (brain/insights.md)
-```markdown
-### [YYYY-MM-DD] {título curto}
-_{descrição em 1-2 linhas}_
-- **Ativo:** {SYMBOL} | **TF:** {timeframe}
-- **Confiança:** alta | média | baixa
-- **Baseado em:** {indicadores/padrões usados}
-```
-
-### Formato de Previsão (brain/predictions-log.md)
-```markdown
-### [YYYY-MM-DD HH:MM] SYMBOL TF — BIAS
-- **Preço na previsão:** $XX,XXX
-- **Alvo:** $XX,XXX
-- **Invalidação:** $XX,XXX
-- **Confiança:** alta | média | baixa
-- **Indicadores base:** [lista]
-- **Status:** ⏳ aberta
-```
-
-### Formato de Erro (brain/mistakes.md)
-```markdown
-### [YYYY-MM-DD] {categoria}: {título}
-- **O que aconteceu:** _{descrição}_
-- **Por que errou:** _{causa raiz}_
-- **Lição:** _{o que fazer diferente}_
-- **Sessão:** [[YYYY-MM-DD-SYMBOL-TF]]
-```
-
-Categorias de erro: `falso-sinal` | `bias-errado` | `timing` | `indicador` | `htf-ignorado` | `overtrading` | `sl-apertado`
+> **REGRA ZERO:** O ciclo READ/WRITE do AUTO-PILOT (seção ⚡ acima) é obrigatório em TODA interação.
+> Formatos de escrita: usar templates em `wiki/brain/_templates/`. Categorias de erro: `falso-sinal` | `bias-errado` | `timing` | `indicador` | `htf-ignorado` | `overtrading` | `sl-apertado`
 
 ---
 
@@ -576,8 +543,8 @@ Trigger: "Como foi minha previsão?" ou "O mercado confirmou?" ou ao analisar at
 
 Workflow:
 1. Ler `wiki/brain/predictions-log.md` → buscar previsões abertas (⏳)
-2. Comparar previsão com estado atual do mercado
-3. Marcar como ✅ acertou | ❌ errou | ⚪ expirou
+2. **Grading objetivo (regra, não opinião):** com `data_get_ohlcv` buscar o range real desde a data da previsão e comparar com os campos `Entrada/SL/TPs`
+3. Marcar pela regra: **TP antes do SL = ✅ | SL antes do TP = ❌ | nenhum no prazo = ⚪**. Se ⚪, preencher `Pós-fecho:` pela direção na expiração (a favor=certa / contra=errada / neutra)
 4. **Atualizar a sessão original** (`wiki/sessions/`):
    a. Preencher seção "Resultado": outcome, entrada/saída real, R:R alcançado, P&L, tempo
    b. Preencher "Setup utilizado" com link para o setup
@@ -604,7 +571,7 @@ Workflow:
 2. Usar a tool `wiki_search` para cruzar conceitos soltos e sugerir novas páginas em `wiki/research/`
 3. Cruzar `wiki/setups/` com `wiki/sessions/` para atualizar estatísticas
 4. **Verificar previsões expiradas** em `brain/predictions-log.md` (> 48h abertas)
-5. **Ranquear insights** em `brain/insights.md` (mover mais validados para cima)
+5. **Rodar `python scripts/tools/archive_brain.py`** → mantém Top N insights em `insights.md` (recência + validações) e arquiva o resto em `brain/insights-archive/YYYY-MM.md`
 6. Identificar conceitos mencionados em `raw/clippings/` mas sem página `wiki/concepts/` própria
 7. **Regenerar `wiki/library.md`** — garantir que todos os clippings estejam linkados no Graph View
 8. **Rodar `python scripts/tools/wiki_lint.py`** → gera `wiki/lint/YYYY-MM-DD.md` (wikilinks quebrados, previsões expiradas, setups sem stats) e atualiza contadores do `index.md`

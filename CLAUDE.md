@@ -1,6 +1,6 @@
 # TradingView MCP — Claude Instructions
 
-68 tools for reading and controlling a live TradingView Desktop chart via CDP (port 9222).
+79 tools for reading and controlling a live TradingView Desktop chart via CDP (port 9222).
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### ANTES de responder qualquer pedido:
 0. **🔌 Testar conexão:** `tv_health_check()` → se falhar → `tv_launch()` → 3 tentativas max
-1. Ler `wiki/brain/insights.md` + `wiki/brain/mistakes.md` (últimos 10)
+1. Ler `wiki/brain/insights.md` (Top N quentes; histórico em `insights-archive/` só sob demanda) + `wiki/brain/mistakes.md` (últimos 10)
 2. Se envolve ativo → ler `wiki/assets/{SYMBOL}.md`
 3. Se envolve análise → ler `wiki/brain/predictions-log.md` → fechar previsões abertas
 
@@ -305,14 +305,13 @@ Ref: [[trade-playbooks]]
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
 2. USDT.D: confirma ou nega o bias?
-3. Funding Rate + Open Interest (se disponível)
+3. **Funding Rate + OI + LSR + Fear&Greed:** ler `raw/feeds/latest.md` (cache do `fetch_feeds.py`). Se ausente/`indisponível`/desatualizado → aplicar a penalidade `dados-parciais` da Fase 9 em vez de estimar
 4. **BTCUSDLONGS + BTCUSDSHORTS (obrigatório para BTC/ETH):**
    - Consultar `BTCUSDLONGS` → valor atual, tendência (subindo/caindo/lateral), nível relativo (alto/médio/baixo)
    - Consultar `BTCUSDSHORTS` → valor atual, tendência, nível relativo
    - Calcular Ratio L/S = BTCUSDLONGS / BTCUSDSHORTS
    - Avaliar risco de squeeze: `Long Squeeze Risk` (ratio > 5 + longs em extremo) ou `Short Squeeze Risk` (ratio < 1 + shorts subindo)
-   - Cruzar com Funding Rate: FR muito positiva + Longs extremos = dupla confirmação de long squeeze risk
-   - Cruzar com OI: OI alto + Ratio extremo = squeeze de alta probabilidade
+   - Cruzar com Funding/OI (de `raw/feeds/latest.md`): FR muito positiva + Longs extremos, ou OI alto + Ratio extremo = squeeze de alta probabilidade
 5. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Longs/Shorts: [ratio] [squeeze risk]`
 
 ### Fase 9 — Declaração de Bias Final
@@ -321,8 +320,9 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 3. Declarar confiança DERIVADA do score: **≥8 = alta | 6–7 = média | 4–5 = baixa | <4 = NEUTRO** (não usar "feeling")
 4. Aplicar a tabela score→ação para o TAMANHO: ≥8 cheia | 6–7 reduzida | 4–5 só observar/paper | <4 não operar
 5. Se bias contradiz macro → rotular `contra-macro` e aplicar penalidade −2 no score
-6. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
-7. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
+6. Se `raw/feeds/latest.md` ausente/`indisponível`/desatualizado → **−1 no score** + rótulo `dados-parciais` (não assumir funding/OI/on-chain que não foram lidos)
+7. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
+8. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
 
 ### Como escrever na sessão (adaptar por classe)
 
@@ -543,8 +543,8 @@ Trigger: "Como foi minha previsão?" ou "O mercado confirmou?" ou ao analisar at
 
 Workflow:
 1. Ler `wiki/brain/predictions-log.md` → buscar previsões abertas (⏳)
-2. Comparar previsão com estado atual do mercado
-3. Marcar como ✅ acertou | ❌ errou | ⚪ expirou
+2. **Grading objetivo (regra, não opinião):** com `data_get_ohlcv` buscar o range real desde a data da previsão e comparar com os campos `Entrada/SL/TPs`
+3. Marcar pela regra: **TP antes do SL = ✅ | SL antes do TP = ❌ | nenhum no prazo = ⚪**. Se ⚪, preencher `Pós-fecho:` pela direção na expiração (a favor=certa / contra=errada / neutra)
 4. **Atualizar a sessão original** (`wiki/sessions/`):
    a. Preencher seção "Resultado": outcome, entrada/saída real, R:R alcançado, P&L, tempo
    b. Preencher "Setup utilizado" com link para o setup
@@ -571,7 +571,7 @@ Workflow:
 2. Usar a tool `wiki_search` para cruzar conceitos soltos e sugerir novas páginas em `wiki/research/`
 3. Cruzar `wiki/setups/` com `wiki/sessions/` para atualizar estatísticas
 4. **Verificar previsões expiradas** em `brain/predictions-log.md` (> 48h abertas)
-5. **Ranquear insights** em `brain/insights.md` (mover mais validados para cima)
+5. **Rodar `python scripts/tools/archive_brain.py`** → mantém Top N insights em `insights.md` (recência + validações) e arquiva o resto em `brain/insights-archive/YYYY-MM.md`
 6. Identificar conceitos mencionados em `raw/clippings/` mas sem página `wiki/concepts/` própria
 7. **Regenerar `wiki/library.md`** — garantir que todos os clippings estejam linkados no Graph View
 8. **Rodar `python scripts/tools/wiki_lint.py`** → gera `wiki/lint/YYYY-MM-DD.md` (wikilinks quebrados, previsões expiradas, setups sem stats) e atualiza contadores do `index.md`

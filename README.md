@@ -5,7 +5,7 @@
 
 Personal AI assistant for your TradingView Desktop charts — now with a **self-learning second brain** and **multi-CLI support**. Built on the [TradingView MCP Bridge](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie), this fork adds a structured wiki system inspired by [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy) where the LLM writes and maintains the knowledge base automatically.
 
-Run the same 68 MCP tools and the autonomous learning protocol from Claude Code, Google Gemini CLI, or OpenAI Codex CLI — all sharing a single `wiki/brain/` knowledge base.
+Run the same 79 MCP tools and the autonomous learning protocol from Claude Code, Google Gemini CLI, or OpenAI Codex CLI — all sharing a single `wiki/brain/` knowledge base.
 
 > [!WARNING]
 > **This tool is not affiliated with, endorsed by, or associated with TradingView Inc.** It interacts with your locally running TradingView Desktop application via Chrome DevTools Protocol. Review the [Disclaimer](#disclaimer) before use.
@@ -70,7 +70,7 @@ wiki/
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
 │  TradingView │────▶│  MCP Bridge  │────▶│  Wiki (markdown) │
-│  (live chart)│     │  (68 tools)  │     │  (persistent)    │
+│  (live chart)│     │  (79 tools)  │     │  (persistent)    │
 └─────────────┘     └──────────────┘     └────────┬────────┘
                                                    │
                     ┌──────────────┐                │
@@ -547,9 +547,9 @@ Additional strategies:
 
 ---
 
-## MCP Tools (68 tools)
+## MCP Tools (79 tools)
 
-All 68 tools from the upstream project are fully available. Each CLI has its own context file with the complete decision tree and tool reference:
+All 79 tools from the upstream project are fully available. Each CLI has its own context file with the complete decision tree and tool reference:
 
 | CLI | Context File | MCP Config |
 |-----|-------------|------------|
@@ -605,7 +605,7 @@ tv stream quote | jq '.close'      # monitor price
           ┌────────▼────────┐
           │  MCP Server     │
           │  (node stdio)   │
-          │  68 tools       │
+          │  79 tools       │
           └────────┬────────┘
                    │ CDP (port 9222)
           ┌────────▼────────┐
@@ -620,7 +620,7 @@ tv stream quote | jq '.close'      # monitor price
           └─────────────────┘
 ```
 
-- **Transport**: MCP over stdio (68 tools) + CLI (`tv` command)
+- **Transport**: MCP over stdio (79 tools) + CLI (`tv` command)
 - **Connection**: Chrome DevTools Protocol on localhost:9222
 - **Wiki**: Markdown files maintained by LLM, human-readable, git-trackable
 - **Multi-CLI**: All agents share the same MCP server and wiki/brain knowledge base
@@ -639,7 +639,7 @@ tv status         # verify CDP connection (TradingView must be running)
 
 This is a fork of **[tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp)** by **[@tradesdontlie](https://github.com/tradesdontlie)**, licensed under the [MIT License](https://github.com/tradesdontlie/tradingview-mcp/blob/main/LICENSE).
 
-The upstream project provides the complete MCP bridge (68 tools, CLI, streaming) that connects Claude Code to TradingView Desktop via CDP. All original functionality is preserved in this fork.
+The upstream project provides the complete MCP bridge (79 tools, CLI, streaming) that connects Claude Code to TradingView Desktop via CDP. All original functionality is preserved in this fork.
 
 ### What this fork changes
 

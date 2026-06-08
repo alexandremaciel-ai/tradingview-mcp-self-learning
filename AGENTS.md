@@ -83,25 +83,31 @@ Antes de qualquer scan, declarar explicitamente o contexto temporal:
 | **Horário BRT + Dia** | [HH:MM] \| [Seg/Ter/Qua/Qui/Sex/Sáb/Dom] |
 | **NYSE** | ABERTA (Seg-Sex 10:30–17:00 BRT / inverno 11:30–18:00) ou FECHADA |
 | **CME** | ABERTO (quase 24h) ou FECHADO (Sex 18h BRT → Dom 19h BRT) |
-| **Forex/DXY** | DISPONÍVEL (Seg 00h – Sex ~22h BRT) ou CONGELADO (fim de semana) |
+| **Forex/DXY** | DISPONÍVEL (Seg 00h – Sex ~22h BRT) ou CONGELADO (Sex ~22h → **Dom 19h BRT**) — **REABRE Dom 19h BRT** |
 
-**Protocolo de fim de semana (Sáb 00h – Dom 19h BRT):**
-- CME, NYSE e Forex **fechados** → SPX, DXY, GOLD, USOIL = **dados congelados do fechamento de sexta**
+**Protocolo de fim de semana (Sex 18h → Dom 19h BRT):**
+- CME, NYSE e Forex **fechados** → SPX, DXY, GOLD, BRENT = **dados congelados do fechamento de sexta**
 - Declarar: `⚠️ Mercados TradFi fechados — macro TradFi baseada no último fechamento de sexta. Cripto é o único mercado em tempo real.`
 - Reduzir o peso de SPX/DXY/GOLD/Petróleo nas conclusões macro (dados sem liquidez nova)
 - Focar nos dados ao vivo: USDT.D + TOTAL + TOTAL2 + TOTAL3 + BTCUSDLONGS/SHORTS
+
+**🔓 Reabertura de domingo (Dom 19h BRT em diante):**
+- CME (`ES1!`), Forex (`DXY`) e petróleo (`BRENT`) **reabrem** → dado ao vivo, **não mais congelado**.
+- **OBRIGATÓRIO** a partir de dom 19h: ler e analisar `ES1!`, `DXY` e `BRENT` ao vivo em **toda** análise (não rotular como `congelado` nem reduzir peso por fim de semana após esse horário).
+- **DXY** = inversamente proporcional ao BTC (DXY↑ → pressão de baixa no BTC). `ES1!` e `BRENT` mantêm leitura padrão (`ES1!` risk-on positivo; `BRENT` inflação — ver Regra de Leitura Macro #4).
+- Declarar na sessão: `⏰ Dom pós-19h: ES1!/DXY/BRENT ao vivo (reabertura)`.
 
 ### Tabela de Fallbacks por Estado de Mercado
 
 **⛔ DEVE executar `chart_set_symbol` para cada ativo. NÃO usar apenas `quote_get`.**
 
-| Ativo | Ticker Normal | NYSE Fechada (pré/pós-market) | Fim de Semana |
-|-------|---------------|-------------------------------|---------------|
-| **S&P 500** | `SPX` | `ES1!` | ⚠️ `ES1!` (congelado desde sexta) |
-| **Ouro** | `GOLD` | `XAUUSD` | ⚠️ `XAUUSD` (congelado) |
-| **Petróleo** | `USOIL` | `CL1!` | ⚠️ sem dado ao vivo — usar com cautela |
-| **Dólar** | `DXY` | `DXY` | ⚠️ `DXY` (congelado) |
-| **Cripto** | tickers normais | tickers normais | ✅ tempo real |
+| Ativo | Ticker Normal | NYSE Fechada (pré/pós-market) | Fim de Semana (Sáb–Dom19h) | Dom 19h+ (reabertura) |
+|-------|---------------|-------------------------------|----------------------------|-----------------------|
+| **S&P 500** | `SPX` | `ES1!` | ⚠️ `ES1!` (congelado desde sexta) | ✅ `ES1!` ao vivo |
+| **Ouro** | `GOLD` | `XAUUSD` | ⚠️ `XAUUSD` (congelado) | ✅ `XAUUSD` ao vivo |
+| **Petróleo** | `BRENT` | `BRENT` | ⚠️ `BRENT` (congelado desde sexta) | ✅ `BRENT` ao vivo |
+| **Dólar** | `DXY` | `DXY` | ⚠️ `DXY` (congelado) | ✅ `DXY` ao vivo (inverso ao BTC) |
+| **Cripto** | tickers normais | tickers normais | ✅ tempo real | ✅ tempo real |
 
 > Anotar sempre na sessão qual ticker foi usado e por quê (ex: `S&P: ES1! [NYSE fechada]`)
 
@@ -116,13 +122,13 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 | Passo | Ticker | Fallback | Observação |
 |-------|--------|----------|------------|
 | 1 | `USDT.D` | — | Sempre disponível |
-| 2 | `SPX` | `ES1!` | NYSE fechada ou fim de semana → ES1! |
+| 2 | `SPX` | `ES1!` | NYSE fechada ou fim de semana → ES1!; **ao vivo após Dom 19h** |
 | 3 | `GOLD` | `XAUUSD` | |
-| 4 | `DXY` | — | Congelado no fim de semana |
+| 4 | `DXY` | — | Congelado Sáb–Dom19h; **reabre/ao vivo após Dom 19h** (inverso ao BTC) |
 | 5 | `TOTAL` | — | Sempre disponível |
 | 6 | `TOTAL2` | — | Sempre disponível |
 | 7 | `TOTAL3` | — | Sempre disponível |
-| 8 | `USOIL` | `CL1!` | Sem dado ao vivo no fim de semana |
+| 8 | `BRENT` | — | Petróleo padrão; congelado Sáb–Dom19h, **ao vivo após Dom 19h** |
 | 9 | `BTCUSDLONGS` | — | Sempre disponível |
 | 10 | `BTCUSDSHORTS` | — | Sempre disponível |
 
@@ -187,16 +193,17 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 1. **Risk-On:** DXY↓ + S&P↑ + USDT.D↓ + TOTAL↑ → BTC bullish.
 2. **Risk-Off:** DXY↑ + S&P↓ + USDT.D↑ + Ouro↑ → BTC bearish.
 3. **Divergência macro:** BTC↑ mas DXY↑ e TOTAL2/3↓ → rally frágil, não confiar.
-4. **Petróleo em alta forte:** pressão inflacionária → Fed hawkish → risco médio p/ cripto.
+4. **Petróleo (`BRENT`) em alta forte:** pressão inflacionária → Fed hawkish → risco médio p/ cripto.
 5. **TOTAL vs TOTAL2 vs TOTAL3:** TOTAL↑ mas TOTAL3↓ → dinheiro em BTC/ETH, altcoins em risco.
 6. **BTCUSDLONGS vs SHORTS (squeeze):** Long Squeeze Risk = longs em extremo + shorts em mínima + preço esticado↑. Short Squeeze Risk = shorts subindo/extremo + longs estáveis/caindo + preço em resistência. Ratio L/S >5 = vulnerável a long squeeze; <1 = combustível p/ short squeeze. Divergências: preço↑ mas longs↓ = rally sem convicção (smart money saindo); preço↓ mas shorts↓ = vendedores desistindo, fundo próximo.
-7. **Fim de semana:** TradFi congelado → reduzir peso de SPX/DXY/GOLD/Petróleo. Rotular `macro-parcial (dados sex)`.
+7. **Fim de semana:** TradFi congelado **somente Sex 18h → Dom 19h BRT** → reduzir peso de SPX/DXY/GOLD/Petróleo e rotular `macro-parcial (dados sex)`. **A partir de Dom 19h, `ES1!`/`DXY`/`BRENT` voltam ao vivo e são obrigatórios** (sem penalidade de fim de semana).
 
 ### Como registrar na sessão
 - Declarar: `Contexto: [hora] | NYSE: ABERTA/FECHADA | CME: ABERTO/FECHADO | Workflow: A/B/C/D`
 - Declarar: `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
 - Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`
-- Fim de semana → rotular macro TradFi como `macro-parcial (dados sex)`
+- Fim de semana (Sáb 00h → Dom 19h) → rotular macro TradFi como `macro-parcial (dados sex)`
+- Dom 19h em diante → declarar `⏰ Dom pós-19h: ES1!/DXY/BRENT ao vivo (reabertura)` e analisar os 3 obrigatoriamente (sem rótulo de congelado)
 
 ---
 

@@ -10,21 +10,18 @@
 
 ### ANTES de responder qualquer pedido:
 0. **🔌 Testar conexão:** `tv_health_check()` → se falhar → `tv_launch()` → 3 tentativas max
-0b. **📡 Feeds (classes cripto):** se `raw/feeds/latest.md` estiver `indisponível` **ou** com timestamp > 2h → rodar `python3 scripts/tools/fetch_feeds.py` (carrega o `.env` sozinho) e reler. Rede falhou → seguir com o cache + rótulo `dados-parciais`. EQUITIES pula (sem funding).
+0b. **📡 Feeds (cripto):** se `raw/feeds/latest.md` `indisponível` **ou** timestamp > 2h → rodar `python3 scripts/tools/fetch_feeds.py` (carrega o `.env`) e reler. Rede falhou → cache + rótulo `dados-parciais`. EQUITIES pula.
+0c. **🖼️ Layout ativo:** `chart_get_state()` → casar os studies (fingerprint) com um perfil em `wiki/brain/layouts.md`; ele define QUAIS indicadores a Fase 6 aplica + a recipe do layout. Sem match → `layout-adhoc`. **Híbrido:** trocar de layout (navegar `/chart/{slug}/`) só se o pedido/classe exigir (ex: SMC → "Liquidity e SMC").
 1. Ler `wiki/brain/insights.md` (Top N quentes; histórico em `insights-archive/` só sob demanda) + `wiki/brain/mistakes.md` (últimos 10)
 2. Se envolve ativo → ler `wiki/assets/{SYMBOL}.md`
 3. Se envolve análise → ler `wiki/brain/predictions-log.md` → fechar previsões abertas
 
-### Protocolo de Aplicação do Brain (executar junto com os passos 1-3):
-- **mistakes.md:** Para cada um dos últimos 5 erros, perguntar: "Este cenário pode se repetir nesta análise?"
-  → Se sim: declarar explicitamente "⚠️ Prevenção ativa: [erro X] → [ação preventiva]"
-- **insights.md:** Identificar os 3 insights mais aplicáveis ao ativo/TF atual
-  → Declarar: "💡 Aplicando: [insight X]"
-- **patterns.md:** Verificar se algum padrão VALIDADO ou CONSOLIDADO está potencialmente ativo
-  → Declarar: "🔄 Padrão monitorado: [nome] (N confirmações)"
-- **predictions-log.md:** Se ativo tem previsão ⏳ aberta → FECHAR/ATUALIZAR antes de continuar
-  → Se previsão > 48h sem atualização → marcar ⚪ expirada automaticamente
-- **metrics.md:** Consultar `brain/metrics.md` (circuit breaker + calibração de confiança). Se 🔴 ativo (3 losses seguidos / DD 5% no dia) → rebaixar recomendação para "somente observação / paper" e declarar `⛔ Disciplina: [estado]`. Ref: [[trading-psychology]]
+### Protocolo de Aplicação do Brain (junto com os passos 1-3):
+- **mistakes.md:** p/ cada um dos últimos 5 erros: "pode repetir aqui?" → se sim, declarar `⚠️ Prevenção ativa: [erro] → [ação]`
+- **insights.md:** os 3 insights mais aplicáveis ao ativo/TF → declarar `💡 Aplicando: [insight]`
+- **patterns.md:** algum padrão VALIDADO/CONSOLIDADO ativo? → declarar `🔄 Padrão monitorado: [nome] (N confirmações)`
+- **predictions-log.md:** previsão ⏳ aberta → FECHAR/ATUALIZAR antes de continuar; > 48h sem update → marcar ⚪ expirada
+- **metrics.md:** `brain/metrics.md` (circuit breaker + calibração). 🔴 ativo (3 losses seguidos / DD 5% no dia) → rebaixar p/ "observação/paper" + declarar `⛔ Disciplina: [estado]`. Ref: [[trading-psychology]]
 
 4. **⚠️ CLASSIFICAR O PEDIDO** na tabela abaixo → seguir o pipeline da classe:
 
@@ -86,16 +83,12 @@ Antes de qualquer scan, declarar explicitamente o contexto temporal:
 | **Forex/DXY** | DISPONÍVEL (Seg 00h – Sex ~22h BRT) ou CONGELADO (Sex ~22h → **Dom 19h BRT**) — **REABRE Dom 19h BRT** |
 
 **Protocolo de fim de semana (Sex 18h → Dom 19h BRT):**
-- CME, NYSE e Forex **fechados** → SPX, DXY, GOLD, BRENT = **dados congelados do fechamento de sexta**
-- Declarar: `⚠️ Mercados TradFi fechados — macro TradFi baseada no último fechamento de sexta. Cripto é o único mercado em tempo real.`
-- Reduzir o peso de SPX/DXY/GOLD/Petróleo nas conclusões macro (dados sem liquidez nova)
-- Focar nos dados ao vivo: USDT.D + TOTAL + TOTAL2 + TOTAL3 + BTCUSDLONGS/SHORTS
+- CME/NYSE/Forex **fechados** → SPX, DXY, GOLD, BRENT = **congelados** (fechamento de sexta). Reduzir seu peso nas conclusões macro.
+- Declarar: `⚠️ TradFi fechado — macro baseada no fechamento de sexta. Cripto = único mercado ao vivo.` Focar em USDT.D + TOTAL/2/3 + BTCUSDLONGS/SHORTS.
 
-**🔓 Reabertura de domingo (Dom 19h BRT em diante):**
-- CME (`ES1!`), Forex (`DXY`) e petróleo (`BRENT`) **reabrem** → dado ao vivo, **não mais congelado**.
-- **OBRIGATÓRIO** a partir de dom 19h: ler e analisar `ES1!`, `DXY` e `BRENT` ao vivo em **toda** análise (não rotular como `congelado` nem reduzir peso por fim de semana após esse horário).
-- **DXY** = inversamente proporcional ao BTC (DXY↑ → pressão de baixa no BTC). `ES1!` e `BRENT` mantêm leitura padrão (`ES1!` risk-on positivo; `BRENT` inflação — ver Regra de Leitura Macro #4).
-- Declarar na sessão: `⏰ Dom pós-19h: ES1!/DXY/BRENT ao vivo (reabertura)`.
+**🔓 Reabertura de domingo (Dom 19h+):**
+- `ES1!`, `DXY`, `BRENT` **reabrem ao vivo** → **OBRIGATÓRIO** analisá-los em toda análise (sem rótulo `congelado` nem penalidade de fim de semana).
+- **DXY** = inverso ao BTC (DXY↑ → baixa). `ES1!` risk-on; `BRENT` inflação (Regra Macro #4). Declarar: `⏰ Dom pós-19h: ES1!/DXY/BRENT ao vivo (reabertura)`.
 
 ### Tabela de Fallbacks por Estado de Mercado
 
@@ -196,7 +189,7 @@ Para CADA ativo, executar: `chart_set_symbol` → `chart_set_timeframe("D")` →
 4. **Petróleo (`BRENT`) em alta forte:** pressão inflacionária → Fed hawkish → risco médio p/ cripto.
 5. **TOTAL vs TOTAL2 vs TOTAL3:** TOTAL↑ mas TOTAL3↓ → dinheiro em BTC/ETH, altcoins em risco.
 6. **BTCUSDLONGS vs SHORTS (squeeze):** Long Squeeze Risk = longs em extremo + shorts em mínima + preço esticado↑. Short Squeeze Risk = shorts subindo/extremo + longs estáveis/caindo + preço em resistência. Ratio L/S >5 = vulnerável a long squeeze; <1 = combustível p/ short squeeze. Divergências: preço↑ mas longs↓ = rally sem convicção (smart money saindo); preço↓ mas shorts↓ = vendedores desistindo, fundo próximo.
-7. **Fim de semana:** TradFi congelado **somente Sex 18h → Dom 19h BRT** → reduzir peso de SPX/DXY/GOLD/Petróleo e rotular `macro-parcial (dados sex)`. **A partir de Dom 19h, `ES1!`/`DXY`/`BRENT` voltam ao vivo e são obrigatórios** (sem penalidade de fim de semana).
+7. **Fim de semana:** Sex 18h → Dom 19h: TradFi congelado → reduzir peso de SPX/DXY/GOLD/BRENT e rotular `macro-parcial (dados sex)`. **Dom 19h+: `ES1!`/`DXY`/`BRENT` ao vivo e obrigatórios** (sem penalidade).
 
 ### Como registrar na sessão
 - Declarar: `Contexto: [hora] | NYSE: ABERTA/FECHADA | CME: ABERTO/FECHADO | Workflow: A/B/C/D`
@@ -254,6 +247,7 @@ Ref: [[fibonacci-structural]] + [[price-action-patterns]]
 
 ### Fase 6 — Indicadores Técnicos (valor + direção + cruzamento + divergências)
 Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-profile]]
+> **⚠️ DIRIGIDA PELO LAYOUT ATIVO (0c):** aplicar cada sub-item só se o indicador estiver no layout; ausente → `N/A — fora do layout`. Indicadores custom (V.V.I.R., MVRV Z, SMC LuxAlgo, Tabela RSI Maciel) têm leitura própria em [[layouts]]/[[indicators]] e entram na confluência.
 > **M e W em RSI/StochRSI/MACD são OBRIGATÓRIOS no macro** (CYCLE/swing/classes BTC/BTC+ETH/ALTCOIN/EQUITIES); recomendados em scalp. M tem peso de ciclo acima do W; W acima do D/4H.
 1. **RSI (14):** valor + zona (>70 OB / <30 OS) + direção da linha + cruzamento RSI×SMA(RSI) (up=bullish / down=bearish).
    - **M (macro de ciclo):** valor+zona+direção+cruzamento de 50. Define teto/piso de momentum do CICLO e alvos mensais; divergência mensal = reversão de ciclo (peso máximo).
@@ -285,7 +279,7 @@ Ref: [[trade-playbooks]]
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
 2. USDT.D: confirma ou nega o bias?
-3. **Funding Rate + OI + Fear&Greed:** **rodar `python3 scripts/tools/fetch_feeds.py` se o cache estiver `indisponível` ou com timestamp > 2h, depois ler** `raw/feeds/latest.md` (o script carrega o `.env` sozinho). Consumir os valores REAIS de funding/OI de BTC e ETH — não estimar. Só se o refresh FALHAR (rede/erro) → penalidade `dados-parciais` (Fase 9)
+3. **Funding Rate + OI + Fear&Greed:** rodar `fetch_feeds.py` se o cache estiver `indisponível`/timestamp > 2h, depois ler `raw/feeds/latest.md`. Consumir os valores REAIS de funding/OI de BTC e ETH — não estimar. Refresh FALHOU (rede/erro) → penalidade `dados-parciais` (Fase 9)
 4. **BTCUSDLONGS + BTCUSDSHORTS (obrigatório para BTC/ETH):**
    - Consultar `BTCUSDLONGS` → valor atual, tendência (subindo/caindo/lateral), nível relativo (alto/médio/baixo)
    - Consultar `BTCUSDSHORTS` → valor atual, tendência, nível relativo
@@ -307,6 +301,7 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 ### Como escrever na sessão (adaptar por classe)
 
 **Todas as classes:**
+- `Layout: [nome] | Indicadores ativos: [lista do layout]` (passo 0c)
 - `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
 - `MTF: M/W/D/4H/1H → [resumo]` (DAILY: D+4H, mas citar o M no contexto de ciclo)
 - `Indicadores: RSI [M/W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [M/W/D/4H vs zero+cross+hist] | ADX [valor]`
@@ -344,18 +339,19 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 ## Decision Tree — Which Tool When
 
 - **Ler chart:** `chart_get_state` (symbol/TF/IDs dos indicadores — chamar 1×) → `data_get_study_values` (valores numéricos dos indicadores visíveis) → `quote_get` (snapshot de preço/OHLC/vol).
-- **Pine custom drawings** (line/label/table/box — invisíveis aos tools normais; indicador precisa estar visível): `data_get_pine_lines` (níveis), `data_get_pine_labels` (texto+preço), `data_get_pine_tables` (linhas), `data_get_pine_boxes` ({high,low}). Usar `study_filter` p/ alvejar um indicador.
+- **Pine custom drawings** (indicador precisa estar visível): `data_get_pine_lines` (níveis), `_labels` (texto+preço), `_tables` (linhas), `_boxes` ({high,low}); `study_filter` p/ alvejar um indicador.
 - **Price data:** `data_get_ohlcv` (sempre `summary: true`; `count` limita) | `quote_get` (último preço).
 - **Mudar chart:** `chart_set_symbol` | `chart_set_timeframe` | `chart_set_type` | `chart_manage_indicator` (nome completo) | `chart_scroll_to_date` | `chart_set_visible_range` | `indicator_set_inputs`.
 - **Pine Script:** `pine_set_source` → `pine_smart_compile` → `pine_get_errors`/`pine_get_console` | `pine_save`/`pine_new`/`pine_open`. ⚠️ evitar `pine_get_source` (200KB+).
 - **Desenhar:** `draw_shape` (horizontal_line/trend_line/rectangle/text) | `draw_list` | `draw_remove_one` | `draw_clear`.
 - **Alertas:** `alert_create` (crossing/greater_than/less_than) | `alert_list` | `alert_delete`.
-- **UI:** `ui_open_panel` | `ui_click` | `layout_switch` | `ui_fullscreen` | `capture_screenshot` (full/chart/strategy_tester).
+- **UI:** `ui_open_panel` | `ui_click` | `ui_fullscreen` | `capture_screenshot` (full/chart/strategy_tester).
+- **Layout:** `layout_list` | trocar = `ui_evaluate` navegando `/chart/{slug}/` (`layout_switch` não recarrega o Desktop) | `pane_list`. Perfis em `wiki/brain/layouts.md`.
 - **TV offline:** `tv_launch` | `tv_health_check`.
 
 ## Context Management Rules
 
-Evitar context bloat: (1) `data_get_ohlcv` sempre com `summary: true` salvo se precisar de barras individuais; (2) usar `study_filter` nos pine tools; (3) nunca `verbose: true` salvo pedido explícito; (4) evitar `pine_get_source` em scripts complexos (200KB+); (5) evitar `data_get_indicator` em indicadores protegidos — usar `data_get_study_values`; (6) preferir `capture_screenshot` (~300KB) a puxar datasets grandes; (7) `chart_get_state` só 1× no início; (8) cap OHLCV: `count: 20` rápida / `100` profunda / `500` só quando necessário.
+Evitar context bloat: (1) `data_get_ohlcv` sempre `summary: true` (exceto barras individuais); (2) `study_filter` nos pine tools; (3) nunca `verbose: true` sem pedido; (4) evitar `pine_get_source` (200KB+); (5) indicadores protegidos → `data_get_study_values`, não `data_get_indicator`; (6) preferir `capture_screenshot` a datasets grandes; (7) `chart_get_state` só 1× no início; (8) cap OHLCV: `count: 20` rápida / `100` profunda / `500` só se necessário.
 
 ## Tool Conventions
 
@@ -584,6 +580,12 @@ Workflow:
 10. **[BRAIN WRITE]** Registrar em `wiki/sessions/YYYY-MM-DD-BTC-CYCLE.md`
 11. Append previsão em `brain/predictions-log.md`
 12. Append em `wiki/log.md`: `## [YYYY-MM-DD] cycle | BTC | Fase: [X]`
+
+### 10. RECALIBRATE LAYOUTS — Recalibrar perfis de layout
+Trigger: "recalibrar layouts" / usuário muda indicadores no TV. ⚠️ Operação do agente via MCP (scripts em `scripts/tools/` são offline).
+1. `layout_list` → por layout: navegar `ui_evaluate("location.href=location.origin+'/chart/{slug}/'")` → verificar toolbar "Layout ativo: X" + `tv_health_check`
+2. `chart_get_state`+`pane_list`+`data_get_study_values` (+ pine lines/labels/tables/boxes p/ SMC) + `capture_screenshot`
+3. Atualizar `wiki/brain/layouts.md` + `brain/indicators.md`; restaurar layout original; append `wiki/log.md`.
 
 ---
 

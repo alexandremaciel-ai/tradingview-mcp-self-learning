@@ -17,7 +17,7 @@ Some os pontos de cada critério ATENDIDO. Critério parcial não conta (binári
 | 2 | **EMA 200 (4H) confirma** | +1 | Preço acima → só long / abaixo → só short |
 | 3 | **Zona institucional** | +2 | Entrada em FVG, Order Block ou POC ([[SMC]] / [[volume-profile]]) |
 | 4 | **Golden Zone Fibonacci** | +1 | Entrada em 0.618–0.786 do impulso ([[fibonacci-structural]]) |
-| 5 | **Divergência confirmando** | +1 | RSI ou MACD divergente a favor ([[rsi-divergences]] / [[macd]]) |
+| 5 | **Divergência confirmando** | +1 | RSI ou MACD divergente a favor ([[rsi-divergences]] / [[macd]]). BTC/ETH: divergência de RSI no USDT.D inversa a favor (ou cruzada BTC↔USDT.D alinhada) também conta ([[liquidity-wicks-trap-short-usdtd]]) |
 | 6 | **BOS no gatilho** | +1 | Fechamento além do pivô no TF de execução ([[SMC]]) |
 | 7 | **Volume / ATR validam** | +1 | Vol > SMA(20)×1.5 **e** \|O−C\| > ATR×1.5 ([[ATR]]) |
 | 8 | **Posicionamento a favor** | +1 | Funding/OI ou Longs-Shorts a favor ([[btcusdlongs-btcusdshorts]] / [[funding-rate]]) |
@@ -29,6 +29,7 @@ Some os pontos de cada critério ATENDIDO. Critério parcial não conta (binári
 | Condição | Pts |
 |----------|-----|
 | Trade **contra o macro** (contra-macro) | −2 |
+| **Divergência RSI no USDT.D** (ou cruzada BTC↔USDT.D) contradiz o bias — BTC/ETH (`usdtd-diverge`) | −1 |
 | **Fim de semana** / liquidez baixa (vol < 40% avg) | −1 |
 | Evento macro de alto impacto < 24h (FOMC/CPI/NFP) | −1 |
 | ADX < 20 num playbook de tendência (1 ou 2) | −1 |
@@ -60,4 +61,5 @@ Some os pontos de cada critério ATENDIDO. Critério parcial não conta (binári
 - [[multi-timeframe-analysis]] · [[SMC]] · [[fibonacci-structural]] · [[volume-profile]]
 - [[rsi-divergences]] · [[macd]] · [[ADX]] · [[ATR]] · [[rsi-stochrsi-combined]]
 - [[btcusdlongs-btcusdshorts]] · [[funding-rate]]
+- [[liquidity-wicks-trap-short-usdtd]] — divergência de RSI no USDT.D como sinal inverso (BTC/ETH)
 - [[metrics]] — calibração score × win rate

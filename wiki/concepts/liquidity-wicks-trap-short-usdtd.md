@@ -37,8 +37,16 @@ se o USDT.D rompe e segura, o BTC continua caindo (não há repique para shortar
 "perfeito" nunca aciona. **Inversão:** quando o USDT.D finalmente *exaure* (rejeita de verdade,
 com pavio + volume), aí sim o BTC ganha o repique. Ler o USDT.D é ler o combustível, não o preço.
 
+### Divergência de RSI no USDT.D + cruzada BTC↔USDT.D (obrigatório BTC/ETH)
+Além do preço, **varrer divergência de RSI no próprio USDT.D** (TFs W/D/4H/1H/15M, **1W primordial**) —
+pela correlação inversa, ela antecipa a reversão do BTC pelo lado oposto: div. **bullish** no USDT.D
+(ou alvo projetado de alta do V.V.I.R.) → BTC **baixista**; div. **bearish** → BTC **altista**.
+**Cruzada BTC↔USDT.D:** BTC faz HH mas o USDT.D **não** faz LL correspondente (faz HL) = topo provável
+do BTC; espelho no fundo (BTC LL sem USDT.D fazer HH = fundo provável). Mecânica completa da divergência
+em [[rsi-divergences]] §8.
+
 ## 4. Síntese na Fase 8
-Declarar sempre: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Trap ativo: [tipo ou —]`
+Declarar sempre: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Div RSI USDT.D: [TF:tipo ou —] | BTC↔USDT.D: alinhado/divergente | Trap ativo: [tipo ou —]`
 - Se o bias de long depende de um pavio de SSL já varrido **e** USDT.D caindo = dupla confirmação.
 - Se o bias contradiz o USDT.D = rotular `contra-macro` e aplicar penalidade no [[confluence-score]].
 
@@ -47,5 +55,6 @@ Declarar sempre: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Trap a
 - [[Wyckoff]] — Spring e UTAD como sweeps de liquidez
 - [[bull-bear-traps]] · [[short-long-squeeze]] — mecânica das armadilhas
 - [[btc-macro-correlations]] — USDT.D no conjunto DXY/SPX/TOTAL
-- [[confluence-score]] — penalidade contra-macro
+- [[rsi-divergences]] — divergência de RSI no USDT.D + cruzada BTC↔USDT.D
+- [[confluence-score]] — penalidade contra-macro + `usdtd-diverge`
 - [[liquidation-heatmap]] — onde a liquidez de alavancagem se acumula

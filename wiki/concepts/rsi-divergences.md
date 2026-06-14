@@ -51,7 +51,7 @@
 ## 4. Parâmetros Operacionais
 
 - **Período padrão:** RSI(14)
-- **Timeframes para divergências:** 1H e 4H (gatilho e confirmação)
+- **Timeframes para divergências:** **15M, 1H, 4H, Diário, Semanal e Mensal** — varrer TODOS quando o RSI está no layout. 1H/15M = gatilho; D/4H = swing; **1W e 1M são PRIMORDIAIS para marcar topo/fundo de movimento (peso máximo)**
 - **Timeframes para sobrecompra/venda macro:** Diário, Semanal e **Mensal**
 - **Timeframe de ciclo:** RSI **Mensal** define teto/piso de ciclo e alvos mensais. Cruzamento mensal de 50 = virada macro. Divergência mensal = reversão de **CICLO** (peso máximo, acima da semanal) — confirmar com a semanal.
 - **Sobrecompra limita retração:** RSI sobrecomprado no Semanal = limite da retração do Mensal; RSI mensal em extremo = teto/piso de ciclo que limita TODOS os TFs abaixo
@@ -136,8 +136,40 @@ Ver estratégia completa: [[rsi-stochrsi-combined]]
 
 ---
 
+## 8. Divergência de RSI no USDT.D — sinal inverso do BTC
+
+> Em análise de BTC/ETH, varrer divergência de RSI **também no USDT.D é OBRIGATÓRIO**. O USDT.D
+> (dominância do Tether) é **inversamente correlacionado** ao BTC — a divergência nele antecipa a
+> reversão do BTC pelo lado oposto.
+
+### Leitura inversa
+| USDT.D (RSI / alvo projetado) | BTC | Significado |
+|-------------------------------|-----|-------------|
+| Div. **bullish** / RSI subindo / alvo de **alta** | **Baixista** | Capital indo p/ stable → BTC perde combustível |
+| Div. **bearish** / RSI caindo / alvo de **baixa** | **Altista** | Capital saindo de stable p/ risco → BTC ganha combustível |
+| Sem divergência / lateral | Neutro | Sem confirmação inversa — reduzir convicção |
+
+- **Mesmos TFs do BTC:** W/D/4H/1H/15M, com **1W primordial** para topo/fundo de movimento.
+- **Alvo projetado:** o V.V.I.R. exibe os preços onde o RSI do USDT.D bate 30/80 — alvo de alta do
+  USDT.D = pressão baixista no BTC.
+
+### Divergência cruzada BTC ↔ USDT.D
+Como são inversos, em um topo saudável do BTC o USDT.D deveria fazer um **fundo mais baixo (LL)**
+correspondente. Quando o BTC faz **HH** mas o USDT.D **não** faz LL (faz HL / fundo mais alto), o
+combustível baixista do USDT.D está se formando = **topo provável do BTC**. O espelho vale no fundo:
+BTC **LL** sem o USDT.D fazer **HH** = exaustão da dominância = **fundo provável do BTC**.
+
+### Enforcement
+Obrigatório em BTC/ETH (Fase 8). Impacto no [[confluence-score]]: divergência do USDT.D (ou cruzada)
+que **contradiz** o bias → **−1 + rótulo `usdtd-diverge`**; que **confirma** → conta no critério 5.
+Mecânica do USDT.D como confirmador/negador macro em [[liquidity-wicks-trap-short-usdtd]].
+
+---
+
 ## Backlinks
 - [[rsi-stochrsi-combined]] — estratégia combinada RSI + StochRSI para BTC
+- [[liquidity-wicks-trap-short-usdtd]] — USDT.D como confirmador inverso; divergência de RSI no USDT.D
+- [[confluence-score]] — score da divergência do USDT.D (critério 5 / `usdtd-diverge`)
 - [[SMC]] — FVG + divergência RSI = confluência máxima
 - [[multi-timeframe-analysis]]
 - [[trade-playbooks]]

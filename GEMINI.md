@@ -251,8 +251,9 @@ Ref: [[rsi-divergences]] + [[macd]] + [[ADX]] + [[bollinger-bands]] + [[volume-p
 > **M e W em RSI/StochRSI/MACD são OBRIGATÓRIOS no macro** (CYCLE/swing/classes BTC/BTC+ETH/ALTCOIN/EQUITIES); recomendados em scalp. M tem peso de ciclo acima do W; W acima do D/4H.
 1. **RSI (14):** valor + zona (>70 OB / <30 OS) + direção da linha + cruzamento RSI×SMA(RSI) (up=bullish / down=bearish).
    - **M (macro de ciclo):** valor+zona+direção+cruzamento de 50. Define teto/piso de momentum do CICLO e alvos mensais; divergência mensal = reversão de ciclo (peso máximo).
-   - **W (regime):** valor+zona+direção. Limita upside/downside dos TFs menores; divergência semanal = reversão de alto peso.
-   - **Divergências M/W/D/4H/1H:** bearish preço HH+RSI LH | bullish preço LL+RSI HL. RSI>70 em M/W/D = teto de retração.
+   - **W (regime):** valor+zona+direção. Limita upside/downside dos TFs menores; **divergência semanal = detector PRIMORDIAL de topo/fundo de movimento** (junto com o M) — toda análise com RSI no layout DEVE varrer a divergência do 1W antes dos TFs menores.
+   - **Divergências M/W/D/4H/1H/15M (OBRIGATÓRIO quando o RSI está no layout):** bearish preço HH+RSI LH | bullish preço LL+RSI HL. **1W e 1M têm peso de topo/fundo de CICLO** (máximo); D/4H = swing; 1H/15M = gatilho. RSI>70 em M/W/D = teto de retração. ⚠️ Divergência sozinha NÃO é gatilho — confirmar com cruzamento RSI×SMA, CHoCH/BOS no TF de execução ou candle em zona ([[rsi-divergences]]).
+   - **USDT.D (BTC/ETH — OBRIGATÓRIO):** USDT.D é INVERSO ao BTC. Varrer divergência de RSI no USDT.D nos mesmos TFs (W/D/4H/1H/15M, **1W primordial**). USDT.D bullish (RSI subindo / div. bullish / alvo projetado de alta do V.V.I.R.) → BTC **baixista**; USDT.D bearish → BTC **altista**. Divergência cruzada **BTC↔USDT.D** (ex: BTC faz HH mas o USDT.D não faz LL correspondente / faz HL = topo do BTC) = mesma leitura inversa. Enforcement + score na Fase 8/9 ([[liquidity-wicks-trap-short-usdtd]]).
 2. **Stoch RSI:** %K/%D valores + cruzamento (%K×%D up=bullish / down=bearish) + zona (>80 OB / <20 OS) + direção.
    - **W (OBRIGATÓRIO):** %K/%D+zona. Reset semanal de OS/OB = virada de ciclo; confirma/nega o timing dos TFs menores. _(StochRSI mensal só contextual; timing fica em W/1H/15M.)_
    - **Divergências (1H/15M):** preço HH+%K LH em >80 = bearish | preço LL+%K HL em <20 = bullish. Reset OS em alta / OB em baixa = continuação.
@@ -278,7 +279,7 @@ Ref: [[trade-playbooks]]
 ### Fase 8 — Liquidez, Correlações e Posicionamento de Margem
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (mensal/semanal/diário) → liquidez acima ou abaixo
-2. USDT.D: confirma ou nega o bias?
+2. **USDT.D — confirmador inverso + divergência (OBRIGATÓRIO BTC/ETH):** (a) confirma/nega o bias (subindo=bearish BTC / caindo=bullish BTC); (b) varrer **divergência de RSI no USDT.D** nos TFs W/D/4H/1H/15M (**1W primordial**); (c) **divergência cruzada BTC↔USDT.D** (BTC HH sem o USDT.D fazer LL correspondente / fazendo HL = topo do BTC). Declarar e levar ao Confluence Score (Fase 9) ([[rsi-divergences]]).
 3. **Funding Rate + OI + Fear&Greed:** rodar `fetch_feeds.py` se o cache estiver `indisponível`/timestamp > 2h, depois ler `raw/feeds/latest.md`. Consumir os valores REAIS de funding/OI de BTC e ETH — não estimar. Refresh FALHOU (rede/erro) → penalidade `dados-parciais` (Fase 9)
 4. **BTCUSDLONGS + BTCUSDSHORTS (obrigatório para BTC/ETH):**
    - Consultar `BTCUSDLONGS` → valor atual, tendência (subindo/caindo/lateral), nível relativo (alto/médio/baixo)
@@ -286,7 +287,7 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
    - Calcular Ratio L/S = BTCUSDLONGS / BTCUSDSHORTS
    - Avaliar risco de squeeze: `Long Squeeze Risk` (ratio > 5 + longs em extremo) ou `Short Squeeze Risk` (ratio < 1 + shorts subindo)
    - Cruzar com Funding/OI (de `raw/feeds/latest.md`): FR muito positiva + Longs extremos, ou OI alto + Ratio extremo = squeeze de alta probabilidade
-5. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Longs/Shorts: [ratio] [squeeze risk]`
+5. Declarar: `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega | Div RSI USDT.D: [TF:tipo ou —] | BTC↔USDT.D: alinhado/divergente | Longs/Shorts: [ratio] [squeeze risk]`
 
 ### Fase 9 — Declaração de Bias Final
 1. Sintetizar todas as fases acima em um bias claro: **LONG / SHORT / NEUTRO**
@@ -294,9 +295,10 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 3. Declarar confiança DERIVADA do score: **≥8 = alta | 6–7 = média | 4–5 = baixa | <4 = NEUTRO** (não usar "feeling")
 4. Aplicar a tabela score→ação para o TAMANHO: ≥8 cheia | 6–7 reduzida | 4–5 só observar/paper | <4 não operar
 5. Se bias contradiz macro → rotular `contra-macro` e aplicar penalidade −2 no score
-6. Se o refresh de feeds FALHOU (rede/erro) ou `raw/feeds/latest.md` segue `indisponível`/ausente → **−1 no score** + rótulo `dados-parciais` (não assumir funding/OI que não foram lidos). Dados puxados com sucesso → SEM penalidade
-7. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
-8. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
+6. **USDT.D divergência (BTC/ETH):** divergência de RSI no USDT.D — ou cruzada BTC↔USDT.D — que **contradiz** o bias → **−1 + rótulo `usdtd-diverge`**; que **confirma** o bias → conta no critério 5 de [[confluence-score]] (divergência confirmando)
+7. Se o refresh de feeds FALHOU (rede/erro) ou `raw/feeds/latest.md` segue `indisponível`/ausente → **−1 no score** + rótulo `dados-parciais` (não assumir funding/OI que não foram lidos). Dados puxados com sucesso → SEM penalidade
+8. Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4)
+9. **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação ([[trading-psychology]])
 
 ### Como escrever na sessão (adaptar por classe)
 
@@ -304,17 +306,19 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 - `Layout: [nome] | Indicadores ativos: [lista do layout]` (passo 0c)
 - `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
 - `MTF: M/W/D/4H/1H → [resumo]` (DAILY: D+4H, mas citar o M no contexto de ciclo)
-- `Indicadores: RSI [M/W/D/4H/1H valores+direção] | StochRSI [W/1H/15M %K/%D+cross] | MACD [M/W/D/4H vs zero+cross+hist] | ADX [valor]`
+- `Indicadores: RSI [M/W/D/4H/1H/15M valores+direção+divergências] | StochRSI [W/1H/15M %K/%D+cross] | MACD [M/W/D/4H vs zero+cross+hist] | ADX [valor]`
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 **BTC / BTC+ETH — adicionar:**
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Div RSI USDT.D: [TF:tipo ou —] | BTC↔USDT.D: alinhado/divergente`
 - `Derivativos: BTC FR [valor] OI [valor] | ETH FR [valor] OI [valor] | F&G [valor]` (de raw/feeds/latest.md)
 - `Longs/Shorts: BTCUSDLONGS [valor] | BTCUSDSHORTS [valor] | Ratio [X.X] | Squeeze Risk: [nível]`
 - (BTC+ETH) `ETH/BTC: [valor] [outperform/underperform] [%]`
 
 **BTC+ALTCOIN — adicionar:**
 - `Liquidez: acima/abaixo/neutra | USDT.D: confirma/nega`
+- `Div RSI USDT.D: [TF:tipo ou —] | BTC↔USDT.D: alinhado/divergente`
 - `Derivativos: BTC FR [valor] OI [valor] | F&G [valor]` (de raw/feeds/latest.md)
 - `Longs/Shorts: Ratio [X.X] | Squeeze Risk: [nível]`
 - `{ALT}/BTC: [valor] [outperform/underperform] [%]`

@@ -87,6 +87,7 @@ pnpm-lock.yaml
 # Working brain files accumulate personal analysis data.
 # Templates in wiki/brain/_templates/ ARE committed for forks.
 wiki/brain/insights.md
+wiki/brain/insights-hot.md
 wiki/brain/mistakes.md
 wiki/brain/predictions-log.md
 wiki/brain/indicators.md

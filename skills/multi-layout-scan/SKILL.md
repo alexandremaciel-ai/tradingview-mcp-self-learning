@@ -33,7 +33,7 @@ abaixo divergirem desse arquivo, **o `layouts.md` vence** (rode RECALIBRATE LAYO
    - Ticker **não mapeado** (cripto ou ação) → `symbol_search` para resolver o símbolo real.
    - Ações/índices (AAPL, TSLA, SPX…) → tratar como classe `EQUITIES`.
 4. **TF default:** 4H, salvo se o usuário pedir outro.
-5. **Classifique o pedido** pela tabela do CLAUDE.md → define o macro scan do Passo 2:
+5. **Classifique o pedido** pela tabela de `skills/_references/class-rules.md` → define o macro scan do Passo 2:
    - 1 ativo BTC → `BTC` · BTC+ETH → `BTC+ETH` · BTC+altcoin → `BTC+ALTCOIN` ·
      altcoin solo → `ALTCOIN` · ação/índice → `EQUITIES`.
 6. **Múltiplos ativos:** faça o macro scan **1× no início**, depois repita o sweep dos
@@ -43,22 +43,14 @@ abaixo divergirem desse arquivo, **o `layouts.md` vence** (rode RECALIBRATE LAYO
 
 ## Passo 2 — Preâmbulo AUTO-PILOT (uma vez, antes do sweep)
 
-Siga o ciclo READ obrigatório do CLAUDE.md:
-1. `tv_health_check` → se falhar, `tv_launch` (3 tentativas).
-2. **Feeds (cripto):** se `raw/feeds/latest.md` estiver `indisponível` ou timestamp > 2h →
-   `python3 scripts/tools/fetch_feeds.py` e reler. EQUITIES pula feeds.
-3. **Brain READ:** `wiki/brain/insights.md` (Top N) + `mistakes.md` (últimos 10) +
-   `wiki/assets/{SYMBOL}.md` + `predictions-log.md` (fechar previsões abertas) +
-   `brain/metrics.md` (circuit breaker). Declarar prevenções/insights ativos.
-4. **Macro scan da classe** (Workflow A/B/C/D do CLAUDE.md):
-   - `BTC`/`BTC+ETH` → completo (10 passos) · `BTC+ALTCOIN` → parcial (7) ·
-     `ALTCOIN` → reduzido (5) · `EQUITIES` → TradFi (DXY/SPX/VIX/setor/GOLD).
-   - Respeite os fallbacks de horário (Step 0 do CLAUDE.md: NYSE/CME/Forex, reabertura Dom 19h).
-   - ⚠️ **`quote_get(symbol=...)` IGNORA o parâmetro** e retorna o chart ativo (bug confirmado
-     12/06). Para cada ticker do macro: `chart_set_symbol` → `data_get_study_values`/`quote_get`
-     (NÃO tente "quotes paralelos por símbolo"). Priorize o **USDT.D MACD ao vivo** (filtro-mestre)
-     + **BTCUSDLONGS/SHORTS**; se um índice não carregar (`chart loading`), repita 1× e, se
-     persistir, use o último valor conhecido rotulando-o (lento) — não trave a varredura.
+Delegue às camadas reutilizáveis (não reimplemente aqui):
+1. **`brain-read`** — conexão TV, feeds, layout ativo, classe do pedido, leitura do brain por
+   relevância, prevenções/insights/padrões, fechar previsões abertas. → Brain Read Summary.
+2. **`macro-scan`** — Step 0 (contexto/horário, NYSE/CME/Forex, reabertura Dom 19h) + Workflow da
+   classe (A/B/C/D) + Regras de Leitura Macro. Faça-o **1× no início** (multi-ativo: 1× só).
+   - ⚠️ Lembrete: **`quote_get(symbol=...)` IGNORA o parâmetro** → `chart_set_symbol` por ticker.
+     Priorize **USDT.D MACD ao vivo** (filtro-mestre) + **BTCUSDLONGS/SHORTS**; índice que não
+     carrega (`chart loading`) → repetir 1×, persistindo use o último valor rotulado (lento).
 
 ---
 
@@ -123,24 +115,20 @@ Reúna tudo (cada indicador uma vez) numa visão única, organizada por eixo:
 
 ---
 
-## Passo 5 — Bias final (Fase 9 do CLAUDE.md)
+## Passo 5 — Bias final (Fase 9)
 
 1. Sintetize todos os eixos num bias claro: **LONG / SHORT / NEUTRO**.
-2. **Confluence Score (0–10)** — listar critérios que pontuaram + penalidades
-   (`−2 contra-macro`, `−1 dados-parciais` se feeds falharam).
-3. **Confiança derivada do score:** ≥8 alta · 6–7 média · 4–5 baixa · <4 NEUTRO.
-4. **Multi-ativo:** adicionar força relativa (ETH/BTC, ALT/BTC: outperform/underperform).
-5. Disciplina: se `brain/metrics.md` indicar circuit breaker 🔴 → rebaixar para observação/paper.
+2. **Confluence Score (0–10)** + penalidades + confiança derivada → seguir
+   `skills/_references/confluence-score.md`.
+3. **Multi-ativo:** adicionar força relativa (ETH/BTC, ALT/BTC: outperform/underperform).
 
 ---
 
 ## Passo 6 — Brain WRITE + cleanup
 
-1. Insight → `wiki/brain/insights.md` + append `wiki/log.md`
-   (`## [YYYY-MM-DD HH:MM] multi-layout-scan | {SYMBOL(s)} {TF}`).
-2. Se bias definido → previsão em `brain/predictions-log.md`.
-3. Indicador que surpreendeu → `brain/indicators.md` · padrão repetido → `brain/patterns.md`.
-4. **Restaurar o layout home** (Trade Diario, `Fbl7OmwZ`) ao final, deixando o chart no estado padrão.
+1. Rodar **`brain-write`** — insight (+ `insights-hot.md`), previsão (se bias), indicators/patterns,
+   append `wiki/log.md` (`## [YYYY-MM-DD HH:MM] multi-layout-scan | {SYMBOL(s)} {TF}`).
+2. **Restaurar o layout home** (Trade Diario, `Fbl7OmwZ`) ao final, deixando o chart no estado padrão.
 
 ---
 

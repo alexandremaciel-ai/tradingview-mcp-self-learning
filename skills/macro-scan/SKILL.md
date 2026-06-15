@@ -1,0 +1,84 @@
+---
+name: macro-scan
+description: Scan macro obrigatório ANTES de analisar qualquer ativo — detecta o contexto de mercado (horário BRT, NYSE/CME/Forex abertos, reabertura Dom 19h), executa o Workflow da classe (A=BTC/BTC+ETH completo 10 passos · B=ALTCOIN reduzido 5 · C=BTC+ALTCOIN parcial 7 · D=EQUITIES TradFi) com os fallbacks de ticker, e aplica as Regras de Leitura Macro (Risk-On/Off, squeeze L/S, fim de semana). Use depois do brain-read e antes do technical-checklist.
+---
+
+# Macro Scan — Pré-requisito de qualquer análise
+
+> O macro contexto define o viés primário. **DEVE** `chart_set_symbol` para cada ativo — NÃO usar
+> apenas `quote_get` (o parâmetro `symbol` é ignorado, retorna o chart ativo). Detalhe de tools em
+> `skills/_references/tv-tools.md`.
+
+## Step 0 — Detector de Contexto de Mercado (SEMPRE PRIMEIRO)
+
+| | Status |
+|--|--------|
+| **Horário BRT + Dia** | [HH:MM] \| [Seg…Dom] |
+| **NYSE** | ABERTA (Seg-Sex 10:30–17:00 BRT / inverno 11:30–18:00) ou FECHADA |
+| **CME** | ABERTO (quase 24h) ou FECHADO (Sex 18h BRT → Dom 19h BRT) |
+| **Forex/DXY** | DISPONÍVEL (Seg 00h – Sex ~22h BRT) ou CONGELADO (Sex ~22h → **Dom 19h BRT**) |
+
+**Fim de semana (Sex 18h → Dom 19h BRT):** CME/NYSE/Forex fechados → SPX/DXY/GOLD/BRENT
+**congelados** (fechamento sexta). Declarar `⚠️ TradFi fechado — macro baseada no fechamento de
+sexta. Cripto = único mercado ao vivo.` Focar USDT.D + TOTAL/2/3 + BTCUSDLONGS/SHORTS.
+
+**🔓 Reabertura Dom 19h+:** `ES1!`, `DXY`, `BRENT` reabrem ao vivo → **OBRIGATÓRIO** analisá-los
+(sem rótulo `congelado`). DXY = inverso ao BTC; ES1! risk-on; BRENT inflação. Declarar
+`⏰ Dom pós-19h: ES1!/DXY/BRENT ao vivo (reabertura)`.
+
+### Fallbacks por estado de mercado
+
+| Ativo | Normal | NYSE Fechada | Fim de Semana | Dom 19h+ |
+|-------|--------|--------------|---------------|----------|
+| S&P 500 | `SPX` | `ES1!` | ⚠️ `ES1!` (congelado) | ✅ `ES1!` ao vivo |
+| Ouro | `GOLD` | `XAUUSD` | ⚠️ `XAUUSD` (congelado) | ✅ `XAUUSD` ao vivo |
+| Petróleo | `BRENT` | `BRENT` | ⚠️ `BRENT` (congelado) | ✅ `BRENT` ao vivo |
+| Dólar | `DXY` | `DXY` | ⚠️ `DXY` (congelado) | ✅ `DXY` ao vivo (inverso) |
+| Cripto | normais | normais | ✅ tempo real | ✅ tempo real |
+
+> Anotar sempre qual ticker foi usado e por quê (ex: `S&P: ES1! [NYSE fechada]`).
+> Para cada ticker: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`.
+
+## Workflow A — BTC / BTC+ETH / DAILY / CYCLE (10 passos — COMPLETO)
+
+1 `USDT.D` · 2 `SPX`(→ES1!) · 3 `GOLD`(→XAUUSD) · 4 `DXY` · 5 `TOTAL` · 6 `TOTAL2` · 7 `TOTAL3`
+· 8 `BRENT` · 9 `BTCUSDLONGS` · 10 `BTCUSDSHORTS`.
+**Depois:** tabela de correlações (10 linhas), ratio L/S, regime + squeeze risk → SÓ ENTÃO BTC/ETH.
+
+## Workflow B — ALTCOIN (5 passos — REDUZIDO)
+
+1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `BTCUSD` (chart) · 5 `{ALT}BTC` (par).
+**Depois:** tabela reduzida (5 linhas), BTC bias → SÓ ENTÃO a altcoin.
+
+## Workflow C — BTC+ALTCOIN (7 passos — PARCIAL)
+
+1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `BTCUSD` · 5 `BTCUSDLONGS` · 6 `BTCUSDSHORTS` · 7 `{ALT}BTC`.
+**Depois:** ratio L/S (obrigatório), BTC bias → BTC → altcoin como relativo.
+
+## Workflow D — EQUITIES (5 passos — TRADFI)
+
+1 `DXY` · 2 `SPX`(→ES1!) · 3 `VIX` · 4 ETF do setor (`XLK`/`XLF`/`XLE`/`XLV`/`XLB`/`XLY`/`XLRE`) · 5 `GOLD`(→XAUUSD).
+**⛔ NÃO usar:** USDT.D, TOTAL/2/3, BTCUSDLONGS/SHORTS. **Depois:** tabela TradFi (5 linhas),
+regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
+
+## Regras de Leitura Macro
+
+1. **Risk-On:** DXY↓ + S&P↑ + USDT.D↓ + TOTAL↑ → BTC bullish.
+2. **Risk-Off:** DXY↑ + S&P↓ + USDT.D↑ + Ouro↑ → BTC bearish.
+3. **Divergência macro:** BTC↑ mas DXY↑ e TOTAL2/3↓ → rally frágil.
+4. **BRENT em alta forte:** pressão inflacionária → Fed hawkish → risco médio p/ cripto.
+5. **TOTAL vs TOTAL3:** TOTAL↑ mas TOTAL3↓ → dinheiro em BTC/ETH, altcoins em risco.
+6. **BTCUSDLONGS vs SHORTS (squeeze):** Long Squeeze Risk = longs extremo + shorts mínima + preço
+   esticado↑. Short Squeeze Risk = shorts subindo/extremo + longs estáveis/caindo + preço em
+   resistência. Ratio L/S >5 = vulnerável a long squeeze; <1 = combustível p/ short squeeze.
+   Divergências: preço↑ mas longs↓ = rally sem convicção; preço↓ mas shorts↓ = vendedores desistindo.
+7. **Fim de semana:** Sex 18h → Dom 19h: TradFi congelado → reduzir peso de SPX/DXY/GOLD/BRENT,
+   rótulo `macro-parcial (dados sex)`. **Dom 19h+: ES1!/DXY/BRENT ao vivo e obrigatórios.**
+
+## Registrar na sessão
+
+- `Contexto: [hora] | NYSE: …| CME: …| Workflow: A/B/C/D`
+- `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
+- Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`.
+
+> Próximo passo: `technical-checklist`.

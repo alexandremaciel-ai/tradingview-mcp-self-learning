@@ -1,9 +1,10 @@
 # TradingView MCP — Self-Learning Edition
 
-> 🧠 Fork with a persistent **LLM Wiki** that turns every chart analysis into compounding knowledge.
+> 🧠 A persistent **LLM Wiki** that turns every chart analysis into compounding knowledge.
+> ⚡ A **skill-first architecture** that keeps the base context tiny and loads analysis logic on demand.
 > 🔌 Works with **Claude Code**, **Gemini CLI**, and **Codex CLI** — same brain, any agent.
 
-Personal AI assistant for your TradingView Desktop charts — now with a **self-learning second brain** and **multi-CLI support**. Built on the [TradingView MCP Bridge](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie), this fork adds a structured wiki system inspired by [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy) where the LLM writes and maintains the knowledge base automatically.
+A personal AI assistant for your TradingView Desktop charts, with a **self-learning second brain** and **multi-CLI support**. Built on the [TradingView MCP Bridge](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie), this fork adds a structured wiki system — inspired by [Andrej Karpathy's LLM Wiki pattern](https://x.com/karpathy) — that the LLM writes and maintains automatically.
 
 Run the same 79 MCP tools and the autonomous learning protocol from Claude Code, Google Gemini CLI, or OpenAI Codex CLI — all sharing a single `wiki/brain/` knowledge base.
 
@@ -18,12 +19,32 @@ Run the same 79 MCP tools and the autonomous learning protocol from Claude Code,
 
 ---
 
+## Table of Contents
+
+- [What This Fork Adds](#what-this-fork-adds)
+- [Skill-First Architecture](#skill-first-architecture)
+- [The Self-Learning Brain](#the-self-learning-brain)
+- [The Obsidian Interface](#the-obsidian-interface)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Daily Usage](#daily-usage)
+- [Skills Reference](#skills-reference)
+- [Wiki Structure](#wiki-structure)
+- [MCP Tools & CLI](#mcp-tools--cli)
+- [Architecture](#architecture)
+- [Testing](#testing)
+- [Upstream Project](#upstream-project)
+- [Disclaimer](#disclaimer)
+- [License](#license)
+
+---
+
 ## What This Fork Adds
 
-The upstream project gives Claude **eyes and hands** on your chart. This fork gives it a **memory**.
+The upstream project gives the LLM **eyes and hands** on your chart. This fork gives it a **memory** — and a **skill-first runtime** that makes that memory cheap to use.
 
-| Feature | Upstream | This Fork |
-|---------|----------|-----------|
+| Capability | Upstream | This Fork |
+|---|---|---|
 | Chart reading & control | ✅ | ✅ |
 | Pine Script dev workflow | ✅ | ✅ |
 | Replay, drawings, alerts | ✅ | ✅ |
@@ -33,17 +54,72 @@ The upstream project gives Claude **eyes and hands** on your chart. This fork gi
 | **Strategy versioning & review** | ❌ | ✅ |
 | **Concept library (SMC, Wyckoff…)** | ❌ | ✅ |
 | **Automated wiki maintenance** | ❌ | ✅ |
+| **Skill-first architecture (on-demand logic)** | ❌ | ✅ |
+| **Relevance-based brain recall** | ❌ | ✅ |
 | **Multi-CLI support (Claude + Gemini + Codex)** | ❌ | ✅ |
 
-### The Wiki System
+---
 
-Every chart analysis feeds a structured markdown wiki that the LLM maintains automatically:
+## Skill-First Architecture
+
+Earlier versions packed the entire analysis protocol — pre-flight checks, macro workflows, a 9-phase technical checklist, and ten wiki operations — into a single **619-line `CLAUDE.md`** that loaded into **every** session. Most of it went unused on any given request, yet it was paid for in tokens every time.
+
+This edition refactors that monolith into a **thin router plus on-demand skills**:
+
+```
+CLAUDE.md  (≈95-line router: invariants + dispatch table + tool cheatsheet)
+   │  request → skill
+   ▼
+Reusable layers (loaded only when a request needs them)
+   brain-read ──┐
+   macro-scan ──┼──►  analyze  (default dispatcher / INGEST)  ◄── multi-layout-scan
+   technical-checklist┤        btc-cycle · prediction-feedback · wiki-maintenance · …
+   brain-write ─┘
+Shared references (markdown, loaded by path): class-rules · confluence-score · tv-tools
+```
+
+**Result:** the always-loaded context dropped **~85%** (619 → 95 lines). A Pine task or a feedback request no longer pays for the full analysis pipeline — each request loads only the skills it actually uses. Quality is preserved (the same frameworks, now modular) and recall is sharper (see [The Self-Learning Brain](#the-self-learning-brain)).
+
+### Request Dispatch
+
+`CLAUDE.md` is now a router that maps each request to a skill:
+
+| You ask for… | Skill invoked |
+|---|---|
+| Analyze a single asset, get a bias/setup (default) | `analyze` |
+| A consolidated scan across every chart layout | `multi-layout-scan` |
+| A scan/screen across multiple symbols or a watchlist | `multi-symbol-scan` |
+| A daily / morning dashboard | `daily-scan` |
+| BTC cycle, top/bottom projection | `btc-cycle` |
+| "How did my prediction do?" | `prediction-feedback` |
+| Wiki lint, strategy update, compile, review, search | `wiki-maintenance` |
+| Recalibrate TradingView layout profiles | `recalibrate-layouts` |
+| Build a Pine indicator/strategy | `pine-develop` |
+| Practice in replay / manual backtest | `replay-practice` |
+| Backtest performance report | `strategy-report` |
+
+The `analyze` dispatcher and the scan skills compose four **reusable layers** — `brain-read`, `macro-scan`, `technical-checklist`, `brain-write` — so the AUTO-PILOT read/write discipline stays intact without duplicating logic. Portability is handled by `scripts/tools/sync_agent_md.py`, which regenerates `GEMINI.md` and `AGENTS.md` from `CLAUDE.md` so all three agents stay in lockstep.
+
+---
+
+## The Self-Learning Brain
+
+Every chart analysis feeds a structured markdown wiki that the LLM maintains automatically. The core of the system is `wiki/brain/` — the active memory the agent reads **before** analyzing and writes **after**.
 
 ```
 wiki/
 ├── index.md                          # Master index (auto-updated)
 ├── log.md                            # Append-only operation log
-├── overview.md                       # Trading thesis & system rules
+├── brain/                            # Active second brain
+│   ├── insights-hot.md               #   Top-8 rolling digest (cheap, always read)
+│   ├── insights.md                   #   Full insight history (searched by relevance)
+│   ├── insights-archive/             #   Cold storage pruned by archive_brain.py
+│   ├── mistakes.md                   #   Logged errors + prevention notes
+│   ├── predictions-log.md            #   Predictions with objective grading
+│   ├── patterns.md                   #   Recurring patterns with confirmation counts
+│   ├── indicators.md                 #   Per-indicator hit-rate calibration
+│   ├── metrics.md                    #   Win rate, Brier score, circuit breaker
+│   └── layouts.md                    #   TradingView layout fingerprints
 ├── assets/BTCUSD.md                  # Per-asset pages with live status
 ├── setups/                           # Trade patterns with win-rate stats
 ├── strategies/                       # Versioned strategies with performance
@@ -53,70 +129,81 @@ wiki/
 └── lint/                             # Wiki health-check reports
 ```
 
-### Six Wiki Operations
+### Relevance-Based Recall
 
-| Command | Trigger | What Happens |
-|---------|---------|-------------|
-| **INGEST** | _"Analyze the chart and record it in the wiki"_ | Captures chart state → creates session → updates asset page → logs |
-| **COMPILE** | _"Compile recent clippings in the wiki"_ | Reads `raw/clippings/` → auto-generates research notes and concepts |
-| **SEARCH** | _"Search the wiki for..."_ | Triggers `wiki_search` MCP Tool to find disconnected insights across the vault |
-| **QUERY** | _"Based on the wiki, [question]"_ | Reads relevant pages → synthesizes answer → archives if valuable |
-| **VISUALIZE**| _"Generate the weekly review"_ | Runs Python scripts to plot Accuracy Curves and create Marp Slides for outputs |
-| **LINT** | _"Wiki health-check"_ | Checks broken links, finds missed concepts via search, marks expired predictions |
-| **UPDATE** | _"Update the strategy"_ | Reviews recent sessions → recalculates stats → proposes adjustments |
+The brain no longer dumps entire files into context. On each analysis, `brain-read`:
+
+- reads `insights-hot.md` (a Top-8 rolling digest) for cheap, always-on context;
+- searches `insights.md` by **relevance** (`wiki_search` / grep on the asset & timeframe) instead of reading it whole;
+- greps `predictions-log.md` for **open predictions of the current symbol** rather than the full log.
+
+`archive_brain.py` keeps `insights.md` lean by moving older entries to `insights-archive/`, and `brain-write` keeps `insights-hot.md` trimmed to the Top 8. The effect is both fewer tokens and a more **relevant** recall than chronological dumping.
 
 ### The Self-Learning Loop
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
-│  TradingView │────▶│  MCP Bridge  │────▶│  Wiki (markdown) │
-│  (live chart)│     │  (79 tools)  │     │  (persistent)    │
-└─────────────┘     └──────────────┘     └────────┬────────┘
-                                                   │
-                    ┌──────────────┐                │
-                    │   LLM Agent  │◀───────────────┘
-                    │  (reads wiki │
-                    │   before     │─── better analysis ──▶ next session
-                    │   analyzing) │
-                    └──────────────┘
+┌──────────────┐     ┌──────────────┐     ┌──────────────────┐
+│  TradingView │────▶│  MCP Bridge  │────▶│  Wiki (markdown)  │
+│ (live chart) │     │  (79 tools)  │     │  (persistent)     │
+└──────────────┘     └──────────────┘     └────────┬─────────┘
+                                                    │
+                     ┌──────────────┐               │
+                     │   LLM Agent  │◀──────────────┘
+                     │ (brain-read  │
+                     │  before, ────│── better analysis ──▶ next session
+                     │  brain-write │
+                     │  after)      │
+                     └──────────────┘
 ```
 
 Each session compounds on previous knowledge. The wiki grows. The analysis improves.
 
-### The Obsidian Interface
+### How the Wiki Grows
 
-The entire repository is designed to be opened as an **Obsidian Vault**. 
-The LLM writes the markdown, and you visualize it in Obsidian using:
-- **Graph View**: Interconnected map of assets, setups, and sessions
-- **Dataview Dashboards**: Real-time tables of win-rates and open predictions
-- **Web Clipper**: Save articles directly to `raw/clippings/` for the LLM to process
-- **Marp Slides**: Weekly performance reviews generated as presentations
+1. **You analyze a chart** → a session file is created in `wiki/sessions/`.
+2. **A setup is identified** → tracked in `wiki/setups/` with occurrence history.
+3. **Statistics accumulate** → win rates and R:R ratios auto-calculated by `metrics_engine.py`.
+4. **Strategy evolves** → `wiki/strategies/` updated with evidence-based changes.
+5. **Lint catches gaps** → missing data, stale pages, and broken links flagged by `wiki_lint.py`.
 
-#### Obsidian Step-by-Step Configuration
+---
 
-1. **Open the Vault:** Install [Obsidian](https://obsidian.md/), click "Open Folder as Vault", and select this repository folder.
-2. **Trust Author:** If prompted, click "Trust Author" to allow the pre-configured Workspace settings to load safely.
-3. **Enable Community Plugins:** Go to Settings ⚙️ -> Community Plugins -> Turn on Safe Mode (disable it) to allow our pre-configured plugins (Dataview, Templater, Calendar) to run.
-4. **View the Dashboard:** Open `wiki/dashboard.md` in Obsidian to see your automatic learning stats natively rendered.
-5. **Obsidian Web Clipper Setup:**
-   - Install the official [Obsidian Web Clipper](https://obsidian.md/clipper) browser extension.
-   - Select your vault in the extension settings.
-   - Set **Behavior > Folder location** to: `raw/clippings`
-   - In **Properties**, add: `source_url: {{url}}` and `date_captured: {{date}}`
-   - In **Note Content**, paste the following template:
+## The Obsidian Interface
+
+The entire repository is designed to be opened as an **Obsidian Vault**. The LLM writes the markdown; you visualize it in Obsidian using:
+
+- **Graph View** — an interconnected map of assets, setups, and sessions
+- **Dataview Dashboards** — live tables of win rates and open predictions
+- **Web Clipper** — save articles directly to `raw/clippings/` for the LLM to process
+- **Marp Slides** — weekly performance reviews generated as presentations
+
+<details>
+<summary><strong>Obsidian step-by-step configuration</strong></summary>
+
+1. **Open the Vault:** install [Obsidian](https://obsidian.md/), click "Open Folder as Vault", and select this repository folder.
+2. **Trust Author:** if prompted, click "Trust Author" so the pre-configured workspace settings load safely.
+3. **Enable Community Plugins:** Settings ⚙️ → Community Plugins → disable Safe Mode to allow the pre-configured plugins (Dataview, Templater, Calendar).
+4. **View the Dashboard:** open `wiki/dashboard.md` to see your learning stats rendered natively.
+5. **Web Clipper:**
+   - install the official [Obsidian Web Clipper](https://obsidian.md/clipper) browser extension and select your vault;
+   - set **Behavior → Folder location** to `raw/clippings`;
+   - in **Properties**, add `source_url: {{url}}` and `date_captured: {{date}}`;
+   - in **Note Content**, paste:
      ```markdown
      # Clipping: {{title}}
 
      ## Key Takeaways
-     - 
+     -
 
      ## Concepts Mentioned
-     - 
+     -
 
      ## Original Content
      {{content}}
      ```
-   - **How to use:** Clip any trading article, then ask Claude: *"Compile recent clippings in the wiki"*.
+   - **Usage:** clip any trading article, then ask your agent: *"Compile recent clippings in the wiki."*
+
+</details>
 
 ---
 
@@ -124,59 +211,50 @@ The LLM writes the markdown, and you visualize it in Obsidian using:
 
 - **TradingView Desktop app** (paid subscription required for real-time data)
 - **Node.js 18+**
+- **Python 3** (for the offline brain/wiki maintenance scripts)
 - **At least one MCP-compatible CLI agent:**
   - [Claude Code](https://claude.ai/code) — uses `CLAUDE.md` + `.mcp.json`
   - [Gemini CLI](https://geminicli.com) — uses `GEMINI.md` + `.gemini/settings.json`
   - [Codex CLI](https://developers.openai.com/codex/cli) — uses `AGENTS.md` + `.codex/config.toml`
 - **macOS, Windows, or Linux**
 
-## Quick Start
+---
 
-### Option A — One-Line Install (recommended)
+## Installation & Setup
 
-Clones, installs dependencies, registers the MCP server in Claude Code, and optionally launches TradingView — all in one command:
+### 1. Install
+
+**One-line install (recommended).** Clones, installs dependencies, registers the MCP server in Claude Code, and optionally launches TradingView:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/alexandremaciel-ai/tradingview-mcp-self-learning/main/scripts/setup.sh | bash
 ```
 
-Or if you already cloned the repo:
-
-```bash
-./scripts/setup.sh
-```
-
-That's it. Open Claude Code and start using.
-
-### Option B — Project Auto-Config (zero setup)
-
-If you just want to clone and go:
+**Manual clone:**
 
 ```bash
 git clone https://github.com/alexandremaciel-ai/tradingview-mcp-self-learning.git
 cd tradingview-mcp-self-learning
 npm install
 ```
-
-Then open Claude Code **inside the project directory**. The `.mcp.json` at the root auto-registers the MCP server — no manual JSON editing needed.
 
 > [!NOTE]
-> With Option B the MCP server is only active when Claude Code is opened inside this project directory. Use Option A for global access from any directory.
+> The project has no heavy dependencies — only `@modelcontextprotocol/sdk` and `chrome-remote-interface`. Installation is fast.
 
-### Option C — Manual Setup
+### 2. Register the MCP server (once per CLI)
 
-If you prefer full control:
+<details open>
+<summary><strong>Claude Code</strong></summary>
+
+**Global registration (recommended):**
 
 ```bash
-git clone https://github.com/alexandremaciel-ai/tradingview-mcp-self-learning.git
-cd tradingview-mcp-self-learning
-npm install
-
-# Register globally via Claude Code CLI
 claude mcp add --scope user tradingview -- node "$(pwd)/src/server.js"
 ```
 
-Or add to `~/.claude/.mcp.json` manually:
+**Project-local auto-registration (zero config):** the repo ships a root `.mcp.json`. Open Claude Code **inside the project directory** and the server registers automatically.
+
+**Manual JSON** in `~/.claude/.mcp.json`:
 
 ```json
 {
@@ -189,12 +267,14 @@ Or add to `~/.claude/.mcp.json` manually:
 }
 ```
 
-### Setting Up Gemini CLI
+</details>
 
-The project includes `GEMINI.md` (protocol context) which is auto-loaded by Gemini CLI. You just need to create the local MCP config:
+<details>
+<summary><strong>Gemini CLI</strong></summary>
+
+`GEMINI.md` is auto-loaded by Gemini CLI. Create the project-scoped MCP config (gitignored):
 
 ```bash
-# Create project-scoped Gemini config (gitignored — never committed)
 mkdir -p .gemini
 cat > .gemini/settings.json << 'EOF'
 {
@@ -210,22 +290,16 @@ EOF
 ```
 
 > [!IMPORTANT]
-> Replace `/absolute/path/to/tradingview-mcp-self-learning` with your actual project path (run `pwd` inside the project directory to get it).
+> Replace `/absolute/path/to/tradingview-mcp-self-learning` with the output of `pwd` inside the project directory.
 
-Then launch Gemini CLI from the project directory:
+</details>
 
-```bash
-cd tradingview-mcp-self-learning
-gemini
-# Ask: "Analyze the current chart and record it in the wiki"
-```
+<details>
+<summary><strong>Codex CLI</strong></summary>
 
-### Setting Up Codex CLI
-
-The project includes `AGENTS.md` (protocol context) which is auto-loaded by Codex CLI. You just need to create the local MCP config:
+`AGENTS.md` is auto-loaded by Codex CLI. Create the project-scoped MCP config (gitignored) and trust the project:
 
 ```bash
-# Create project-scoped Codex config (gitignored — never committed)
 mkdir -p .codex
 cat > .codex/config.toml << 'EOF'
 [mcp_servers.tradingview]
@@ -237,7 +311,6 @@ tool_timeout_sec = 120
 required = true
 EOF
 
-# Trust the project (required for project-scoped configs)
 cat >> ~/.codex/config.toml << EOF
 
 [projects."/absolute/path/to/tradingview-mcp-self-learning"]
@@ -246,260 +319,119 @@ EOF
 ```
 
 > [!IMPORTANT]
-> Replace `/absolute/path/to/tradingview-mcp-self-learning` with your actual project path in **both** the `.codex/config.toml` and the `~/.codex/config.toml` trust entry.
+> Replace the absolute path in **both** `.codex/config.toml` and the `~/.codex/config.toml` trust entry.
 
-Then launch Codex CLI from the project directory:
+</details>
 
-```bash
-cd tradingview-mcp-self-learning
-codex
-# Ask: "Analyze the current chart and record it in the wiki"
-```
+### 3. Launch TradingView with CDP enabled
 
-### Launch TradingView
-
-TradingView Desktop must be running with Chrome DevTools Protocol enabled:
+> [!IMPORTANT]
+> TradingView **must be launched via this script** (not from the Dock or Applications folder). The Chrome DevTools Protocol debug port must be explicitly enabled for the MCP bridge to connect.
 
 | Platform | Command |
-|----------|---------|
-| **Mac** | `./scripts/launch_tv_debug_mac.sh` |
+|---|---|
+| **macOS** | `./scripts/launch_tv_debug_mac.sh` |
 | **Windows** | `scripts\launch_tv_debug.bat` |
 | **Linux** | `./scripts/launch_tv_debug_linux.sh` |
 | **Manual** | `/path/to/TradingView --remote-debugging-port=9222` |
 | **Via MCP** | Ask your agent: *"Use tv_launch to start TradingView"* |
 
-### Verify & Start
+The script auto-detects the install path, relaunches with `--remote-debugging-port=9222`, and waits for `CDP ready at http://localhost:9222`. Verify the port directly with:
 
-```
-1. Ask your agent: "Use tv_health_check to verify TradingView is connected"
-2. Ask your agent: "Analyze the current graph and record it on the wiki."
-```
-
-The wiki will grow from here.
-
----
-
-## Running the Application — Complete Step-by-Step Guide
-
-Follow these steps every time you want to use the TradingView MCP Self-Learning system.
-
-### Prerequisites Checklist
-
-Before starting, make sure you have:
-
-- [ ] **TradingView Desktop** installed (paid subscription required)
-- [ ] **Node.js 18+** — verify with `node --version`
-- [ ] **Claude Code** with MCP support — verify with `claude --version`
-- [ ] This repository cloned and dependencies installed (see Step 1)
-
----
-
-### Step 1 — Install Dependencies
-
-Clone the repository (if you haven't already) and install Node.js dependencies:
-
-```bash
-git clone https://github.com/alexandremaciel-ai/tradingview-mcp-self-learning.git
-cd tradingview-mcp-self-learning
-npm install
-```
-
-If you already cloned it, just make sure dependencies are up to date:
-
-```bash
-npm install
-```
-
-> [!NOTE]
-> The project has no heavy dependencies — only `@modelcontextprotocol/sdk` and `chrome-remote-interface`. Installation is fast.
-
----
-
-### Step 2 — Launch TradingView with CDP Enabled
-
-> [!IMPORTANT]
-> TradingView **must be launched via this script** (not from your Dock or Applications folder). The Chrome DevTools Protocol (CDP) debug port must be explicitly enabled for the MCP bridge to connect.
-
-Run the platform-specific launch script:
-
-**macOS:**
-```bash
-./scripts/launch_tv_debug_mac.sh
-```
-
-**Windows:**
-```cmd
-scripts\launch_tv_debug.bat
-```
-
-**Linux:**
-```bash
-./scripts/launch_tv_debug_linux.sh
-```
-
-**What the script does:**
-1. Auto-detects your TradingView installation path
-2. Kills any existing TradingView process
-3. Relaunches TradingView with `--remote-debugging-port=9222`
-4. Waits up to 15 seconds for the CDP endpoint to become available
-5. Confirms readiness with a `CDP ready at http://localhost:9222` message
-
-**Expected output:**
-```
-Found TradingView at: /Applications/TradingView.app/Contents/MacOS/TradingView
-Launching with --remote-debugging-port=9222 ...
-PID: 12345
-Waiting for CDP...
-CDP ready at http://localhost:9222
-{
-  "Browser": "Chrome/...",
-  "webSocketDebuggerUrl": "ws://localhost:9222/..."
-}
-```
-
-**If TradingView is installed in a custom path**, run it manually:
-```bash
-/path/to/TradingView.app/Contents/MacOS/TradingView --remote-debugging-port=9222 &
-```
-
-**Verify CDP is responding:**
 ```bash
 curl http://localhost:9222/json/version
 ```
 
----
+### 4. Verify the connection
 
-### Step 3 — Register the MCP Server in Your CLI
-
-This step only needs to be done **once per CLI**. Skip to Step 4 if you've already registered it.
-
-#### Claude Code
-
-**Option A — Global registration (recommended):**
-
-```bash
-claude mcp add --scope user tradingview -- node "$(pwd)/src/server.js"
-```
-
-> [!TIP]
-> Use `$(pwd)/src/server.js` to automatically insert the absolute path. Run this command from inside the project directory.
-
-**Option B — Project-local auto-registration (zero config):**
-
-The repository already includes a `.mcp.json` at the root. When you open Claude Code **inside the project directory**, the MCP server is registered automatically — no command needed.
-
-```bash
-# Just open Claude Code from within the project folder
-cd tradingview-mcp-self-learning
-claude  # MCP server auto-activates
-```
-
-> [!NOTE]
-> With Option B, the MCP server is only active when Claude Code is opened inside this project directory. Use Option A for global access.
-
-**Option C — Manual JSON config:**
-
-Edit `~/.claude/.mcp.json` (create if it doesn't exist):
-
-```json
-{
-  "mcpServers": {
-    "tradingview": {
-      "command": "node",
-      "args": ["/absolute/path/to/tradingview-mcp-self-learning/src/server.js"]
-    }
-  }
-}
-```
-
-#### Gemini CLI
-
-See [Setting Up Gemini CLI](#setting-up-gemini-cli) in the Quick Start section above.
-
-#### Codex CLI
-
-See [Setting Up Codex CLI](#setting-up-codex-cli) in the Quick Start section above.
-
----
-
-### Step 4 — Verify the Connection
-
-With TradingView running (Step 2) and the MCP server registered (Step 3), open your preferred CLI and ask:
+Open your CLI from the project directory and ask:
 
 ```
 Use tv_health_check to verify TradingView is connected
 ```
 
-**Expected response:** The agent will confirm the CDP connection is active, report the TradingView version, and list available tools.
+The agent confirms the CDP connection, reports the TradingView version, and lists available tools.
 
-**If the connection fails:**
+<details>
+<summary><strong>Troubleshooting</strong></summary>
 
 | Symptom | Fix |
-|---------|-----|
-| `CDP connection refused` | TradingView was not launched with the debug script — repeat Step 2 |
+|---|---|
+| `CDP connection refused` | TradingView wasn't launched with the debug script — repeat step 3 |
 | `Port 9222 already in use` | Run `lsof -i :9222` and kill the conflicting process |
-| `MCP server not found` | Re-run Step 3; restart Claude Code after registering |
+| `MCP server not found` | Re-run step 2; restart your CLI after registering |
 | `TradingView not found` in script | Install TradingView Desktop or pass a custom path manually |
 
-You can also verify via CLI without Claude Code:
-```bash
-tv status          # check CDP connection
-curl http://localhost:9222/json/version  # raw CDP check
-```
+You can also check connectivity with `tv status` or `curl http://localhost:9222/json/version`.
+
+</details>
 
 ---
 
-### Step 5 — Start Using the System
+## Daily Usage
 
-Everything is connected. Here are the key commands to get started:
-
-#### First analysis (triggers wiki creation)
 ```
-Analyze the current chart and record it in the wiki
+1. Launch TradingView:  ./scripts/launch_tv_debug_mac.sh
+2. Open your agent in the project directory:  claude | gemini | codex
+3. "Use tv_health_check to verify TradingView is connected"
+4. "Analyze the current chart and record it in the wiki"   → runs the analyze pipeline
+5. Review the new session file in wiki/sessions/
+6. Keep going — the wiki compounds automatically
 ```
 
-#### Wiki operations
+Common requests (the router picks the right skill automatically):
+
 | What you want | What to say |
-|---------------|-------------|
-| Analyze & save | *"Analyze the current graph and record it on the wiki"* |
-| Query the wiki | *"Based on the wiki, what is the current bias for BTC?"* |
-| Run a health check | *"Run a wiki health-check"* |
-| Update strategy | *"Update the strategy based on recent sessions"* |
-
-#### CLI commands (for power users)
-```bash
-tv status                     # verify CDP connection
-tv quote                      # get current price
-tv symbol AAPL                # switch chart symbol
-tv ohlcv --summary            # price summary
-tv screenshot -r chart        # capture the chart
-tv stream quote | jq '.close' # monitor price live
-tv pine compile               # compile Pine Script
-```
-
-#### Run tests (no TradingView needed)
-```bash
-npm test          # runs 29 offline unit tests
-```
-
----
-
-### Typical Session Flow
-
-```
-1. Run ./scripts/launch_tv_debug_mac.sh
-2. Open your preferred CLI agent in the project directory:
-   - Claude Code: claude
-   - Gemini CLI:  gemini
-   - Codex CLI:   codex
-3. Ask: "Use tv_health_check to verify TradingView is connected"
-4. Ask: "Analyze the current chart and record it in the wiki"
-5. Review the new session file created in wiki/sessions/
-6. Continue your analysis — the wiki compounds automatically
-```
+|---|---|
+| Analyze & record an asset | *"Analyze BTC and record it in the wiki"* |
+| Consolidated multi-layout scan | *"Run a multi-layout scan on Bitcoin and Ethereum"* |
+| Query the brain | *"Based on the wiki, what is the current bias for BTC?"* |
+| Close a prediction | *"How did my last BTC prediction do?"* |
+| Health check | *"Run a wiki health-check"* |
+| Strategy review | *"Update the strategy based on recent sessions"* |
 
 > [!TIP]
-> The wiki grows with every session. The more you use it, the better the analysis becomes as the LLM reads accumulated insights before every new session. All three CLIs share the same `wiki/brain/` — insights compound across platforms.
+> All three CLIs share the same `wiki/brain/` — insights compound across platforms.
+
+---
+
+## Skills Reference
+
+Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes them via the Skill tool; Gemini/Codex read the same files by path (kept in sync by `sync_agent_md.py`).
+
+### Reusable layers
+| Skill | Role |
+|---|---|
+| `brain-read` | AUTO-PILOT READ — connection, feeds, layout fingerprint, relevance-based brain recall, declare preventions/insights, close open predictions |
+| `macro-scan` | Market-context detector + class workflow (A/B/C/D) + macro reading rules (Risk-On/Off, squeeze, weekend) |
+| `technical-checklist` | The 9-phase checklist — MTF, SMC, Wyckoff, Fibonacci, layout-driven indicators, playbook, liquidity/USDT.D, bias + confluence score |
+| `brain-write` | AUTO-PILOT WRITE — insight, prediction, indicator/pattern updates, session file, log |
+
+### Dispatchers & operations
+| Skill | Role |
+|---|---|
+| `analyze` | Default pipeline (INGEST): classify → brain-read → macro-scan → technical-checklist → bias → brain-write |
+| `multi-layout-scan` | Sweep every TradingView layout with indicator dedup → consolidated cross-axis analysis |
+| `multi-symbol-scan` | Screen/compare multiple symbols or a watchlist |
+| `daily-scan` | Morning dashboard (macro 1× + quick BTC + watchlist + predictions) |
+| `btc-cycle` | Cycle phase, top/bottom scoring, 200W SMA, on-chain, Fibonacci-log projection |
+| `prediction-feedback` | Objective grading of open predictions + setup/indicator/metric updates |
+| `wiki-maintenance` | LINT / UPDATE STRATEGY / COMPILE / REVIEW / SEARCH — runs the Python tools |
+| `recalibrate-layouts` | Re-fingerprint TradingView layouts into `wiki/brain/layouts.md` |
+| `chart-analysis`, `pine-develop`, `replay-practice`, `strategy-report` | Focused tactical workflows |
+
+### Shared references
+`skills/_references/class-rules.md` · `confluence-score.md` · `tv-tools.md` — loaded by path when a skill needs the full detail, so the logic is never duplicated.
+
+### Maintenance scripts (`scripts/tools/`)
+| Script | Purpose |
+|---|---|
+| `fetch_feeds.py` | Pull funding/OI (Coinalyze) + Fear & Greed → `raw/feeds/latest.md` |
+| `archive_brain.py` | Prune `insights.md` to the Top N, archive the rest |
+| `wiki_lint.py` | Broken links, expired predictions, statless setups; updates index counters |
+| `metrics_engine.py` | Win rate, Brier score, drawdown, circuit breaker → `brain/metrics.md` |
+| `plot_accuracy.py` / `plot_metrics.py` | Accuracy curve + calibration charts |
+| `sync_agent_md.py` | Regenerate `GEMINI.md` / `AGENTS.md` from `CLAUDE.md` |
 
 ---
 
@@ -507,86 +439,61 @@ npm test          # runs 29 offline unit tests
 
 ### Concepts (pre-populated)
 
-The wiki ships with foundational technical analysis concepts:
-
 | Concept | Description |
-|---------|-------------|
+|---|---|
 | [SMC](wiki/concepts/SMC.md) | Smart Money Concepts — CHoCH, BoS, FVG, Order Blocks |
 | [Wyckoff](wiki/concepts/Wyckoff.md) | Accumulation, Distribution, Spring, UTAD |
-| [ADX](wiki/concepts/ADX.md) | Trend strength filter with interpretation table |
+| [ADX](wiki/concepts/ADX.md) | Trend-strength filter with interpretation table |
 | [ATR](wiki/concepts/ATR.md) | Volatility-based position sizing and stop-loss |
 | [MTF Analysis](wiki/concepts/multi-timeframe-analysis.md) | 1D→4H→1H→15m→5m hierarchy and conflict rules |
 | [BTCUSDLONGS/SHORTS](wiki/concepts/btcusdlongs-btcusdshorts.md) | Bitfinex margin positioning for squeeze detection |
 | [Short/Long Squeeze](wiki/concepts/short-long-squeeze.md) | Cascade liquidation mechanics and setup conditions |
-| [BTC Cycle Analysis](wiki/concepts/btc-cycle-analysis.md) | Complete macro cycle framework — tops, bottoms, scoring system |
-| [Puell Multiple](wiki/concepts/puell-multiple.md) | Miner revenue metric for cycle phase identification |
-| [Pi Cycle Top](wiki/concepts/pi-cycle-top.md) | 111DMA vs 350DMA×2 crossover for cycle top detection |
-| [Hash Ribbons](wiki/concepts/hash-ribbons.md) | Mining capitulation indicator for cycle bottom signals |
+| [BTC Cycle Analysis](wiki/concepts/btc-cycle-analysis.md) | Macro cycle framework — tops, bottoms, scoring system |
+| [Puell Multiple](wiki/concepts/puell-multiple.md) | Miner-revenue metric for cycle phase identification |
+| [Pi Cycle Top](wiki/concepts/pi-cycle-top.md) | 111DMA vs 350DMA×2 crossover for cycle-top detection |
+| [Hash Ribbons](wiki/concepts/hash-ribbons.md) | Mining-capitulation indicator for cycle-bottom signals |
 
-### Strategy
+### Strategies
 
-The default strategy — [Conservative Trend Follower v2.0](wiki/strategies/conservative-trend-follower-v2.md) — documents:
-- Entry/exit rules with 4-layer filter system
-- Trailing stop progression (breakeven at +10%, stepped)
-- HTF conflict resolution (4H bearish + ADX > 25 = hard block)
-- Performance tracking table (populated after sessions)
+The default strategy — [Conservative Trend Follower v2.0](wiki/strategies/conservative-trend-follower-v2.md) — documents entry/exit rules with a 4-layer filter, a stepped trailing stop, HTF conflict resolution, and a performance-tracking table. Additional strategies:
 
-Additional strategies:
 | Strategy | Description |
-|----------|-------------|
+|---|---|
 | [Liquidity Wicks + USDT.D](wiki/strategies/liquidity-wicks-trap-short-usdtd.md) | HTF wick mapping, trap detection, USDT.D correlation |
 | [RSI + StochRSI Combined](wiki/strategies/rsi-stochrsi-combined.md) | RSI (D/4H) for direction, StochRSI (1H/15M) for entry timing |
 
-### How the Wiki Grows
-
-1. **You analyze a chart** → a session file is created in `wiki/sessions/`
-2. **A setup is identified** → tracked in `wiki/setups/` with occurrence history
-3. **Statistics accumulate** → win rates, R:R ratios auto-calculated
-4. **Strategy evolves** → `wiki/strategies/` updated with evidence-based changes
-5. **Lint catches gaps** → missing data, stale pages, broken links flagged
+> [!NOTE]
+> Personal performance numbers live only in `wiki/brain/metrics.md` and `wiki/setups/index.md` (both gitignored). The public `wiki/strategies/*.md` files keep qualitative placeholders.
 
 ---
 
-## MCP Tools (79 tools)
+## MCP Tools & CLI
 
-All 79 tools from the upstream project are fully available. Each CLI has its own context file with the complete decision tree and tool reference:
+All 79 upstream tools are available. Each CLI has its own context file with the dispatch table and a tool cheatsheet; the full tool decision tree lives in `skills/_references/tv-tools.md`.
 
 | CLI | Context File | MCP Config |
-|-----|-------------|------------|
+|---|---|---|
 | Claude Code | [`CLAUDE.md`](CLAUDE.md) | `.mcp.json` (tracked) |
 | Gemini CLI | [`GEMINI.md`](GEMINI.md) | `.gemini/settings.json` (gitignored) |
 | Codex CLI | [`AGENTS.md`](AGENTS.md) | `.codex/config.toml` (gitignored) |
 
-### Chart Reading
-`chart_get_state` · `data_get_study_values` · `quote_get` · `data_get_ohlcv`
-
-### Pine Script Data
-`data_get_pine_lines` · `data_get_pine_labels` · `data_get_pine_tables` · `data_get_pine_boxes`
-
-### Chart Control
-`chart_set_symbol` · `chart_set_timeframe` · `chart_set_type` · `chart_manage_indicator` · `chart_scroll_to_date`
-
-### Pine Script Development
-`pine_set_source` · `pine_smart_compile` · `pine_get_errors` · `pine_save` · `pine_new` · `pine_open`
-
-### Replay, Drawing, Alerts
-`replay_start` · `replay_step` · `replay_trade` · `draw_shape` · `alert_create` · `capture_screenshot`
-
-### Multi-Pane & Batch
-`pane_set_layout` · `pane_set_symbol` · `batch_run` · `tab_list` · `tab_new`
-
-## CLI
+**Chart reading:** `chart_get_state` · `data_get_study_values` · `quote_get` · `data_get_ohlcv`
+**Pine drawings:** `data_get_pine_lines` · `data_get_pine_labels` · `data_get_pine_tables` · `data_get_pine_boxes`
+**Chart control:** `chart_set_symbol` · `chart_set_timeframe` · `chart_set_type` · `chart_manage_indicator` · `chart_scroll_to_date`
+**Pine development:** `pine_set_source` · `pine_smart_compile` · `pine_get_errors` · `pine_save` · `pine_new` · `pine_open`
+**Replay / drawing / alerts:** `replay_start` · `replay_step` · `replay_trade` · `draw_shape` · `alert_create` · `capture_screenshot`
+**Multi-pane & batch:** `pane_set_layout` · `pane_set_symbol` · `batch_run` · `tab_list` · `tab_new`
 
 Every MCP tool is also a `tv` CLI command with JSON output:
 
 ```bash
-tv status                          # check connection
+tv status                          # check CDP connection
 tv quote                           # current price
 tv symbol AAPL                     # change symbol
 tv ohlcv --summary                 # price summary
 tv screenshot -r chart             # capture chart
 tv pine compile                    # compile Pine Script
-tv stream quote | jq '.close'      # monitor price
+tv stream quote | jq '.close'      # monitor price live
 ```
 
 ---
@@ -594,42 +501,45 @@ tv stream quote | jq '.close'      # monitor price
 ## Architecture
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│ Claude Code  │    │ Gemini CLI   │    │ Codex CLI    │
-│ (CLAUDE.md)  │    │ (GEMINI.md)  │    │ (AGENTS.md)  │
-│ (.mcp.json)  │    │ (.gemini/)   │    │ (.codex/)    │
-└──────┬───────┘    └──────┬───────┘    └──────┬───────┘
-       │                   │                   │
-       └───────────┬───────┴───────────────────┘
-                   │
-          ┌────────▼────────┐
-          │  MCP Server     │
-          │  (node stdio)   │
-          │  79 tools       │
-          └────────┬────────┘
-                   │ CDP (port 9222)
-          ┌────────▼────────┐
-          │  TradingView    │
-          │  Desktop        │
-          └────────┬────────┘
-                   │
-          ┌────────▼────────┐
-          │  wiki/brain/    │  ← shared state (insights, predictions,
-          │  wiki/sessions/ │     mistakes compound across all CLIs)
-          │  raw/           │
-          └─────────────────┘
+┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+│ Claude Code  │   │ Gemini CLI   │   │ Codex CLI    │
+│ CLAUDE.md    │   │ GEMINI.md    │   │ AGENTS.md    │   ← thin routers (kept in
+│ .mcp.json    │   │ .gemini/     │   │ .codex/      │     sync by sync_agent_md.py)
+└──────┬───────┘   └──────┬───────┘   └──────┬───────┘
+       └──────────────┬───┴──────────────────┘
+                      │  request → skill (loaded on demand)
+              ┌───────▼────────┐
+              │ skills/         │  brain-read · macro-scan · technical-checklist
+              │ (on-demand SOP) │  brain-write · analyze · btc-cycle · …
+              └───────┬────────┘
+              ┌───────▼────────┐
+              │  MCP Server     │  node stdio · 79 tools
+              └───────┬────────┘
+                      │ CDP (port 9222)
+              ┌───────▼────────┐
+              │  TradingView    │
+              │  Desktop        │
+              └───────┬────────┘
+              ┌───────▼────────┐
+              │  wiki/brain/    │  ← shared state (insights, predictions,
+              │  wiki/sessions/ │     mistakes compound across all CLIs)
+              │  raw/           │
+              └─────────────────┘
 ```
 
-- **Transport**: MCP over stdio (79 tools) + CLI (`tv` command)
-- **Connection**: Chrome DevTools Protocol on localhost:9222
-- **Wiki**: Markdown files maintained by LLM, human-readable, git-trackable
-- **Multi-CLI**: All agents share the same MCP server and wiki/brain knowledge base
-- **No dependencies** beyond `@modelcontextprotocol/sdk` and `chrome-remote-interface`
+- **Transport:** MCP over stdio (79 tools) + a `tv` CLI command.
+- **Connection:** Chrome DevTools Protocol on `localhost:9222`.
+- **Runtime:** thin per-CLI router → on-demand skills → MCP server.
+- **Wiki:** markdown maintained by the LLM, human-readable, git-trackable.
+- **Multi-CLI:** all agents share the same MCP server and `wiki/brain/` knowledge base.
+- **Dependencies:** only `@modelcontextprotocol/sdk` and `chrome-remote-interface` (Node) + Python 3 stdlib for the maintenance scripts.
+
+---
 
 ## Testing
 
 ```bash
-npm test          # 29 offline tests (no TradingView needed)
+npm test          # offline e2e + Pine-analysis tests (no TradingView needed)
 tv status         # verify CDP connection (TradingView must be running)
 ```
 
@@ -637,66 +547,66 @@ tv status         # verify CDP connection (TradingView must be running)
 
 ## Upstream Project
 
-This is a fork of **[tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp)** by **[@tradesdontlie](https://github.com/tradesdontlie)**, licensed under the [MIT License](https://github.com/tradesdontlie/tradingview-mcp/blob/main/LICENSE).
-
-The upstream project provides the complete MCP bridge (79 tools, CLI, streaming) that connects Claude Code to TradingView Desktop via CDP. All original functionality is preserved in this fork.
+This is a fork of **[tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp)** by **[@tradesdontlie](https://github.com/tradesdontlie)**, licensed under the [MIT License](https://github.com/tradesdontlie/tradingview-mcp/blob/main/LICENSE). The upstream project provides the complete MCP bridge (79 tools, CLI, streaming) that connects agents to TradingView Desktop via CDP. All original functionality is preserved.
 
 ### What this fork changes
 
-- **Added**: `wiki/` — persistent LLM-maintained knowledge base
-- **Added**: `raw/` — immutable data storage (screenshots, OHLCV, Pine exports)
-- **Added**: `GEMINI.md` — Gemini CLI context file (brain protocol)
-- **Added**: `AGENTS.md` — Codex CLI context file (brain protocol)
-- **Modified**: `CLAUDE.md` — added Wiki Maintenance Protocol section
-- **Modified**: `README.md` — updated for self-learning edition + multi-CLI support
-- **Modified**: `.gitignore` — security rules for wiki data + CLI local configs (`.gemini/`, `.codex/`, `.claude/`)
+- **Added** `wiki/` — a persistent, LLM-maintained knowledge base (the second brain).
+- **Added** `skills/` — the skill-first runtime (reusable layers, dispatchers, operations, shared references).
+- **Added** `raw/` — immutable data storage (screenshots, OHLCV, feeds, Pine exports).
+- **Added** `scripts/tools/` — Python maintenance scripts (feeds, archiving, lint, metrics, plots, agent-file sync).
+- **Added** `GEMINI.md` / `AGENTS.md` — Gemini and Codex context files, generated from `CLAUDE.md`.
+- **Refactored** `CLAUDE.md` — from a 619-line monolith into a ~95-line skill-first router.
+- **Updated** `.gitignore` — security rules for personal brain data and local CLI configs (`.gemini/`, `.codex/`, `.claude/`).
 
-No upstream source code (`src/`, `scripts/`, `tests/`) was modified.
+No upstream source code (`src/`, `tests/`) was modified.
 
 > [!NOTE]
-> The CLI config directories (`.gemini/`, `.codex/`, `.claude/`) are **gitignored** because they contain absolute local paths. Each fork user creates their own configs locally. The protocol files (`GEMINI.md`, `AGENTS.md`, `CLAUDE.md`) **are** tracked — they contain no personal data, only the shared brain protocol.
+> CLI config directories (`.gemini/`, `.codex/`, `.claude/`) are **gitignored** because they contain absolute local paths. The context files (`CLAUDE.md`, `GEMINI.md`, `AGENTS.md`) **are** tracked — they hold only the shared protocol, no personal data.
 
 ---
 
 ## Attributions
 
-- **Upstream project**: [tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie) — MIT License
-- **Wiki pattern**: Inspired by [Andrej Karpathy's LLM Wiki concept](https://x.com/karpathy)
-- **Fork maintainer**: [@alexandremaciel-ai](https://github.com/alexandremaciel-ai)
+- **Upstream project:** [tradingview-mcp](https://github.com/tradesdontlie/tradingview-mcp) by [@tradesdontlie](https://github.com/tradesdontlie) — MIT License
+- **Wiki pattern:** inspired by [Andrej Karpathy's LLM Wiki concept](https://x.com/karpathy)
+- **Fork maintainer:** [@alexandremaciel-ai](https://github.com/alexandremaciel-ai)
 
 This project is not affiliated with, endorsed by, or associated with:
 - **TradingView Inc.** — TradingView is a trademark of TradingView Inc.
 - **Anthropic** — Claude and Claude Code are trademarks of Anthropic, PBC.
 
+---
+
 ## Disclaimer
 
 This project is provided **for personal, educational, and research purposes only**.
 
-**How this tool works:** This tool uses the Chrome DevTools Protocol (CDP), a standard debugging interface built into all Chromium-based applications by Google. It does not reverse engineer any proprietary TradingView protocol, connect to TradingView's servers, or bypass any access controls. The debug port must be explicitly enabled by the user via a standard Chromium command-line flag (`--remote-debugging-port=9222`).
+**How this tool works:** it uses the Chrome DevTools Protocol (CDP), a standard debugging interface built into all Chromium-based applications. It does not reverse engineer any proprietary TradingView protocol, connect to TradingView's servers, or bypass any access controls. The debug port must be explicitly enabled by the user via a standard Chromium command-line flag (`--remote-debugging-port=9222`).
 
 By using this software, you acknowledge and agree that:
 
-1. **You are solely responsible** for ensuring your use of this tool complies with [TradingView's Terms of Use](https://www.tradingview.com/policies/) and all applicable laws.
-2. TradingView's Terms of Use **restrict automated data collection, scraping, and non-display usage** of their platform and data. This tool uses Chrome DevTools Protocol to programmatically interact with the TradingView Desktop app, which may conflict with those terms.
-3. **You assume all risk** associated with using this tool. The authors are not responsible for any account bans, suspensions, legal actions, or other consequences resulting from its use.
+1. **You are solely responsible** for ensuring your use complies with [TradingView's Terms of Use](https://www.tradingview.com/policies/) and all applicable laws.
+2. TradingView's Terms of Use **restrict automated data collection, scraping, and non-display usage** of their platform and data. This tool uses CDP to programmatically interact with the TradingView Desktop app, which may conflict with those terms.
+3. **You assume all risk** associated with using this tool. The authors are not responsible for any account bans, suspensions, legal actions, or other consequences.
 4. This tool **must not be used** for, including but not limited to:
-   - Redistributing, reselling, or commercially exploiting TradingView's market data
-   - Circumventing TradingView's access controls or subscription restrictions
-   - Performing automated trading or algorithmic decision-making using extracted data
-   - Violating the intellectual property rights of Pine Script indicator authors
-   - Connecting to TradingView's servers or infrastructure (all access is via the locally running Desktop app)
-5. The streaming functionality monitors your locally running TradingView Desktop instance only. It does not connect to TradingView's servers or extract data from TradingView's infrastructure.
-6. Market data accessed through this tool remains subject to exchange and data provider licensing terms. **Do not redistribute, store, or commercially exploit any data obtained through this tool.**
+   - redistributing, reselling, or commercially exploiting TradingView's market data;
+   - circumventing TradingView's access controls or subscription restrictions;
+   - performing automated trading or algorithmic decision-making using extracted data;
+   - violating the intellectual property rights of Pine Script indicator authors;
+   - connecting to TradingView's servers or infrastructure (all access is via the locally running Desktop app).
+5. The streaming functionality monitors your locally running TradingView Desktop instance only. It does not connect to TradingView's servers.
+6. Market data accessed through this tool remains subject to exchange and data-provider licensing terms. **Do not redistribute, store, or commercially exploit any data obtained through this tool.**
 7. This tool accesses internal, undocumented TradingView application interfaces that may change or break at any time without notice.
-8. **The wiki system** stores analysis notes and observations locally in markdown files. It does not store raw market data. Screenshots in `raw/screenshots/` are for personal reference only and must not be redistributed.
+8. **The wiki system** stores analysis notes locally in markdown. It does not store raw market data. Screenshots in `raw/screenshots/` are for personal reference only and must not be redistributed.
 
 **Use at your own risk.** If you are unsure whether your intended use complies with TradingView's terms, do not use this tool.
 
+---
+
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE) for details. The MIT license applies to the source code of this project only. It does not grant any rights to TradingView's software, data, trademarks, or intellectual property.
 
-The MIT license applies to the source code of this project only. It does not grant any rights to TradingView's software, data, trademarks, or intellectual property.
-
-Original upstream code: Copyright (c) 2026 [@tradesdontlie](https://github.com/tradesdontlie).
-Wiki system additions: Copyright (c) 2026 [@alexandremaciel-ai](https://github.com/alexandremaciel-ai).
+- Original upstream code: Copyright (c) 2026 [@tradesdontlie](https://github.com/tradesdontlie).
+- Wiki system & skill-first additions: Copyright (c) 2026 [@alexandremaciel-ai](https://github.com/alexandremaciel-ai).

@@ -7,6 +7,16 @@ description: Scan multiple symbols for setups, patterns, or strategy performance
 
 You are scanning multiple symbols for trading setups or comparing performance.
 
+## Step 0: Preâmbulo (classe WATCHLIST — análise de mercado)
+
+Se o scan for de **análise de mercado** (não só comparar backtests), rode 1× no início:
+- **`brain-read`** — conexão, feeds, brain por relevância, classe `WATCHLIST`, fechar previsões.
+- **`macro-scan`** — macro completo **1×** (Risk-On/Off/Misto) — vale para todos os ativos do scan.
+- Output por ativo: tabela `Ativo | Preço | Bias | Confiança | Setup? | Nota` + Top 3
+  (ver `skills/_references/class-rules.md`). Ao final, **`brain-write`** (1 sessão `YYYY-MM-DD-WATCHLIST.md`).
+
+> Para puro screening técnico/backtest (sem brain), siga direto do Step 1.
+
 ## Step 1: Define the Scan
 
 Determine:

@@ -73,3 +73,5 @@ Esta regra foi adicionada após erro de 2026-04-19 onde BTC long no 1H foi stopp
 - [[multi-timeframe-analysis]] — ST H4 como filtro de direção para setups LTF
 - [[SMC]] — ST define tendência macro; SMC define a entrada
 - [[bull-bear-traps]] — ST virando verde sem candle fechado acima = bull trap potencial
+- [[mxwll-suite]] — par de estrutura no layout Emas
+- [[layouts]] — presente no layout Emas

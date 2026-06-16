@@ -4,7 +4,7 @@
 > Categoria: Indicador / Tendência / Médias móveis
 
 ## Definição
-Indicador simples de **cruzamento de médias móveis** (SMA). Sinaliza a tendência primária e os clássicos Golden Cross (média rápida cruza acima da lenta) e Death Cross (abaixo). Presente no layout **EMA Cross e MVRV**.
+Indicador simples de **cruzamento de médias móveis** (SMA). Sinaliza a tendência primária e os clássicos Golden Cross (média rápida cruza acima da lenta) e Death Cross (abaixo). Presente no layout **EMA Cross e MVRV**. O layout **Emas** usa uma variante "EMA Cross" em **ribbon de 4 EMAs** (`ema_01..ema_04`) — mesma leitura de empilhamento/cruzamento.
 
 ## Leituras práticas
 - **Rápida > lenta** = viés de alta; **rápida < lenta** = viés de baixa.
@@ -22,5 +22,7 @@ Indicador simples de **cruzamento de médias móveis** (SMA). Sinaliza a tendên
 ## Backlinks
 - [[multi-timeframe-analysis]] — filtro direcional HTF
 - [[mvrv-z-score]] — par no layout EMA Cross e MVRV
+- [[mxwll-suite]] — par de estrutura no layout Emas (EMA ribbon + Mxwll)
+- [[supertrend]] — par de tendência no layout Emas
 - [[layouts]]
 - [[indicators]]

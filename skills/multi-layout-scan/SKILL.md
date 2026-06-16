@@ -59,12 +59,15 @@ Delegue às camadas reutilizáveis (não reimplemente aqui):
 ### Mapa de duplicatas — capturar SÓ na 1ª aparição, pular depois
 | Indicador | Aparece em | Capturar em |
 |-----------|-----------|-------------|
-| RSI Divergences Pro (V.V.I.R.) | 4/4 layouts | Trade Diario (1º) |
-| Stoch RSI Div Pro | 3/4 | Trade Diario (1º) |
-| MACD (qualquer variante) | 3/4 | Trade Diario (1º) |
-| Crypto Smart Volume | 2/4 | Trade Diario (1º) |
+| RSI Divergences Pro (V.V.I.R.) | 4/5 layouts (**não** no Emas) | Trade Diario (1º) |
+| Tabela RSI Dinâmica - Maciel | 2/5 (Trade Diario + RSI's e MACD) | Trade Diario (1º) |
+| Stoch RSI Div Pro | 3/5 | Trade Diario (1º) |
+| MACD (qualquer variante) | 3/5 | Trade Diario (1º) |
+| Crypto Smart Volume | 2/5 | Trade Diario (1º) |
+| Volume (nativo) | 3/5 | Trade Diario (1º) |
 
 Todos os **demais** indicadores são exclusivos de um layout → sempre capturar.
+⚠️ O **Emas** é o único layout **sem RSI/StochRSI/MACD/ADX** (price-action puro) → ele não contribui osciladores; capture nele só os exclusivos (Mxwll Suite, Supertrend, EMA Cross ribbon).
 
 ### Procedimento por layout (repetir nesta ordem)
 Para cada layout: navegue, confirme, leia, aplique a dedup.
@@ -82,19 +85,27 @@ Para cada layout: navegue, confirme, leia, aplique a dedup.
    - Whale Liquidity and Absorption → `data_get_pine_boxes` (**filtrar zonas dentro de ±5%
      do preço** para poupar contexto)
    - Visible Range Volume Profile → `data_get_study_values` (POC/HVN/Up/Down/Total)
+   - Mxwll Suite (layout Emas) → `data_get_pine_labels` (estrutura BoS/CHoCH/HH/HL/LH/LL + Fib) +
+     `data_get_pine_tables(study_filter="Mxwll")` (sessões/volume) + `data_get_pine_lines(study_filter="Mxwll")`
+     (S/R/liquidez — **filtrar ±5% do preço**, são ≈500 linhas)
 7. **Aplicar dedup:** pular qualquer indicador da tabela de duplicatas já capturado antes.
 
 ### Sequência dos layouts (otimizada — os compartilhados caem no 1º)
 | # | Layout | Slug | Capturar aqui |
 |---|--------|------|---------------|
-| 1 | **Trade Diario** ⭐home | `Fbl7OmwZ` | V.V.I.R. RSI · Stoch RSI · MACD · Crypto Smart Volume · **Triple Smoothed Signals** (exclusivo) |
-| 2 | **RSI's e MACD** | `CtPFiwLf` | **Tabela RSI Maciel** (MTF 5m→1M + preços P.RSI 30/50/70) · **Visible Range Volume Profile** · **RSI&EMA Reverse Calculator** |
-| 3 | **EMA Cross e MVRV** | `HQ98e9nf` | **Bollinger Awesome Alert** · **EMA200** (filtro de tendência 4H) · **ADX** (força/range). _MVRV removido pelo usuário 12/06 — não é mais layout de ciclo._ |
-| 4 | **Liquidity e SMC** | `71Oqhxgm` | **SMC LuxAlgo** (CHoCH/BOS/EQH/EQL/OBs) · **Whale Liquidity Absorption** |
+| 1 | **Trade Diario** ⭐home | `Fbl7OmwZ` | V.V.I.R. RSI · Stoch RSI · MACD Div · Crypto Smart Volume · **Tabela RSI Maciel** (MTF 5m→1M + preços P.RSI 30/50/70). _Triple Smoothed Signals saiu — substituído pela Tabela Maciel (16/06)._ |
+| 2 | **Emas** 🆕 | `f8sPhMo9` | **Mxwll Suite** (estrutura BoS/CHoCH/HH/HL/LH/LL + Fib + sessões + S/R/liquidez) · **Supertrend** (tendência ATR) · **EMA Cross** (ribbon de 4 EMAs). _Sem osciladores — price-action puro._ |
+| 3 | **RSI's e MACD** | `CtPFiwLf` | **Visible Range Volume Profile** · **RSI&EMA Reverse Calculator** (Tabela Maciel já capturada no #1) |
+| 4 | **EMA Cross e MVRV** | `HQ98e9nf` | **Bollinger Awesome Alert** · **EMA200** (filtro de tendência 4H) · **ADX** (força/range). _MVRV removido pelo usuário 12/06 — não é mais layout de ciclo._ |
+| 5 | **Liquidity e SMC** | `71Oqhxgm` | **SMC LuxAlgo** (CHoCH/BOS/EQH/EQL/OBs) · **Whale Liquidity Absorption** |
 
-> O layout **Padrão 3** é legado/sem URL acessível → **ignorar**.
+> O layout **Padrão 3** foi **removido pelo usuário** (não consta mais no `layout_list`, 16/06) → ignorar.
 >
-> **Nota L3:** o "EMA Cross e MVRV" foi reconfigurado pelo usuário (12/06) — **MVRV/SMA Cross
+> **Nota Emas (#2):** layout novo, **price-action puro sem osciladores** (não tem RSI/StochRSI/MACD/ADX).
+> Não contribui momentum à consolidação — capture nele só os exclusivos (Mxwll/Supertrend/EMA ribbon).
+> Se o pedido exigir RSI/MACD, eles já vêm do Trade Diario / RSI's e MACD.
+>
+> **Nota L4:** o "EMA Cross e MVRV" foi reconfigurado pelo usuário (12/06) — **MVRV/SMA Cross
 > removidos, EMA200/ADX adicionados**. Não há mais layout de **ciclo on-chain**: para CYCLE,
 > adicionar o MVRV ad-hoc (`chart_manage_indicator`) ou usar [[btc-cycle-analysis]]. Sempre
 > capture o que o `chart_get_state` retornar ao vivo (símbolo INDEX:BTCUSD).
@@ -106,12 +117,12 @@ Para cada layout: navegue, confirme, leia, aplique a dedup.
 Reúna tudo (cada indicador uma vez) numa visão única, organizada por eixo:
 
 - **Momentum / Osciladores:** RSI (V.V.I.R. + Tabela Maciel MTF 5m→1M) · StochRSI · MACD
-- **Tendência:** Triple Smoothed Signals · SMA Cross · EMA do RSI
-- **Volume / Liquidez:** Crypto Smart Volume · Visible Range Volume Profile · Whale Absorption
-- **Ciclo on-chain:** MVRV Z-Score
-- **Estrutura SMC:** CHoCH/BOS · EQH/EQL · Order Blocks
+- **Tendência:** Supertrend (ATR) · EMA Cross ribbon · EMA200 · EMA do RSI
+- **Volume / Liquidez:** Crypto Smart Volume · Visible Range Volume Profile · Whale Absorption · Mxwll S/R
+- **Ciclo on-chain:** MVRV Z-Score (ad-hoc — sem layout dedicado)
+- **Estrutura SMC:** CHoCH/BOS · EQH/EQL · Order Blocks (LuxAlgo) · BoS/CHoCH/HH/HL/LH/LL (Mxwll)
 - **Volatilidade:** Bollinger squeeze
-- **Níveis-chave:** P.RSI50/70 (Tabela Maciel) · POC (VRVP) · OBs (SMC) · clusters Whale
+- **Níveis-chave:** P.RSI50/70 (Tabela Maciel) · POC (VRVP) · OBs (SMC) · clusters Whale · Fib + S/R (Mxwll)
 
 ---
 

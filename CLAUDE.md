@@ -31,6 +31,7 @@ Claude Code ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ Trading
 | "scan multi-layout", "varredura de todos os layouts", análise consolidada | **`multi-layout-scan`** |
 | "scan da lista", "watchlist", comparar vários ativos | **`multi-symbol-scan`** |
 | "daily", "morning scan", resumo de abertura | **`daily-scan`** |
+| "briefing macro", "agenda da semana", "calendário econômico", "o que pode afetar o BTC" (via web) | **`btc-macro-briefing`** |
 | "ciclo", "topo/fundo", "onde estamos no ciclo" | **`btc-cycle`** |
 | "como foi minha previsão?", "o mercado confirmou?", fechar previsão | **`prediction-feedback`** |
 | "lint", "health-check", "atualize a estratégia", "compile clippings", "revisão semanal", "ache na wiki" | **`wiki-maintenance`** |

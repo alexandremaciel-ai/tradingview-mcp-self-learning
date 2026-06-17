@@ -21,7 +21,10 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
 2. **Depois de qualquer análise →** invocar a skill **`brain-write`** (insight, previsão, sessão, log).
 3. Estas duas pontas são **obrigatórias** mesmo num pedido "rápido". O dispatcher `analyze` já as chama.
 4. Feeds (cripto): `raw/feeds/latest.md` `indisponível` ou > 2h → `python3 scripts/tools/fetch_feeds.py`.
-5. Circuit breaker 🔴 em `brain/metrics.md` (3 losses seguidos / DD 5% dia) → rebaixar p/ observação/paper.
+5. **Gate matinal (briefing):** `brain-read` (passo 2b) roda `python3 scripts/tools/check_briefing.py`
+   → 1ª análise do dia sem `wiki/briefings/{hoje}.md` invoca **`btc-macro-briefing`** (que persiste o
+   arquivo); toda análise do dia consome o Veredito (`macro-scan` Step 0.5). Refresh só por evento 🔴.
+6. Circuit breaker 🔴 em `brain/metrics.md` (3 losses seguidos / DD 5% dia) → rebaixar p/ observação/paper.
 
 ---
 

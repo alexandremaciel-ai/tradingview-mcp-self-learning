@@ -14,6 +14,17 @@ description: Ciclo READ obrigatório do AUTO-PILOT antes de QUALQUER análise de
 2. **📡 Feeds (cripto):** se `raw/feeds/latest.md` `indisponível` **ou** timestamp > 2h → rodar
    `python3 scripts/tools/fetch_feeds.py` (carrega o `.env`) e reler. Rede falhou → cache + rótulo
    `dados-parciais`. EQUITIES pula feeds.
+2b. **🗞️ Briefing macro do dia (gate matinal):** rodar `python3 scripts/tools/check_briefing.py`.
+   Garante 1 briefing por dia, lido por toda análise. Decisão por estado:
+   - **`AUSENTE`** → invocar a skill **`btc-macro-briefing`** (horizonte default `semana`) **antes
+     de prosseguir**; ela persiste `wiki/briefings/{hoje}.md`. Depois ler o Veredito.
+   - **`PRESENTE`** e **sem** evento de ALTO impacto (FOMC/CPI/NFP/PCE/Powell) dentro da janela da
+     análise → **NÃO re-rodar**; só ler `wiki/briefings/{hoje}.md` (o `🔴 EVENTOS` + o
+     `=== VEREDITO ===`) e passar adiante.
+   - **`PRESENTE`** **mas** há evento 🔴 agendado dentro da janela → re-rodar `btc-macro-briefing`
+     (refresh por evento 🔴; sobrescreve o arquivo do dia).
+   - Aplica-se a **todas as classes** (o briefing é macro-global; FOMC/CPI/DXY também movem
+     EQUITIES). O `macro-scan` (Step 0.5) consome o Veredito daqui.
 3. **🖼️ Layout ativo (0c):** `chart_get_state()` → casar os studies (fingerprint) com um perfil em
    `wiki/brain/layouts.md`; ele define QUAIS indicadores a Fase 6 aplica + a recipe do layout. Sem
    match → `layout-adhoc`. **Híbrido:** trocar de layout (navegar `/chart/{slug}/`) só se o
@@ -50,6 +61,8 @@ Classes: `BTC | BTC+ETH | BTC+ALTCOIN | ALTCOIN | EQUITIES | WATCHLIST | DAILY |
 
 Bloco com: classe detectada, layout ativo + indicadores, prevenções ativas, insights aplicados,
 padrões monitorados, previsões abertas fechadas/atualizadas, estado de disciplina.
+Incluir também:
+`🗞️ Briefing do dia: [presente | recém-gerado | refresh por evento] | Postura: [risk-on/off/cautela/aguardar evento] | 🔴 hoje: [evento ou —]`.
 
 > Brain files inexistentes → copiar de `wiki/brain/_templates/`. Próximo passo do pipeline:
 > `macro-scan` (pelo Workflow da classe), depois `technical-checklist`.

@@ -102,6 +102,12 @@ wiki/brain/predictions-archive/
 wiki/sessions/*.md
 !wiki/sessions/_template.md
 
+# ── Wiki Briefings — daily macro briefings (personal runtime) ─
+# Um arquivo por dia (wiki/briefings/YYYY-MM-DD.md), gerado pela skill
+# btc-macro-briefing. O _template.md É commitado para forks.
+wiki/briefings/*.md
+!wiki/briefings/_template.md
+
 # ── Wiki Analysis — personal Q&A and investigations ─────────
 wiki/analysis/*.md
 !wiki/analysis/_template.md

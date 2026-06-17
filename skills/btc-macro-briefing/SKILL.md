@@ -6,8 +6,10 @@ description: Briefing macro global do mercado financeiro com foco em TUDO que po
 # BTC Macro Briefing — Panorama macro global via Web Search
 
 > Esta skill **NÃO lê o chart do TradingView**. Ela coleta dados macro reais via **WebSearch/
-> WebFetch** e produz um briefing estruturado em PT-BR, tom técnico e direto. É standalone: não
-> exige `brain-read`/`brain-write`. Saída final: bloco `=== VEREDITO DE RISCO MACRO ===`.
+> WebFetch** e produz um briefing estruturado em PT-BR, tom técnico e direto. **Não depende** de
+> `brain-read`/`brain-write` (para não recursar quando chamada pelo gate de `brain-read`), mas
+> **persiste** seu resultado no briefing do dia (ver "Persistência" no fim). Saída final: bloco
+> `=== VEREDITO DE RISCO MACRO ===`.
 
 ## Parâmetros (reconhecer em linguagem natural)
 
@@ -153,3 +155,19 @@ Postura sugerida: [risk-on / risk-off / cautela / aguardar evento X]
 
 > No modo `resumido`: emitir apenas o cabeçalho, o bloco `🔴 EVENTOS DE ALTO IMPACTO` e o
 > `=== VEREDITO DE RISCO MACRO ===` (cada bloco 1-8 pode virar uma única linha-resumo ou ser omitido).
+
+## Persistência (OBRIGATÓRIA ao final)
+
+> Sem este passo o gate de `brain-read` não sabe que o briefing "já rodou hoje". É o que torna a
+> verificação determinística (filesystem) em vez de depender da memória do LLM.
+
+1. **Gravar o briefing do dia** em `wiki/briefings/{AAAA-MM-DD}.md` (data em **BRT**), partindo de
+   `wiki/briefings/_template.md`. Se o arquivo do dia já existir, **sobrescrever** (é o refresh do
+   dia, ex.: re-execução por evento 🔴). Preencher no header: Data/Hora BRT, dia da semana,
+   `Horizonte` (`hoje`/`semana` — o gate lê este campo), `Detalhe` e o contexto de mercado.
+2. **Append em `wiki/log.md`** (mesma linha que as demais operações):
+   `## [AAAA-MM-DD HH:MM] briefing | {horizonte} | Veredito: {postura sugerida} | 🔴: {top eventos do dia}`.
+3. **Backlinks:** manter `## Backlinks` com `[[log]]` e, se houver sessão de análise do dia,
+   adicionar o backlink bidirecional.
+
+> ⚠️ `raw/` é imutável — NÃO gravar lá. O cache de feeds (`raw/feeds/latest.md`) é só leitura aqui.

@@ -39,6 +39,17 @@ sexta. Cripto = único mercado ao vivo.` Focar USDT.D + TOTAL/2/3 + BTCUSDLONGS/
 > Anotar sempre qual ticker foi usado e por quê (ex: `S&P: ES1! [NYSE fechada]`).
 > Para cada ticker: `chart_set_symbol` → `chart_set_timeframe("D")` → `quote_get` → `data_get_study_values`.
 
+## Step 0.5 — Briefing macro do dia (input de eventos)
+
+> O Step 0 lê tickers (USDT.D/DXY/SPX/Longs-Shorts) = macro **estrutural**. Este step traz o macro
+> de **eventos** (calendário/ETF/black-swan), que o chart não enxerga. Vem do briefing já garantido
+> pelo gate de `brain-read` (passo 2b) — aqui **não** se roda busca web; só se consome.
+
+1. Ler `wiki/briefings/{hoje}.md` (data BRT): o `🔴 EVENTOS DE ALTO IMPACTO` + o `=== VEREDITO ===`.
+2. Fundir no regime: a `Postura sugerida` e o `Risco direcional 24h/7d` entram como input macro de
+   eventos, **ao lado** das Regras de Leitura Macro baseadas em ticker (abaixo).
+3. Se ausente (gate não rodou por algum motivo) → rótulo `briefing-ausente` e seguir só com tickers.
+
 ## Workflow A — BTC / BTC+ETH / DAILY / CYCLE (10 passos — COMPLETO)
 
 1 `USDT.D` · 2 `SPX`(→ES1!) · 3 `GOLD`(→XAUUSD) · 4 `DXY` · 5 `TOTAL` · 6 `TOTAL2` · 7 `TOTAL3`
@@ -74,11 +85,16 @@ regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
    Divergências: preço↑ mas longs↓ = rally sem convicção; preço↓ mas shorts↓ = vendedores desistindo.
 7. **Fim de semana:** Sex 18h → Dom 19h: TradFi congelado → reduzir peso de SPX/DXY/GOLD/BRENT,
    rótulo `macro-parcial (dados sex)`. **Dom 19h+: ES1!/DXY/BRENT ao vivo e obrigatórios.**
+8. **Evento macro iminente (do briefing — Step 0.5):** se o briefing marca evento 🔴
+   (FOMC/CPI/NFP/PCE/Powell) dentro da janela da operação → **rebaixar confiança** e rotular
+   `pré-evento (X)`; a postura tende a `aguardar evento`. Conflito entre a leitura de ticker e o
+   Veredito do briefing → **declarar a divergência, não forçar conclusão**.
 
 ## Registrar na sessão
 
 - `Contexto: [hora] | NYSE: …| CME: …| Workflow: A/B/C/D`
 - `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
+- `Briefing: [postura sugerida] | 🔴 janela: [evento ou —]` (do Step 0.5)
 - Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`.
 
 > Próximo passo: `technical-checklist`.

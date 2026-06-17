@@ -53,6 +53,7 @@ The upstream project gives the LLM **eyes and hands** on your chart. This fork g
 | **Setup tracking with statistics** | ❌ | ✅ |
 | **Strategy versioning & review** | ❌ | ✅ |
 | **Concept library (SMC, Wyckoff…)** | ❌ | ✅ |
+| **Daily macro briefing gate (event-aware analysis)** | ❌ | ✅ |
 | **Automated wiki maintenance** | ❌ | ✅ |
 | **Skill-first architecture (on-demand logic)** | ❌ | ✅ |
 | **Relevance-based brain recall** | ❌ | ✅ |
@@ -90,6 +91,7 @@ Shared references (markdown, loaded by path): class-rules · confluence-score ·
 | A consolidated scan across every chart layout | `multi-layout-scan` |
 | A scan/screen across multiple symbols or a watchlist | `multi-symbol-scan` |
 | A daily / morning dashboard | `daily-scan` |
+| A macro briefing — economic calendar, what can move BTC (web search) | `btc-macro-briefing` |
 | BTC cycle, top/bottom projection | `btc-cycle` |
 | "How did my prediction do?" | `prediction-feedback` |
 | Wiki lint, strategy update, compile, review, search | `wiki-maintenance` |
@@ -125,6 +127,7 @@ wiki/
 ├── strategies/                       # Versioned strategies with performance
 ├── concepts/SMC.md, Wyckoff.md...    # Technical analysis knowledge base
 ├── sessions/                         # Every analysis session archived
+├── briefings/                        # Daily macro briefings (YYYY-MM-DD.md)
 ├── analysis/                         # Q&A and insights preserved
 └── lint/                             # Wiki health-check reports
 ```
@@ -138,6 +141,18 @@ The brain no longer dumps entire files into context. On each analysis, `brain-re
 - greps `predictions-log.md` for **open predictions of the current symbol** rather than the full log.
 
 `archive_brain.py` keeps `insights.md` lean by moving older entries to `insights-archive/`, and `brain-write` keeps `insights-hot.md` trimmed to the Top 8. The effect is both fewer tokens and a more **relevant** recall than chronological dumping.
+
+### Daily Macro Briefing Gate
+
+Chart indicators show the *structural* macro (USDT.D, DXY, S&P, longs/shorts) but are blind to *event* macro — an FOMC meeting today, a CPI print tomorrow, ETF flows, a stablecoin depeg. The `btc-macro-briefing` skill gathers that via live web search, but on its own it was ephemeral: nothing recorded whether it had already run, and `macro-scan` never consumed it.
+
+This edition turns the briefing into a **deterministic daily artifact** wired into the mandatory pre-flight:
+
+- **Persistence** — the briefing now writes `wiki/briefings/YYYY-MM-DD.md` (one file per day, BRT) and appends to the log.
+- **The gate** — `brain-read` (step 2b) runs `check_briefing.py`, a read-only filesystem check. On the **first analysis of the day** with no briefing yet, it runs `btc-macro-briefing` *before* proceeding; later analyses the same day reuse the file (no re-run) unless a high-impact event (FOMC/CPI/NFP/PCE) falls inside the analysis window, which forces a refresh.
+- **Consumption** — `macro-scan` (step 0.5) folds the briefing's *Macro Risk Verdict* (suggested stance, critical dates, imminent event) into the regime call and the confluence score; an imminent 🔴 event downgrades confidence and tags the read `pre-event`.
+
+The decision to run still lives with the LLM, but the *evidence* (does today's briefing exist?) is a filesystem fact — not a memory guess.
 
 ### The Self-Learning Loop
 
@@ -385,6 +400,7 @@ Common requests (the router picks the right skill automatically):
 |---|---|
 | Analyze & record an asset | *"Analyze BTC and record it in the wiki"* |
 | Consolidated multi-layout scan | *"Run a multi-layout scan on Bitcoin and Ethereum"* |
+| Macro briefing / economic calendar | *"Give me a macro briefing — what can move BTC this week?"* |
 | Query the brain | *"Based on the wiki, what is the current bias for BTC?"* |
 | Close a prediction | *"How did my last BTC prediction do?"* |
 | Health check | *"Run a wiki health-check"* |
@@ -414,6 +430,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 | `multi-layout-scan` | Sweep every TradingView layout with indicator dedup → consolidated cross-axis analysis |
 | `multi-symbol-scan` | Screen/compare multiple symbols or a watchlist |
 | `daily-scan` | Morning dashboard (macro 1× + quick BTC + watchlist + predictions) |
+| `btc-macro-briefing` | Web-search macro briefing (economic calendar, liquidity, ETF flows, sentiment, black-swan) → daily verdict; persists `wiki/briefings/`. Gated by `brain-read` step 2b |
 | `btc-cycle` | Cycle phase, top/bottom scoring, 200W SMA, on-chain, Fibonacci-log projection |
 | `prediction-feedback` | Objective grading of open predictions + setup/indicator/metric updates |
 | `wiki-maintenance` | LINT / UPDATE STRATEGY / COMPILE / REVIEW / SEARCH — runs the Python tools |
@@ -427,6 +444,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 | Script | Purpose |
 |---|---|
 | `fetch_feeds.py` | Pull funding/OI (Coinalyze) + Fear & Greed → `raw/feeds/latest.md` |
+| `check_briefing.py` | Read-only gate — report whether today's macro briefing exists (date/age/horizon) |
 | `archive_brain.py` | Prune `insights.md` to the Top N, archive the rest |
 | `wiki_lint.py` | Broken links, expired predictions, statless setups; updates index counters |
 | `metrics_engine.py` | Win rate, Brier score, drawdown, circuit breaker → `brain/metrics.md` |

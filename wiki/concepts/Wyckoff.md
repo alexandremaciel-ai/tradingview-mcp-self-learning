@@ -41,6 +41,9 @@
 - Volume de compra alto + preço não sobe muito = vendedores institucionais distribuindo → UT
 - Aplicação: verificar volume do candle de sweep ANTES de confirmar Spring/UT
 
+> A fase de Acumulação é a **transferência de riqueza** do varejo para o Smart Money — a doutrina de
+> entrada (POIs, compras escalonadas, gatilhos de sobrevenda) está em [[institutional-flow-poi]].
+
 ## Conexões com SMC LuxAlgo (Unificação de Frameworks)
 
 | Wyckoff | SMC LuxAlgo | Brain/Insights |
@@ -75,6 +78,7 @@ quote_get → OHLC para verificar wick/body do candle de Spring/UT
 
 ## Backlinks
 - [[SMC]]
+- [[institutional-flow-poi]] — acumulação cíclica, POIs e gatilhos de entrada
 - [[BTCUSD]]
 - [[research/2026-04-21-price-action-wyckoff-volume-batch5]]
 - [[brain/patterns]]

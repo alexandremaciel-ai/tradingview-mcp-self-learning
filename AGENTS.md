@@ -52,6 +52,11 @@ Codex ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingView D
 **Referências** (markdown carregado por path quando uma skill cita):
 `skills/_references/class-rules.md` · `confluence-score.md` · `tv-tools.md`.
 
+**Doutrina de leitura (lente ativa em TODA análise):** `wiki/concepts/institutional-flow-poi.md` —
+os 4 Pilares (Estrutura/Ciclos/Volume/Macro), POIs, acumulação cíclica e gatilhos de reversão (CHoCH,
+sobrevenda Diário/Semanal, perda de LTA). Aplicada pelo `technical-checklist`; ações de exposição
+sempre ancoradas à disciplina (`position-sizing`/circuit breaker).
+
 ---
 
 ## 🔧 Tool cheatsheet (detalhe em `skills/_references/tv-tools.md`)

@@ -62,6 +62,9 @@ O preço tende a retornar para preencher o FVG antes de continuar.
 - EQH varrido + weekly close abaixo = BSL grab confirmado → Playbook 3 (Stop Hunt Reversal)
 - EQH + Golden Zone Fibonacci + FVG = entrada sniper de máxima convicção
 
+> OB + FVG + EQH/EQL + suporte de absorção, quando coincidem, formam um **POI (Ponto de Interesse
+> Institucional)**. A doutrina de entrada nos POIs (escalonamento, gatilhos) está em [[institutional-flow-poi]].
+
 ---
 
 ## 5. Confluências com Outros Conceitos
@@ -88,6 +91,7 @@ O preço tende a retornar para preencher o FVG antes de continuar.
 
 ## Backlinks
 - [[conservative-trend-follower-v2]]
+- [[institutional-flow-poi]] — OB/FVG/EQH-EQL como POIs + gestão de entrada
 - [[Wyckoff]]
 - [[multi-timeframe-analysis]]
 - [[fibonacci-structural]] — Golden Zone + OB/FVG

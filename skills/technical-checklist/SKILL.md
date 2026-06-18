@@ -7,6 +7,11 @@ description: Checklist de análise técnica obrigatória (Fases 1-9) — MTF top
 
 > Ler os conceitos da wiki e aplicar cada framework. Pular é PROIBIDO; se não se aplica, declarar
 > "N/A" com justificativa. Detalhe de score em `skills/_references/confluence-score.md`.
+>
+> **Lente obrigatória — 4 Pilares + Fluxo Institucional** ([[institutional-flow-poi]]): toda análise
+> cruza Estrutura (Fases 2-3), Ciclos (Fase 4/macro), Volume (Fase 6) e Contexto Macro (`macro-scan`),
+> mapeia **POIs** (zonas de demanda institucional) e observa os **gatilhos de reversão** (CHoCH,
+> sobrevenda Diário/Semanal, perda de LTA). Toda ação de exposição é ancorada à disciplina.
 
 ## Fase 1 — Leitura de Contexto
 Já coberto por `brain-read` (insights, mistakes, indicators, patterns, asset). Referenciar a
@@ -28,13 +33,17 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 3. **Order Blocks** (último candle antes de impulso = zona institucional).
 4. Liquidez: EQH/EQL, PDH/PDL, BSL/SSL.
 5. Traps: Bull/Bear Trap, BSL Grab, Stop Hunt.
-6. Confluência: FVG + OB + Fib Golden Zone = máxima convicção.
+6. Confluência: FVG + OB + Fib Golden Zone = máxima convicção (= **POI**, ver [[institutional-flow-poi]]).
+7. **CHoCH = gatilho de reversão** (fim da acumulação/distribuição do Smart Money): confirmar no TF
+   relevante + volume; usar para mudar bias ou manter posição.
 
 ## Fase 4 — Wyckoff — Ref: [[Wyckoff]]
 1. Fase: Acumulação / Markup / Distribuição / Markdown.
 2. Eventos: Spring (false break down) ou UT/UTAD (false break up).
 3. Esforço × Resultado: alto volume + resultado pequeno = absorção.
 4. Cruzar com SMC: Spring = EQL sweep + CHoCH bull | UT = EQH sweep + CHoCH bear.
+5. **Acumulação cíclica** (transferência de riqueza): se em fase de Acumulação/Markdown tardio,
+   mapear os **POIs** abaixo (primário + secundários) para entradas escalonadas — ver [[institutional-flow-poi]].
 
 ## Fase 5 — Fibonacci + Price Action — Ref: [[fibonacci-structural]] + [[price-action-patterns]]
 1. Fib do último impulso relevante.
@@ -58,6 +67,10 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
      1H/15M, **1W primordial**). USDT.D bullish → BTC **baixista**; USDT.D bearish → BTC **altista**.
      Div cruzada **BTC↔USDT.D** (BTC HH sem USDT.D fazer LL / fazendo HL = topo do BTC). Ref:
      [[liquidity-wicks-trap-short-usdtd]].
+   - **Sobrevenda como GATILHO de entrada** ([[institutional-flow-poi]]): **RSI 1W em OS = ótimo ponto
+     de aporte/long (quase sempre)**; **RSI 1D em OS = exaustão vendedora → gatilho de aumento
+     ESCALONADO de exposição**. ⚠️ Sempre confirmar com confluência (POI, divergência, CHoCH) e
+     respeitar SL/circuit breaker — gatilho de alta probabilidade ≠ ignorar risco.
 2. **Stoch RSI:** %K/%D + cruzamento + zona (>80 OB / <20 OS) + direção.
    - **W (OBRIGATÓRIO):** reset semanal de OS/OB = virada de ciclo.
    - **Divergências (1H/15M):** preço HH+%K LH em >80 = bearish | preço LL+%K HL em <20 = bullish.
@@ -79,7 +92,9 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 
 ## Fase 8 — Liquidez, Correlações e Posicionamento de Margem
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
-1. Mapear pavios HTF (M/W/D) → liquidez acima ou abaixo.
+1. Mapear pavios HTF (M/W/D) → liquidez acima ou abaixo. Pavios + OB/FVG = **POIs** institucionais
+   (absorção/book). **Perda de LTA = capitulação final** = POI de máxima convicção (só com
+   confluência) — ver [[institutional-flow-poi]].
 2. **USDT.D — confirmador inverso + divergência (OBRIGATÓRIO BTC/ETH):** (a) confirma/nega o bias;
    (b) varrer div de RSI no USDT.D (W/D/4H/1H/15M, 1W primordial); (c) div cruzada BTC↔USDT.D.
 3. **Funding Rate + OI + Fear&Greed:** ler `raw/feeds/latest.md` (valores REAIS de BTC/ETH — não
@@ -94,5 +109,8 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 Ver `skills/_references/confluence-score.md`: bias LONG/SHORT/NEUTRO, **Confluence Score (0–10)**,
 confiança derivada (≥8 alta / 6–7 média / 4–5 baixa / <4 NEUTRO), penalidades (`contra-macro −2`,
 `usdtd-diverge −1`, `dados-parciais −1`), disciplina (circuit breaker 🔴 → observação).
+> Gatilhos institucionais confirmados (CHoCH + Sobrevenda Semanal + POI alinhado) **reforçam** o
+> Confluence Score pelos critérios que já existem — **não** criam score paralelo e **nunca** burlam
+> a disciplina ([[institutional-flow-poi]]).
 
 > Análise concluída → chamar `brain-write` para registrar insight/previsão/sessão.

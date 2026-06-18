@@ -5,7 +5,7 @@ description: Análise de ciclo do Bitcoin — onde estamos no ciclo, projeção 
 
 # CYCLE — Análise de Ciclo do BTC
 
-Ref: [[btc-cycle-analysis]]
+Ref: [[btc-cycle-analysis]] · [[institutional-flow-poi]] (acumulação cíclica, POIs, gatilhos de sobrevenda)
 
 1. **[BRAIN READ]** Rodar `brain-read` + ler `wiki/concepts/btc-cycle-analysis.md`.
 2. **[MACRO SCAN]** Rodar `macro-scan` Workflow A completo (10 passos).
@@ -19,9 +19,12 @@ Ref: [[btc-cycle-analysis]]
    Realized Price (acima/abaixo). _MVRV foi removido do layout "EMA Cross" — adicionar ad-hoc via
    `chart_manage_indicator` se preciso._
 6. **[FIBONACCI LOG]** Fib do low do ciclo anterior ao ATH (escala log).
-7. **[SCORING]** Score de Topo [X/10] + Score de Fundo [X/15].
+7. **[SCORING]** Score de Topo [X/10] + Score de Fundo [X/15]. Sobrevenda Semanal/Mensal e funding
+   negativo extremo entram como critérios de fundo (gatilhos de acumulação — [[institutional-flow-poi]]).
 8. **[PROJEÇÃO]** Se bear confirmado → zona de fundo com 6 métodos: Fractal drawdown · 200W SMA ·
    Realized Price · Fibonacci log · Temporal · Confluência técnica. Zona onde 3+ convergem.
 9. **[OUTPUT]** Diagnóstico: Fase atual | Scores | Indicadores | Projeção | Estratégia de acumulação.
+   A estratégia mapeia **POIs** (primário = onde 3+ métodos convergem; secundários abaixo) para
+   **compras escalonadas** ancoradas a [[position-sizing]] — não adivinhar o fundo absoluto.
 10. **[BRAIN WRITE]** Registrar `wiki/sessions/YYYY-MM-DD-BTC-CYCLE.md` + previsão em
     `predictions-log.md` + append `wiki/log.md` (`cycle | BTC | Fase: [X]`).

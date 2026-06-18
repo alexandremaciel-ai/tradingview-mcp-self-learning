@@ -56,6 +56,8 @@ Classes: `BTC | BTC+ETH | BTC+ALTCOIN | ALTCOIN | EQUITIES | WATCHLIST | DAILY |
 - **predictions:** previsão ⏳ aberta → FECHAR/ATUALIZAR; > 48h → ⚪ expirada.
 - **metrics:** 🔴 ativo (3 losses seguidos / DD 5% no dia) → rebaixar p/ "observação/paper" +
   `⛔ Disciplina: [estado]`. Ref: `[[trading-psychology]]`.
+- **lente sempre ativa:** os 4 Pilares + POIs + gatilhos de sobrevenda (D/W) e CHoCH são doutrina de
+  toda análise — `[[institutional-flow-poi]]` (aplicada nas Fases do `technical-checklist`).
 
 ## Saída — Brain Read Summary
 

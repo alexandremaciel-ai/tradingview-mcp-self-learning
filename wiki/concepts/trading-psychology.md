@@ -3,6 +3,9 @@
 > O edge técnico só sobrevive se a disciplina o protege depois de uma perda.
 > Esta página é PROTOCOLO, não teoria: o LLM consulta [[metrics]] antes de emitir bias operável e aplica as regras de bloqueio abaixo.
 > Complementa os Circuit Breakers de [[position-sizing]].
+> **Escopo:** aqui é a psicologia de **autodisciplina** (proteger-se de si mesmo). A psicologia de
+> **estrutura de mercado** (Sardelas vs Institucionais, "Sair da Matrix", varejo = liquidez) vive em
+> [[institutional-flow-poi]] — as duas se complementam.
 
 ## 1. Estados de Bloqueio (enforcement)
 
@@ -48,6 +51,7 @@ O revenge trade (reentrar no impulso logo após um stop, para "recuperar") é o 
 - [ ] Meu SL está definido ANTES da entrada e é sagrado?
 
 ## Backlinks
+- [[institutional-flow-poi]] — psicologia de estrutura de mercado (Sardelas vs Institucionais)
 - [[position-sizing]] — circuit breakers e regras de ouro
 - [[mistakes]] — categoria `psicologico`
 - [[confluence-score]] — gate objetivo de entrada

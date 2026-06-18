@@ -89,6 +89,11 @@ regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
    (FOMC/CPI/NFP/PCE/Powell) dentro da janela da operação → **rebaixar confiança** e rotular
    `pré-evento (X)`; a postura tende a `aguardar evento`. Conflito entre a leitura de ticker e o
    Veredito do briefing → **declarar a divergência, não forçar conclusão**.
+9. **Acumulação/Distribuição Cíclica (fluxo institucional — [[institutional-flow-poi]]):**
+   *Fundo de ciclo* = sobrevenda Semanal/Mensal + DXY enfraquecendo + USDT.D em recuo + shorts
+   extremos/funding negativo (combustível de short squeeze) → setup de acumulação institucional.
+   *Topo de ciclo* = sobrecompra Semanal/Mensal + DXY forte + USDT.D subindo + longs extremos/funding
+   positivo (long squeeze) → setup de distribuição. Cruzar com a Regra 6 (squeeze L/S).
 
 ## Registrar na sessão
 

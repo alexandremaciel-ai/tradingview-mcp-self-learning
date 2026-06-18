@@ -46,7 +46,8 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
 | relatório de performance de backtest | **`strategy-report`** |
 
 **Camadas reutilizáveis** (o `analyze` e os scans as encadeiam; invocáveis isoladamente):
-`brain-read` · `macro-scan` · `technical-checklist` · `brain-write`.
+`brain-read` · `macro-scan` · `technical-checklist` · `brain-write` ·
+`btc-macro-briefing` (disparada pelo **gate matinal** do `brain-read` passo 2b — web-search, não lê chart; o `macro-scan` Step 0.5 consome o Veredito que ela persiste).
 
 **Referências** (markdown carregado por path quando uma skill cita):
 `skills/_references/class-rules.md` · `confluence-score.md` · `tv-tools.md`.

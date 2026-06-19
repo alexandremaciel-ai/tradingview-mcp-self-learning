@@ -8,11 +8,15 @@ formato legado em texto livre) e calcula métricas objetivas de edge:
   - Win rate global e por: lado (long/short/spot), tipo (scalp/swing/holder),
     setup, playbook, regime macro (risk-on/off/misto), dia útil vs fim de semana.
   - Calibração de confiança: win rate observado por nível + Brier score.
+  - Calibração por critério: Hit Rate de cada sinal listado no campo `Critérios:`
+    (slugs de skills/_references/criteria-keys.md) — alimenta os pesos data-driven
+    do Confluence Score.
   - Drawdown: maior sequência de losses; streak atual → flag de circuit breaker.
   - R:R planejado vs realizado.
 
 Escreve o resultado em wiki/brain/metrics.md (consumido pela LLM e pelo Obsidian
-Dataview) e atualiza o bloco "Métricas Globais" de wiki/setups/index.md.
+Dataview), reescreve os campos de performance de wiki/brain/indicators.md (Sessões/
+Acertos/Falhas/Hit Rate) e atualiza o bloco "Métricas Globais" de wiki/setups/index.md.
 
 Uso:
   python scripts/tools/metrics_engine.py
@@ -40,6 +44,68 @@ CONFIDENCE_PROB = {
 }
 
 HEADER_RE = re.compile(r'^###\s+\[(\d{4}-\d{2}-\d{2})[^\]]*\]\s*(.*)$')
+
+INDICATORS_FILE = os.path.join(BASE_DIR, 'wiki', 'brain', 'indicators.md')
+
+# Slugs de critério (campo `Critérios:`) -> cabeçalho da seção em indicators.md.
+# Mantém 1:1 com skills/_references/criteria-keys.md. Slugs de contexto (macro, usdtd,
+# dxy, funding, liquidez, fib-golden, wyckoff, estrutura, poi) NÃO têm seção própria —
+# aparecem só na tabela "Calibração por Critério" de metrics.md (sem writeback).
+SLUG_TO_HEADER = {
+    'ema200': 'EMA 50/200',
+    'ema-cross': 'EMA Cross (ribbon)',
+    'sma-cross': 'SMA Cross',
+    'rsi': 'RSI',
+    'stochrsi': 'RSI Estocástico (Stoch RSI)',
+    'macd': 'MACD',
+    'adx': 'ADX',
+    'atr': 'ATR',
+    'bollinger': 'Bollinger Awesome Alert R1.1 (JustUncleL)',
+    'supertrend': 'Supertrend',
+    'smc-choch': 'CHoCH / BoS (SMC)',
+    'smc-fvg': 'FVG (SMC)',
+    'smc-ob': 'Smart Money Concepts [LuxAlgo]',
+    'volume': 'Crypto Smart Volume PRO (v1/v2)',
+    'vrvp': 'Visible Range Volume Profile',
+    'whale': 'Whale Liquidity and Absorption Profile [AlgoAlpha]',
+    'mvrv': 'MVRV Z Score & Free Float Z-Score',
+    'divergencia': 'RSI Divergences Pro + Adaptive MTF Filter (V.V.I.R.)',
+    'mxwll': 'Mxwll Suite',
+}
+
+# Linha de performance em indicators.md (preserva qualquer anotação após o Hit Rate).
+PERF_RE = re.compile(
+    r'(- \*\*Sessões de uso:\*\*\s*)([^|]*?)'
+    r'(\s*\|\s*\*\*Acertos:\*\*\s*)([^|]*?)'
+    r'(\s*\|\s*\*\*Falhas:\*\*\s*)([^|]*?)'
+    r'(\s*\|\s*\*\*Hit Rate:\*\*\s*)(\S+)'
+)
+
+
+def parse_criteria(block):
+    """Lê o campo `Critérios:` → lista de (slug, sinal '+'/'-').
+    Aceita `slug+`, `slug-` e `-slug`. Separadores: vírgula e `|`."""
+    val = field(block, 'Critérios')
+    if not val:
+        return []
+    out = []
+    for tok in re.split(r'[,\|]', val):
+        t = tok.strip()
+        if not t:
+            continue
+        sign = '+'
+        if t.startswith('-'):
+            sign = '-'
+            t = t[1:].strip()
+        elif t.endswith('-'):
+            sign = '-'
+            t = t[:-1].strip()
+        elif t.endswith('+'):
+            t = t[:-1].strip()
+        slug = re.sub(r'[^a-z0-9\-]', '', t.lower())
+        if slug:
+            out.append((slug, sign))
+    return out
 
 
 def field(block, name):
@@ -222,8 +288,31 @@ def parse_predictions():
             'rr_real': infer_rr_real(block, status),
             'postclose': infer_postclose(block),
             'weekend': d.weekday() >= 5,
+            'criteria': parse_criteria(block),
         })
     return records
+
+
+def criteria_stats(records):
+    """Acerto/falha por slug de critério (só sinais '+'), a partir do resultado.
+    win → acerto; loss ou ⚪-errada → falha; aberta/⚪-certa/neutra → ignora."""
+    stats = {}
+    for r in records:
+        status = r['status']
+        if status == 'win':
+            credit = 'acerto'
+        elif status == 'loss':
+            credit = 'falha'
+        elif status == 'expired' and r['postclose'] == 'errada':
+            credit = 'falha'
+        else:
+            continue  # aberta, ⚪-certa, ⚪-neutra, ⚪ sem Pós-fecho
+        for slug, sign in r['criteria']:
+            if sign != '+':
+                continue
+            s = stats.setdefault(slug, {'acertos': 0, 'falhas': 0})
+            s['acertos' if credit == 'acerto' else 'falhas'] += 1
+    return stats
 
 
 # ---------- Agregações ----------
@@ -325,6 +414,7 @@ def build_report(records):
     nontrigger = (exp / total * 100.0) if total else None
 
     cal_rows, brier, brier_n = calibration(records)
+    crit = criteria_stats(records)
     max_streak, cur_streak = max_loss_streak(records)
     rr_plan = avg([r['rr_plan'] for r in records])
     rr_real = avg([r['rr_real'] for r in records])
@@ -351,8 +441,8 @@ def build_report(records):
     out.append(f'| Expiradas/não-acionadas ⚪ | {exp} |')
     out.append(f'| ⚪ já graduadas (Pós-fecho) | {exp_graded} |')
     out.append(f'| ⚪ direcionalmente erradas | {exp_wrong} |')
-    out.append(f'| **Win Rate ESTRITO** (só ✅/❌) | **{fmt_wr(wr_global)}** |')
-    out.append(f'| **Win Rate AJUSTADO** (⚪-erradas = loss) | **{fmt_wr(wr_adjusted)}** |')
+    out.append(f'| **Win Rate AJUSTADO** (número principal — ⚪-erradas = loss) | **{fmt_wr(wr_adjusted)}** |')
+    out.append(f'| Win Rate estrito (só ✅/❌, otimista) | {fmt_wr(wr_global)} |')
     out.append(f'| Taxa de não-acionamento (⚪/total) | {fmt_wr(nontrigger)} |')
     out.append(f'| R:R plan médio | {("—" if rr_plan is None else f"{rr_plan:.2f}")} |')
     out.append(f'| R:R real médio | {("—" if rr_real is None else f"{rr_real:.2f}")} |')
@@ -397,6 +487,35 @@ def build_report(records):
     out += render_group('Dia Útil vs Fim de Semana', 'Período',
                         group_table(records, lambda r: 'fim de semana' if r['weekend'] else 'dia útil', 'Período'))
 
+    # Calibração por critério (pesos data-driven do Confluence Score)
+    out.append('## Calibração por Critério')
+    out.append('')
+    out.append('> Hit Rate de cada sinal `+` listado no campo `Critérios:` das previsões fechadas.')
+    out.append('> O `Confluence Score` pesa cada critério por isto (guarda: N < 8 = peso atual; '
+               '< 40% & N ≥ 8 = não pontua / `sinal-fraco`). Ver `[[confluence-score]]` / `[[criteria-keys]]`.')
+    out.append('')
+    out.append('| Critério | Acertos | Falhas | N | Hit Rate | Peso (data-driven) |')
+    out.append('|---|---|---|---|---|---|')
+    for slug in sorted(crit, key=lambda k: (-(crit[k]['acertos'] + crit[k]['falhas']), k)):
+        a = crit[slug]['acertos']
+        f = crit[slug]['falhas']
+        n = a + f
+        hr = (a / n * 100.0) if n else None
+        if n < 8:
+            peso = 'amostra baixa (peso atual)'
+        elif hr < 40:
+            peso = '⚠️ sinal-fraco → NÃO pontua'
+        elif hr < 55:
+            peso = 'meio-peso'
+        elif hr <= 70:
+            peso = 'peso cheio'
+        else:
+            peso = 'cheio + bônus'
+        out.append(f'| {slug} | {a} | {f} | {n} | {fmt_wr(hr)} | {peso} |')
+    if not crit:
+        out.append('| _(sem `Critérios:` taggeados ainda)_ | — | — | 0 | — | coletar amostras |')
+    out.append('')
+
     # Leitura recomendada
     out.append('## Leitura Automática')
     out.append('')
@@ -420,6 +539,16 @@ def build_report(records):
         insights.append(f'- ⚪ {exp - exp_graded} expirada(s) ainda sem `Pós-fecho` — graduar a direção para o WR ajustado refletir a realidade.')
     if wr_adjusted is not None and wr_global is not None and (wr_global - wr_adjusted) >= 10:
         insights.append(f'- ⚠️ WR estrito ({fmt_wr(wr_global)}) está {wr_global - wr_adjusted:.0f}pp acima do ajustado ({fmt_wr(wr_adjusted)}) — viés: perdas viram "expiradas".')
+    # critérios fracos (anti-sinal): N>=8 e hit rate <40%
+    for slug in sorted(crit):
+        a, f = crit[slug]['acertos'], crit[slug]['falhas']
+        n = a + f
+        if n >= 8 and (a / n * 100.0) < 40:
+            insights.append(f'- ⚠️ `sinal-fraco:{slug}` ({a}/{n} = {a / n * 100:.0f}%) — não pontuar no Confluence Score; considerar inverter a leitura.')
+    # setups fracos: N>=10 e win rate <50%
+    for k, w, l, opn, exp, wr in group_table(records, lambda r: r['setup'], 'Setup'):
+        if k != '—' and wr is not None and (w + l) >= 10 and wr < 50:
+            insights.append(f'- ⚠️ `setup-fraco:{k}` (WR {fmt_wr(wr)}, n={w + l}) — travar confiança em "média" + −1.')
     if not insights:
         insights.append('- Sem alertas automáticos. Continuar coletando amostras (win rate estabiliza com ≥20 trades fechados por grupo).')
     out += insights
@@ -440,7 +569,8 @@ def update_setups_index(summary):
         content = f.read()
     original = content
 
-    wr = fmt_wr(summary['wr_global'])
+    # WR ajustado é o número principal (cai para o estrito se não houver ⚪ graduadas).
+    wr = fmt_wr(summary['wr_adjusted'] if summary['wr_adjusted'] is not None else summary['wr_global'])
     rr = '—' if summary['rr_real'] is None else f"{summary['rr_real']:.2f}"
     closed = summary['wins'] + summary['losses']
 
@@ -459,6 +589,50 @@ def update_setups_index(summary):
     return False
 
 
+def update_indicators(records):
+    """Reescreve Sessões/Acertos/Falhas/Hit Rate em indicators.md a partir dos `Critérios:`.
+    Só toca seções cujo cabeçalho mapeia para um slug (SLUG_TO_HEADER); preserva anotações
+    após o Hit Rate. Retorna a contagem de seções atualizadas."""
+    if not os.path.exists(INDICATORS_FILE):
+        return 0
+    stats = criteria_stats(records)
+    header_to_slug = {v: k for k, v in SLUG_TO_HEADER.items()}
+    with open(INDICATORS_FILE, 'r', encoding='utf-8') as f:
+        content = f.read()
+    original = content
+
+    # Quebra em [preâmbulo, '## Header', corpo, '## Header', corpo, ...]
+    parts = re.split(r'(?m)^(## .+)$', content)
+    rebuilt = [parts[0]]
+    updated = 0
+    for i in range(1, len(parts), 2):
+        header_line = parts[i]
+        body = parts[i + 1] if i + 1 < len(parts) else ''
+        slug = header_to_slug.get(header_line[3:].strip())
+        if slug and slug in stats:
+            a = stats[slug]['acertos']
+            fa = stats[slug]['falhas']
+            n = a + fa
+            hr = f'{a / n * 100:.0f}%' if n else '—'
+
+            def repl(m):
+                return (f'{m.group(1)}{n}{m.group(3)}{a}'
+                        f'{m.group(5)}{fa}{m.group(7)}{hr}')
+
+            new_body, count = PERF_RE.subn(repl, body, count=1)
+            if count:
+                body = new_body
+                updated += 1
+        rebuilt.append(header_line)
+        rebuilt.append(body)
+    content = ''.join(rebuilt)
+
+    if content != original:
+        with open(INDICATORS_FILE, 'w', encoding='utf-8') as f:
+            f.write(content)
+    return updated
+
+
 def main():
     records = parse_predictions()
     report, summary = build_report(records)
@@ -466,6 +640,7 @@ def main():
     with open(OUT_FILE, 'w', encoding='utf-8') as f:
         f.write(report)
     setups_updated = update_setups_index(summary)
+    indicators_updated = update_indicators(records)
 
     print('Métricas geradas:', os.path.relpath(OUT_FILE, BASE_DIR))
     print(f'  Previsões parseadas: {summary["total"]}')
@@ -474,6 +649,7 @@ def main():
     print(f'  Win Rate ajustado: {fmt_wr(summary["wr_adjusted"])}')
     print(f'  Não-acionamento:   {fmt_wr(summary["nontrigger"])}')
     print(f'  setups/index.md atualizado: {"sim" if setups_updated else "não"}')
+    print(f'  indicators.md — seções calibradas: {indicators_updated}')
 
 
 if __name__ == '__main__':

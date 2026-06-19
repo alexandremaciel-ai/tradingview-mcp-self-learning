@@ -14,9 +14,12 @@ description: Fecha o loop de aprendizado avaliando previsões abertas — gradin
    real, R:R, P&L, tempo) + "Setup utilizado" (link).
 5. **Se setup usado no trade:** atualizar "Histórico de Ocorrências" + recalcular "Estatísticas" +
    atualizar `wiki/setups/index.md`.
-6. **Se ❌ errou:** causa raiz → append `brain/mistakes.md` (categoria + lição + **Prevenção**) +
-   `brain/indicators.md` (incrementar Falhas + recalcular Hit Rate do indicador que falhou).
-7. **Se ✅ acertou:** reforçar insight em `brain/insights.md` + `brain/indicators.md` (Acertos + Hit Rate).
+6. **Se ❌ errou:** causa raiz → append `brain/mistakes.md` (categoria + lição + **Prevenção**).
+7. **Se ✅ acertou:** reforçar insight em `brain/insights.md`.
 8. Atualizar `brain/patterns.md` se padrão confirmou/negou → promover Status se atingiu threshold.
 9. Preencher "Aprendizados desta Sessão" se ainda vazio.
-10. Append `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`.
+10. **Recalcular calibração:** rodar `python3 scripts/tools/metrics_engine.py` — ele lê o campo
+    `Critérios:` da previsão fechada e reescreve Acertos/Falhas/Hit Rate por critério em
+    `brain/indicators.md` + a seção "Calibração por Critério" de `brain/metrics.md`. **Não editar os
+    números de `indicators.md` à mão** (o Hit Rate é derivado dos `Critérios:`, não digitado).
+11. Append `wiki/log.md`: `## [YYYY-MM-DD] feedback | {SYMBOL} {resultado}`.

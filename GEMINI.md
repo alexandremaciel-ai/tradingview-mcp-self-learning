@@ -50,7 +50,7 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
 `btc-macro-briefing` (disparada pelo **gate matinal** do `brain-read` passo 2b — web-search, não lê chart; o `macro-scan` Step 0.5 consome o Veredito que ela persiste).
 
 **Referências** (markdown carregado por path quando uma skill cita):
-`skills/_references/class-rules.md` · `confluence-score.md` · `tv-tools.md`.
+`skills/_references/class-rules.md` · `confluence-score.md` · `tv-tools.md` · `criteria-keys.md`.
 
 **Doutrina de leitura (lente ativa em TODA análise):** `wiki/concepts/institutional-flow-poi.md` —
 os 4 Pilares (Estrutura/Ciclos/Volume/Macro), POIs, acumulação cíclica e gatilhos de reversão (CHoCH,

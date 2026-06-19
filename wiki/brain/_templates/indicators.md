@@ -1,8 +1,10 @@
 # Brain — Aprendizados sobre Indicadores
 
 > Registro de como cada indicador se comporta na prática.
-> O LLM consulta isso para calibrar peso de cada sinal.
-> Atualizar performance após cada sessão onde o indicador foi testado.
+> O LLM consulta isso para calibrar o peso de cada sinal (ver [[confluence-score]] / [[criteria-keys]]).
+> Os campos numéricos (Sessões/Acertos/Falhas/Hit Rate) são **reescritos por
+> `scripts/tools/metrics_engine.py`** a partir do campo `Critérios:` das previsões — NÃO editar à mão.
+> Editar à mão só as notas qualitativas (Confiabilidade observada / Melhor uso / Falhas comuns).
 
 ## EMA 50/200
 - **Sessões de uso:** 0

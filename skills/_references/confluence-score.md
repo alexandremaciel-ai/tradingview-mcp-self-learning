@@ -11,6 +11,31 @@
    (não usar "feeling").
 4. Tabela score→ação para o TAMANHO: **≥8 cheia | 6–7 reduzida | 4–5 só observar/paper | <4 não operar**.
 
+## Pesos dirigidos por dados (calibração empírica)
+
+> O score **aprende com o resultado**: o peso de cada critério é escalado pelo Hit Rate empírico
+> que o `metrics_engine.py` mantém em `wiki/brain/indicators.md` (alimentado pelo campo
+> `Critérios:` das previsões — ver `[[criteria-keys]]`). O `brain-read` injeta esses números no
+> **Cartão de Calibração**; aplicá-los aqui NÃO é opcional.
+
+Para CADA critério que pontuaria, olhar `Acertos/Falhas` (= N amostras) e o Hit Rate:
+
+| Amostra (N = Acertos+Falhas) | Hit Rate | Efeito no critério |
+|---|---|---|
+| **< 8 (guarda)** | qualquer | peso **atual/cheio**, SEM ajuste (amostra pequena = não confiar ainda) |
+| ≥ 8 | **< 40%** | **não pontua** + rótulo `sinal-fraco:<slug>` (anti-sinal — considerar inverter a leitura) |
+| ≥ 8 | 40–55% | **meio-peso** (conta 0.5 ponto) |
+| ≥ 8 | 55–70% | peso cheio |
+| ≥ 8 | **> 70%** | peso cheio + **elegível ao bônus de confluência** |
+
+- A guarda de amostra (< 8) existe para 1–2 trades não distorcerem o peso de um sinal — honesto por
+  construção. Critério sem registro em `indicators.md` = tratar como < 8 (peso atual).
+- Declarar no bloco de bias os ajustes aplicados, ex.: `−adx (sinal-fraco 32%, n=11) | macd meio-peso (52%, n=9)`.
+
+**Trava por setup** (Win Rate em `wiki/setups/index.md`, mesma guarda de amostra ≥ 10):
+- WR < 50% e N ≥ 10 → teto de confiança em **"média"** + **−1** (rótulo `setup-fraco`).
+- WR ≥ 70% e N ≥ 10 → **+1** (cap em 10).
+
 ## Penalidades
 
 - Bias contradiz macro → rótulo `contra-macro` + **−2**.

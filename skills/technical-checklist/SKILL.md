@@ -109,6 +109,11 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
 Ver `skills/_references/confluence-score.md`: bias LONG/SHORT/NEUTRO, **Confluence Score (0–10)**,
 confiança derivada (≥8 alta / 6–7 média / 4–5 baixa / <4 NEUTRO), penalidades (`contra-macro −2`,
 `usdtd-diverge −1`, `dados-parciais −1`), disciplina (circuit breaker 🔴 → observação).
+> **Pesos dirigidos por dados:** aplicar a calibração empírica do Cartão de Calibração (Hit Rate por
+> critério em `indicators.md` + Win Rate do setup) — `sinal-fraco` não pontua, `setup-fraco` trava a
+> confiança. Ao declarar o score, **emitir os critérios que pontuaram como slugs de
+> `skills/_references/criteria-keys.md`** (ex.: `ema200+, macd+, rsi+, smc-ob+, macro+ | -adx`) — o
+> `brain-write` copia essa lista para o campo `Critérios:` da previsão (alimenta a calibração futura).
 > Gatilhos institucionais confirmados (CHoCH + Sobrevenda Semanal + POI alinhado) **reforçam** o
 > Confluence Score pelos critérios que já existem — **não** criam score paralelo e **nunca** burlam
 > a disciplina ([[institutional-flow-poi]]).

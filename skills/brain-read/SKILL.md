@@ -25,6 +25,14 @@ description: Ciclo READ obrigatório do AUTO-PILOT antes de QUALQUER análise de
      (refresh por evento 🔴; sobrescreve o arquivo do dia).
    - Aplica-se a **todas as classes** (o briefing é macro-global; FOMC/CPI/DXY também movem
      EQUITIES). O `macro-scan` (Step 0.5) consome o Veredito daqui.
+2c. **🔁 Gate de feedback (fecha o loop ANTES de analisar):** garante que a análise leia métricas
+   frescas. Espelha o gate matinal:
+   - `grep -n "⏳" wiki/brain/predictions-log.md` filtrando o símbolo → para cada previsão aberta
+     **vencida** (horizonte/prazo passou, ou > 48h sem update), rodar o grading do `prediction-feedback`
+     (regra objetiva com `data_get_ohlcv`): TP antes SL = ✅ / SL antes TP = ❌ / nenhum = ⚪ + `Pós-fecho`.
+   - Depois de fechar o que venceu, rodar **`python3 scripts/tools/metrics_engine.py`** → atualiza
+     `metrics.md` (WR, circuit breaker) + `indicators.md` (Hit Rate por critério) a partir dos `Critérios:`.
+   - Só então prosseguir: o Cartão de Calibração (passo 3) lerá números atuais, não defasados.
 3. **🖼️ Layout ativo (0c):** `chart_get_state()` → casar os studies (fingerprint) com um perfil em
    `wiki/brain/layouts.md`; ele define QUAIS indicadores a Fase 6 aplica + a recipe do layout. Sem
    match → `layout-adhoc`. **Híbrido:** trocar de layout (navegar `/chart/{slug}/`) só se o
@@ -45,7 +53,13 @@ Classes: `BTC | BTC+ETH | BTC+ALTCOIN | ALTCOIN | EQUITIES | WATCHLIST | DAILY |
 - **asset:** se envolve ativo → `wiki/assets/{SYMBOL}.md`.
 - **predictions:** `grep -n "⏳" wiki/brain/predictions-log.md` filtrando o **símbolo do pedido** →
   ler só as abertas relevantes. Fechar/atualizar antes de continuar; > 48h sem update → ⚪ expirada.
-- **metrics:** ler `wiki/brain/metrics.md` (curto) → circuit breaker + calibração.
+- **metrics:** ler `wiki/brain/metrics.md` (curto) → circuit breaker + WR (usar o **ajustado** como
+  número principal) + segmentação (melhor/pior lado e regime).
+- **indicators (calibração por sinal):** ler em `wiki/brain/indicators.md` o Hit Rate **só dos
+  indicadores do layout ativo** (não o arquivo todo) → define o peso data-driven de cada critério no
+  Confluence Score (ver `[[confluence-score]]` / `[[criteria-keys]]`).
+- **setups:** se houver setup candidato, ler seu Win Rate em `wiki/setups/index.md` → trava
+  `setup-fraco` (WR < 50%, N ≥ 10) ou bônus (WR ≥ 70%, N ≥ 10).
 
 ## 3 — Protocolo de aplicação (declarar explicitamente)
 
@@ -56,13 +70,18 @@ Classes: `BTC | BTC+ETH | BTC+ALTCOIN | ALTCOIN | EQUITIES | WATCHLIST | DAILY |
 - **predictions:** previsão ⏳ aberta → FECHAR/ATUALIZAR; > 48h → ⚪ expirada.
 - **metrics:** 🔴 ativo (3 losses seguidos / DD 5% no dia) → rebaixar p/ "observação/paper" +
   `⛔ Disciplina: [estado]`. Ref: `[[trading-psychology]]`.
+- **calibração (Cartão de Calibração):** para os indicadores do layout, declarar o ajuste de peso que
+  valerá neste score → `📊 Calibração: ema200 cheio (78%, n=12) | -adx sinal-fraco (32%, n=11) → não
+  pontua | macd meio-peso (52%, n=9) | setup X WR 44% (n=10) → trava em média`. Critério com N < 8 →
+  declarar `(amostra baixa, peso atual)`. É consumido na Fase 9 do `technical-checklist`.
 - **lente sempre ativa:** os 4 Pilares + POIs + gatilhos de sobrevenda (D/W) e CHoCH são doutrina de
   toda análise — `[[institutional-flow-poi]]` (aplicada nas Fases do `technical-checklist`).
 
 ## Saída — Brain Read Summary
 
 Bloco com: classe detectada, layout ativo + indicadores, prevenções ativas, insights aplicados,
-padrões monitorados, previsões abertas fechadas/atualizadas, estado de disciplina.
+padrões monitorados, previsões abertas fechadas/atualizadas (gate de feedback), estado de disciplina,
+e o **📊 Cartão de Calibração** (ajustes de peso data-driven por critério + trava de setup).
 Incluir também:
 `🗞️ Briefing do dia: [presente | recém-gerado | refresh por evento] | Postura: [risk-on/off/cautela/aguardar evento] | 🔴 hoje: [evento ou —]`.
 

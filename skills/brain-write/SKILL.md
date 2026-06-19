@@ -14,8 +14,12 @@ description: Ciclo WRITE obrigatório do AUTO-PILOT depois de QUALQUER análise 
    (`## [YYYY-MM-DD HH:MM] {op} | {SYMBOL} {TF}`).
 
 ## Condicional
-2. **Bias definido →** previsão em `wiki/brain/predictions-log.md` (Status `⏳ aberta`).
-3. **Indicador surpreendeu →** atualizar `wiki/brain/indicators.md` (campos Sessões/Acertos/Falhas + Hit Rate).
+2. **Bias definido →** previsão em `wiki/brain/predictions-log.md` (Status `⏳ aberta`). **Obrigatório:**
+   incluir o campo `- **Critérios:**` com os slugs de `skills/_references/criteria-keys.md` — os MESMOS
+   critérios que pontuaram no Confluence Score (Fase 9). É o que alimenta a calibração por sinal.
+3. **Indicador surpreendeu →** registrar a observação qualitativa em `wiki/brain/indicators.md`
+   ("Confiabilidade observada" / "Falhas comuns"). Os campos numéricos (Sessões/Acertos/Falhas/Hit Rate)
+   são reescritos por `metrics_engine.py` a partir dos `Critérios:` — **não editar à mão**.
 4. **Padrão repetido (2ª+ vez) →** atualizar `wiki/brain/patterns.md`; promover Status quando
    atingir threshold: OBSERVAÇÃO →(2)→ VALIDADO →(3)→ CONSOLIDADO.
 5. **Erro confirmado →** append em `wiki/brain/mistakes.md` (categoria + lição + **Prevenção**).

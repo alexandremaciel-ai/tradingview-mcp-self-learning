@@ -36,6 +36,19 @@ riqueza**: o preço só cai porque há demanda institucional sendo construída p
   espera o fundo por influência de narrativa.
 - Fases formais (SC/AR/ST/Spring) e a Lei do Esforço × Resultado estão em `[[Wyckoff]]`.
 
+### Defesa de Preço Médio & Deslocamento
+A instituição constrói posição **absorvendo a pressão contrária** numa faixa de preço (comprando as vendas
+do varejo) — essa faixa vira o seu **preço médio**, que ela **defende** enquanto monta a posição. Mapear a
+faixa de defesa diz a natureza da lateralização:
+- **Acumulação** — defesa de compra numa base após queda → prepara **alta**.
+- **Redistribuição** — defesa de venda numa pausa dentro da queda → prepara **continuação de baixa**.
+
+Quando a instituição termina de montar e **alavanca o capital final**, o preço sai da faixa num
+**deslocamento violento** (candles de grande amplitude) — a alta súbita já descrita. **Romper a zona de
+defesa institucional** (perder o preço médio defendido, com volume) sinaliza a provável **inversão da
+tendência primária** — é o avesso do gatilho: a defesa falhou. Perfil de absorção por faixa em
+`[[whale-liquidity-absorption]]`; eventos formais (Spring/UT, Esforço × Resultado) em `[[Wyckoff]]`.
+
 ---
 
 ## POIs — Pontos de Interesse Institucional
@@ -89,6 +102,11 @@ confluência (pilares + POI) e respeitam a disciplina.
 - **Sair da Matrix**: entender que o mercado **só cai porque existe demanda**. Para os institucionais
   comprarem bilhões, precisam que o varejo venda — por isso o preço cai para ativar stops e gerar a
   liquidez das compras profissionais.
+- **Engenharia de liquidez (os dois lados)**: o varejo é previsível — vende cedo em resistência/falso topo
+  e estopa compras em suporte. O institucional **lê essa previsibilidade** e força o preço temporariamente
+  no sentido contrário para varrer essa liquidez: empurra **para cima** (BSL grab) e estopa os vendedores
+  antecipados antes de uma queda real; empurra **para baixo** (SSL grab) e estopa os compradores antes da
+  alta real. O movimento "óbvio" é a isca — ver Inducement em `[[SMC]]`.
 - **A Matrix** é o ambiente de narrativas de pânico fabricadas para induzir o varejo a vender. O
   profissional observa o **fluxo** (absorção, volume em POI), não a narrativa.
 - **Book de ofertas**: a demanda institucional não aparece como um book comprador óbvio — é construída
@@ -108,9 +126,14 @@ temporais de ciclos anteriores (halving, drawdowns, sazonalidade) — detalhe em
 - **Acumulação Cíclica** — faixa onde o Smart Money absorve a venda do varejo (transferência de riqueza).
 - **Capitulação** — desistência em massa do varejo; fundo de movimento.
 - **CHoCH** (Change of Character) — choque de tendência que confirma mudança de direção.
+- **Defesa de Preço Médio** — faixa onde a instituição absorve a pressão contrária e forma/defende seu preço
+  médio; ao alavancar gera deslocamento violento; romper a zona = inversão provável da tendência primária.
 - **Faca Caindo** — comprar dentro do POI pré-mapeado durante a queda (não no vácuo).
+- **Inducement (Indução)** — região que aparenta topo/fundo sem perda da estrutura oposta; isca de liquidez
+  para o varejo (detalhe em `[[SMC]]`).
 - **Book / Absorção** — demanda institucional construída sem book comprador visível.
 - **Matrix** — narrativas de pânico fabricadas para manipular as sardelas.
+- **Redistribuição** — faixa de defesa de venda dentro da queda; lateralização que prepara continuação de baixa.
 - **POI** (Ponto de Interesse Institucional) — zona de alta liquidez e demanda institucional (OB+FVG+EQH/EQL+suporte de absorção).
 - **Sardelas / Sardinhas** — amadores que operam pelo emocional e servem de liquidez.
 - **Sobrevenda no Diário** — exaustão vendedora no D; gatilho de aumento de exposição escalonado.
@@ -127,4 +150,5 @@ temporais de ciclos anteriores (halving, drawdowns, sazonalidade) — detalhe em
 - [[btc-cycle-analysis]] — Pilar Ciclos + sazonalidade
 - [[volume-profile]] — Pilar Volume
 - [[btc-macro-correlations]] — Pilar Contexto Macro
+- [[whale-liquidity-absorption]] — perfil de absorção por faixa = mapa da defesa de preço médio
 - [[trade-playbooks]] — playbooks de entrada que usam POIs e gatilhos

@@ -28,11 +28,14 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 6. **15M/5M:** gatilho de execução, BOS de confirmação.
 
 ## Fase 3 — Smart Money Concepts — Ref: [[SMC]]
-1. Estrutura: **BOS** (continuação) ou **CHoCH** (reversão) no 4H e 1H.
+1. Estrutura: **BOS** (continuação) ou **CHoCH** (reversão) no 4H e 1H. **Regra de Estrutura: só é topo
+   se perder fundo** — máxima não é topo até perder o último fundo relevante (CHoCH); simétrico p/ fundos.
+   SMC sozinho ≈ 50% → **validar a quebra prioritariamente em D/M** (define as regiões exatas de compra/venda).
 2. **FVG** (gaps de liquidez não preenchidos).
 3. **Order Blocks** (último candle antes de impulso = zona institucional).
 4. Liquidez: EQH/EQL, PDH/PDL, BSL/SSL.
-5. Traps: Bull/Bear Trap, BSL Grab, Stop Hunt.
+5. Traps: Bull/Bear Trap, BSL Grab, Stop Hunt, **Inducement** (aparenta topo/fundo sem perder a estrutura
+   oposta = isca de liquidez; exigir CHoCH + perda de fundo antes de tratar como reversão).
 6. Confluência: FVG + OB + Fib Golden Zone = máxima convicção (= **POI**, ver [[institutional-flow-poi]]).
 7. **CHoCH = gatilho de reversão** (fim da acumulação/distribuição do Smart Money): confirmar no TF
    relevante + volume; usar para mudar bias ou manter posição.
@@ -93,8 +96,9 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 ## Fase 8 — Liquidez, Correlações e Posicionamento de Margem
 Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcusdlongs-btcusdshorts]]
 1. Mapear pavios HTF (M/W/D) → liquidez acima ou abaixo. Pavios + OB/FVG = **POIs** institucionais
-   (absorção/book). **Perda de LTA = capitulação final** = POI de máxima convicção (só com
-   confluência) — ver [[institutional-flow-poi]].
+   (absorção/book). Clusters de absorção = **zona de defesa de preço médio** (acumulação vs redistribuição;
+   romper a zona com volume = inversão provável da tendência primária). **Perda de LTA = capitulação final**
+   = POI de máxima convicção (só com confluência) — ver [[institutional-flow-poi]].
 2. **USDT.D — confirmador inverso + divergência (OBRIGATÓRIO BTC/ETH):** (a) confirma/nega o bias;
    (b) varrer div de RSI no USDT.D (W/D/4H/1H/15M, 1W primordial); (c) div cruzada BTC↔USDT.D.
 3. **Funding Rate + OI + Fear&Greed:** ler `raw/feeds/latest.md` (valores REAIS de BTC/ETH — não

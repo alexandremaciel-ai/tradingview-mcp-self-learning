@@ -20,6 +20,8 @@
 **BTC:** Macro vence micro — não confiar em rompimento sem fechamento + volume + USDT.D confirmando.
 
 **ALTCOIN:** Se BTC em risco macro → altcoins só como scalp/day trade. Wyckoff: só se vol diário > $50M.
+Compra de altcoin (swing) **só com o BTC dando sustentação técnica** (gatilho/estrutura de alta) — sem
+gatilho claro no ativo primário, long em secundárias é alto risco. Ver `[[institutional-flow-poi]]`.
 
 **EQUITIES:** Checar earnings iminentes (7 dias) → alertar risco de gap. Horário: pré-market (05h–10:30h BRT), regular (10:30–17:00h), after-hours — sinais em regular = mais confiáveis. Playbook 4 (squeeze crypto) **não se aplica** — usar Playbooks 1-3.
 

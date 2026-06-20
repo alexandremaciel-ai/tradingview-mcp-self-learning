@@ -23,5 +23,6 @@ Perfil granular de **absorção e liquidez por faixa de preço** (AlgoAlpha). Pl
 ## Backlinks
 - [[smc-luxalgo]] — estrutura + OB complementam o mapa de liquidez
 - [[liquidity-wicks-trap-short-usdtd]] — varredura de liquidez / pavios
+- [[institutional-flow-poi]] — clusters de absorção = zona de defesa de preço médio institucional
 - [[layouts]] — layout Liquidity e SMC
 - [[indicators]]

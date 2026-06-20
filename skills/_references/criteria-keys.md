@@ -66,10 +66,10 @@
 | `usdtd` | USDT.D confirmando o lado (mola/topo, divergência a favor) |
 | `dxy` | DXY a favor do bias |
 | `funding` | Funding/OI a favor (squeeze risk a favor) |
-| `liquidez` | Sweep/grab de liquidez ou POI HTF a favor |
+| `liquidez` | Sweep/grab de liquidez ou POI HTF a favor; inducement evitado / defesa de preço médio mapeada |
 | `fib-golden` | Golden Zone Fibonacci (0.618–0.65) na zona de entrada |
 | `wyckoff` | Fase de Wyckoff (SC/AR/Spring/UTAD) confirmando |
-| `estrutura` | Estrutura MTF (BoS/tendência) a favor |
+| `estrutura` | Estrutura MTF (BoS/tendência) a favor; regra "só é topo se perder fundo" + quebra validada em D/M |
 | `poi` | POI institucional alinhado ([[institutional-flow-poi]]) |
 
 > Mantenha esta lista 1:1 com os cabeçalhos `##` de `indicators.md`. Ao adicionar um indicador

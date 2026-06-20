@@ -2,6 +2,7 @@
 
 > Conceito central de leitura de estrutura de mercado e zonas institucionais.
 > Atualizado: 2026-04-23 com KB v1.0 (EQH/EQL traps, MSS, Fibonacci confluence)
+> Atualizado: 2026-06-20 com KB institucional (Regra de Estrutura, confluência BOS em HTF, Inducement)
 
 ---
 
@@ -19,6 +20,16 @@
 - CHoCH no 4H = gatilho para mudar bias
 - BOS no 15M = gatilho de entrada (após confirmação no 4H/1H)
 - MSS = confirma reversão estrutural, não apenas pullback
+
+### Regra de Estrutura — "só é topo se perder fundo"
+Uma máxima no gráfico **não é topo** até o preço reverter e **perder o último fundo relevante** (CHoCH).
+Enquanto os fundos anteriores seguirem intactos, a máxima é apenas correção dentro da tendência — adivinhar
+topo sem perda de fundo é **operar contra a estrutura** (e contra a probabilidade). Simétrico para fundos:
+uma mínima só é fundo após romper o último topo relevante (CHoCH altista).
+
+> **Confluência de quebra em HTF.** SMC puro ≈ coin-flip (~50% de acerto). Para inclinar a probabilidade,
+> validar a quebra (BOS/CHoCH) **prioritariamente em D e M** — o tempo gráfico maior define as regiões
+> exatas e mais seguras de compra/venda; gatilhos de TF menor só valem alinhados a essa quebra macro.
 
 ---
 
@@ -57,6 +68,10 @@ O preço tende a retornar para preencher o FVG antes de continuar.
 - **Bear Trap:** rompimento abaixo de EQL/PDL **sem volume**, seguido de reversão. Sinal de Long.
 - **BSL Grab:** spike mínimo acima de EQH → close abaixo = smart money capturou liquidez antes de queda
 - **Stop Hunt:** movimento brusco que atinge zonas de stop antes de reverter para a direção real
+- **Inducement (área de indução):** região que **aparenta** topo/fundo mas cujos fundos/topos anteriores
+  **NÃO foram perdidos** — isca deliberada para induzir o varejo a vender/comprar cedo e gerar a liquidez
+  que o institucional precisa. Antes de tratar como reversão, exigir **CHoCH + perda de fundo** (Regra de
+  Estrutura, §1); sem isso, a "reversão" é a própria armadilha.
 
 ### Confluência de Alta Convicção
 - EQH varrido + weekly close abaixo = BSL grab confirmado → Playbook 3 (Stop Hunt Reversal)

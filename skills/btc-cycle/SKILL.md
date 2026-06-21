@@ -14,10 +14,20 @@ Ref: [[btc-cycle-analysis]] · [[institutional-flow-poi]] (acumulação cíclica
    b. TF `M` → `data_get_ohlcv({summary:true})` → `capture_screenshot`.
    c. RSI semanal (divergências), MACD semanal (cruzamento vs zero), volume (climático?).
 4. **[200W SMA]** Preço vs 200W SMA — se NÃO tocou → fundo provavelmente NÃO ocorreu.
-5. **[ON-CHAIN]** (se instalados no chart): MVRV Z >7 topo / <0 fundo · NUPL >0.75 euforia / <0
-   capitulação · Puell >4 topo / <0.5 fundo · Pi Cycle Top (111DMA vs 350DMA×2) · Hash Ribbons ·
-   Realized Price (acima/abaixo). _MVRV foi removido do layout "EMA Cross" — adicionar ad-hoc via
-   `chart_manage_indicator` se preciso._
+5. **[ON-CHAIN]** Fonte primária = feed dedicado (não depende mais do chart). **Gate de frescor
+   (~1×/dia, OBRIGATÓRIO):** se `raw/feeds/onchain-latest.md` ausente **ou** timestamp > 24h → rodar
+   `python3 scripts/tools/fetch_onchain.py`; senão só ler o arquivo. ⚠️ O BGeometrics tem limite
+   **8 req/h · 15/dia** — NÃO re-rodar no mesmo dia (o gate evita isso; re-run no mesmo hora → 429,
+   que degrada para proxy/chart sem quebrar).
+   - **Todas KEYLESS** (api.bitcoin-data.com `/v1/<slug>/last`, sem key): **NUPL** (>0.75 euforia /
+     <0 capitulação) · **Puell** (>4 topo / <0.5 fundo) · **MVRV Z** (>7 topo / <0 fundo, confirma o
+     chart) · **Realized Price** (preço<RP = capitulação) · **Reserve Risk**.
+   - **Computadas (blockchain.com / preço):** **Pi Cycle Top** (111DMA vs 2×350DMA) · **Hash Ribbons**
+     (MA30<MA60 = capitulação de mineradores; cruz↑ = compra histórica) · Puell proxy (fallback).
+   - **MVRV Z primário** continua vindo do **chart** (layout Emas — `data_get_study_values`); a linha
+     do feed é confirmação cruzada.
+   - `BGEO_API_KEY` (opcional, no `.env`) **não é necessária** — só eleva os limites do tier free.
+     Métrica `indisponível`/`429` → **não pontua** (não estimar).
 6. **[FIBONACCI LOG]** Fib do low do ciclo anterior ao ATH (escala log).
 7. **[SCORING]** Score de Topo [X/10] + Score de Fundo [X/15]. Sobrevenda Semanal/Mensal e funding
    negativo extremo entram como critérios de fundo (gatilhos de acumulação — [[institutional-flow-poi]]).

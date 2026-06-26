@@ -35,12 +35,15 @@ Uso:
 Sem dependências externas (stdlib: urllib, json).
 """
 
+import functools
 import json
 import os
 import sys
 import urllib.error
-import urllib.request
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _feeds_common import load_dotenv, http_get_json as _http_get_json  # noqa: E402
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FEEDS_DIR = os.path.join(BASE_DIR, 'raw', 'feeds')
@@ -50,36 +53,11 @@ BLOCKCHAIN_BASE = 'https://api.blockchain.info/charts'
 BGEO_BASE = 'https://api.bitcoin-data.com/v1'
 TIMEOUT = 20
 
-
-def load_dotenv(path=None):
-    """Carrega BASE_DIR/.env em os.environ (stdlib puro). Env real vence o .env."""
-    path = path or os.path.join(BASE_DIR, '.env')
-    if not os.path.isfile(path):
-        return
-    try:
-        with open(path, encoding='utf-8') as f:
-            for raw in f:
-                line = raw.strip()
-                if not line or line.startswith('#') or '=' not in line:
-                    continue
-                key, _, val = line.partition('=')
-                key = key.strip()
-                val = val.strip().strip('"').strip("'")
-                if key and key not in os.environ:
-                    os.environ[key] = val
-    except OSError:
-        return
-
-
-load_dotenv()
+load_dotenv(BASE_DIR)
 
 BGEO_API_KEY = os.environ.get('BGEO_API_KEY', '').strip()
 
-
-def http_get_json(url, headers=None):
-    req = urllib.request.Request(url, headers=headers or {})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-        return json.loads(resp.read().decode('utf-8'))
+http_get_json = functools.partial(_http_get_json, timeout=TIMEOUT)
 
 
 # ---------------------------------------------------------------------------

@@ -8,3 +8,15 @@ export function jsonResult(obj, isError = false) {
     ...(isError && { isError: true }),
   };
 }
+
+/**
+ * Wraps a core function as an MCP tool handler: runs it with the incoming args,
+ * returns jsonResult on success, and a uniform error result on throw.
+ * `errExtra` adds extra fields (e.g. a hint) to the error payload.
+ */
+export function handle(fn, errExtra) {
+  return async (args) => {
+    try { return jsonResult(await fn(args)); }
+    catch (err) { return jsonResult({ success: false, error: err.message, ...errExtra }, true); }
+  };
+}

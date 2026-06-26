@@ -29,12 +29,15 @@ Config (lida de BASE_DIR/.env ou do ambiente — variável de ambiente tem prece
 Sem dependências externas (stdlib: urllib, json).
 """
 
+import functools
 import json
 import os
 import sys
 import urllib.error
-import urllib.request
 from datetime import datetime, timezone
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _feeds_common import load_dotenv, http_get_json as _http_get_json  # noqa: E402
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FEEDS_DIR = os.path.join(BASE_DIR, 'raw', 'feeds')
@@ -44,41 +47,12 @@ COINALYZE_BASE = 'https://api.coinalyze.net/v1'
 FNG_URL = 'https://api.alternative.me/fng/?limit=1'
 TIMEOUT = 12
 
-def load_dotenv(path=None):
-    """Carrega BASE_DIR/.env em os.environ (stdlib puro, sem deps).
-
-    NÃO sobrescreve variáveis já presentes no ambiente — env real vence o .env,
-    mantendo válido o uso `COINALYZE_API_KEY=xxx python fetch_feeds.py`.
-    Degradação graciosa: sem .env (ou erro de leitura) segue sem alterar nada.
-    """
-    path = path or os.path.join(BASE_DIR, '.env')
-    if not os.path.isfile(path):
-        return
-    try:
-        with open(path, encoding='utf-8') as f:
-            for raw in f:
-                line = raw.strip()
-                if not line or line.startswith('#') or '=' not in line:
-                    continue
-                key, _, val = line.partition('=')
-                key = key.strip()
-                val = val.strip().strip('"').strip("'")
-                if key and key not in os.environ:
-                    os.environ[key] = val
-    except OSError:
-        return
-
-
-load_dotenv()
+load_dotenv(BASE_DIR)
 
 API_KEY = os.environ.get('COINALYZE_API_KEY', '').strip()
 SYMBOLS = os.environ.get('COINALYZE_SYMBOLS', 'BTCUSDT_PERP.A,ETHUSDT_PERP.A').strip()
 
-
-def http_get_json(url, headers=None):
-    req = urllib.request.Request(url, headers=headers or {})
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-        return json.loads(resp.read().decode('utf-8'))
+http_get_json = functools.partial(_http_get_json, timeout=TIMEOUT)
 
 
 def fetch_coinalyze():

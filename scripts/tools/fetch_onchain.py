@@ -234,10 +234,10 @@ def build_digest(now, ribbons, pi, bgeo, puell_proxy):
     else:
         L.append(f'| NUPL | {nupl if nupl is not None else "indisponível"} | — | BGeometrics |')
 
-    # MVRV Z (confirmação do chart)
+    # MVRV Z (primário = feed; chart só ad-hoc — nenhum layout o plota desde 12/06)
     mvrv = bvals.get('mvrv-zscore')
     if isinstance(mvrv, (int, float)):
-        L.append(f'| MVRV Z-Score (confirma chart) | {mvrv:.4f} | {bgeo_zone("mvrv-zscore", mvrv)} | BGeometrics |')
+        L.append(f'| MVRV Z-Score (primário) | {mvrv:.4f} | {bgeo_zone("mvrv-zscore", mvrv)} | BGeometrics |')
     else:
         L.append(f'| MVRV Z-Score | {mvrv if mvrv is not None else "indisponível"} | — | BGeometrics |')
 
@@ -280,7 +280,8 @@ def build_digest(now, ribbons, pi, bgeo, puell_proxy):
     L.append('> Limiares (ref. `wiki/concepts/btc-cycle-analysis.md`): Puell >4 topo / <0.5 fundo · '
              'Pi Cycle 111DMA≥2×350DMA = topo · Hash Ribbons MA30<MA60 = capitulação, cruz↑ = compra · '
              'NUPL >0.75 euforia / <0 capitulação · MVRV-Z >7 topo / <0 fundo.')
-    L.append('> MVRV-Z primário vem do **chart** (layout Emas); a linha BGeometrics é confirmação cruzada.')
+    L.append('> MVRV-Z primário = **este feed** (BGeometrics). Nenhum layout plota MVRV desde 12/06 — o '
+             'chart só confirma se adicionado ad-hoc; senão não citar valor de chart (seria estimativa).')
     L.append('')
     return '\n'.join(L) + '\n'
 

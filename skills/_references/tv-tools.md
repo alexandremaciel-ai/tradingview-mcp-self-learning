@@ -6,7 +6,8 @@
 ## Decision Tree — Which Tool When
 
 - **Ler chart:** `chart_get_state` (symbol/TF/IDs dos indicadores — chamar 1×) → `data_get_study_values` (valores numéricos dos indicadores visíveis) → `quote_get` (snapshot de preço/OHLC/vol).
-- **Pine custom drawings** (indicador precisa estar visível): `data_get_pine_lines` (níveis), `_labels` (texto+preço), `_tables` (linhas), `_boxes` ({high,low}); `study_filter` p/ alvejar um indicador.
+- ⚠️ **`data_get_study_values` dá só o VALOR ATUAL.** Marcas de **divergência** (Bull/Bear) e estruturas (**OB/FVG/CHoCH/BOS/EQH/EQL**) NÃO saem por ele — são `line/label/box/plotshape`. Lê-las exige os pine tools abaixo ou `capture_screenshot` do pane. Afirmar divergência/estrutura a partir de `study_values` (ou por inferência de price action) viola o Invariante 0 → use a fonte ou declare `DADO_INDISPONIVEL`.
+- **Pine custom drawings** (indicador precisa estar visível): `data_get_pine_lines` (níveis + segmentos de divergência via `verbose=true`, cor=bull/bear), `_labels` (texto+preço), `_tables` (linhas), `_boxes` ({high,low}); `study_filter` p/ alvejar um indicador.
 - **Price data:** `data_get_ohlcv` (sempre `summary: true`; `count` limita) | `quote_get` (último preço).
 - **Mudar chart:** `chart_set_symbol` | `chart_set_timeframe` | `chart_set_type` | `chart_manage_indicator` (nome completo) | `chart_scroll_to_date` | `chart_set_visible_range` | `indicator_set_inputs`.
 - **Pine Script:** `pine_set_source` → `pine_smart_compile` → `pine_get_errors`/`pine_get_console` | `pine_save`/`pine_new`/`pine_open`. ⚠️ evitar `pine_get_source` (200KB+).

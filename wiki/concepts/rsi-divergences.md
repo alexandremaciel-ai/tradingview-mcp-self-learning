@@ -3,6 +3,13 @@
 > Conceito crítico para identificar exaustão de tendência antes da reversão de candle.
 > Fonte: Crypto Trading KB v1.0 | Integrado: 2026-04-23
 
+> 🔴 **Como LER a divergência (Invariante 0 — fonte, não inferência):** os padrões abaixo descrevem o que
+> o indicador (`RSI Divergences Pro` / V.V.I.R.) **já computa e plota**. Preferir SEMPRE a marca lida da
+> fonte — `data_get_pine_lines(study_filter="RSI Div", verbose=true)` (cor=bull/bear) e, se decisivo,
+> `capture_screenshot` do pane. `data_get_study_values` dá só o valor atual e **não** revela divergência.
+> A comparação manual de pivôs (preço HH/LL vs RSI HH/LL) só vale com a **série puxada de fonte real**;
+> nunca afirmar presença/ausência por estimativa → senão `DADO_INDISPONIVEL`. (Erro de ref.: CYCLE 28/06.)
+
 ---
 
 ## 1. Tipos de Divergência

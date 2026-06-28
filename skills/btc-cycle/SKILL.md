@@ -23,20 +23,27 @@ Ref: [[btc-cycle-analysis]] · [[institutional-flow-poi]] (acumulação cíclica
       reversão no fechamento** (martelo/engolfo) e posição vs ATH.
    b. TF `W` → `data_get_study_values` → `capture_screenshot`.
    c. TF `M` → `data_get_ohlcv({summary:true})` → `capture_screenshot`.
-   d. RSI semanal (divergências), MACD semanal (cruzamento vs zero), volume (climático?).
-4. **[200W SMA]** Preço vs 200W SMA — se NÃO tocou → fundo provavelmente NÃO ocorreu.
+   d. RSI semanal (divergências — **ler a marca da fonte**: `data_get_pine_lines(study_filter="RSI Div",
+      verbose=true)`/screenshot do pane, nunca inferir; ver `technical-checklist` Fase 6 callout 🔴),
+      MACD semanal (cruzamento vs zero), volume (climático?).
+4. **[200W SMA]** Obter o valor REAL: `chart_manage_indicator(action:"add", name:"Moving Average")` no
+   Semanal com `length=200` (`indicator_set_inputs`) → `data_get_study_values`. Preço vs 200W SMA — se NÃO
+   tocou → fundo provavelmente NÃO ocorreu. ⚠️ Indisponível (não plotada) → rotular `200W-estimada
+   (computada)` e NUNCA apresentar como nível lido do chart (Invariante 0).
 5. **[ON-CHAIN]** Fonte primária = feed dedicado (não depende mais do chart). **Gate de frescor
    (~1×/dia, OBRIGATÓRIO):** se `raw/feeds/onchain-latest.md` ausente **ou** timestamp > 24h → rodar
    `python3 scripts/tools/fetch_onchain.py`; senão só ler o arquivo. ⚠️ O BGeometrics tem limite
    **8 req/h · 15/dia** — NÃO re-rodar no mesmo dia (o gate evita isso; re-run no mesmo hora → 429,
    que degrada para proxy/chart sem quebrar).
    - **Todas KEYLESS** (api.bitcoin-data.com `/v1/<slug>/last`, sem key): **NUPL** (>0.75 euforia /
-     <0 capitulação) · **Puell** (>4 topo / <0.5 fundo) · **MVRV Z** (>7 topo / <0 fundo, confirma o
-     chart) · **Realized Price** (preço<RP = capitulação) · **Reserve Risk**.
+     <0 capitulação) · **Puell** (>4 topo / <0.5 fundo) · **MVRV Z** (>7 topo / <0 fundo) ·
+     **Realized Price** (preço<RP = capitulação) · **Reserve Risk**.
    - **Computadas (blockchain.com / preço):** **Pi Cycle Top** (111DMA vs 2×350DMA) · **Hash Ribbons**
      (MA30<MA60 = capitulação de mineradores; cruz↑ = compra histórica) · Puell proxy (fallback).
-   - **MVRV Z primário** continua vindo do **chart** (layout Emas — `data_get_study_values`); a linha
-     do feed é confirmação cruzada.
+   - **MVRV Z primário = o FEED** (BGeometrics keyless). ⚠️ Nenhum layout plota MVRV desde 12/06 (removido
+     do "EMA Cross e MVRV"; Emas é price-action puro — ver [[layouts]]). O chart só serve de confirmação
+     cruzada **se** o MVRV for adicionado **ad-hoc** (`chart_manage_indicator`); não existindo, **não
+     citar valor de chart** (seria estimativa).
    - `BGEO_API_KEY` (opcional, no `.env`) **não é necessária** — só eleva os limites do tier free.
      Métrica `indisponível`/`429` → **não pontua** (não estimar).
 6. **[FIBONACCI LOG]** Fib do low do ciclo anterior ao ATH (escala log).

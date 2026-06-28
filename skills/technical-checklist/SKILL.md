@@ -68,12 +68,27 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 > Custom (V.V.I.R., MVRV Z, SMC LuxAlgo, Tabela RSI Maciel) têm leitura própria em [[layouts]]/[[indicators]].
 > **M e W em RSI/StochRSI/MACD são OBRIGATÓRIOS no macro**; M tem peso de ciclo acima do W.
 
+> 🔴 **FONTE DA DIVERGÊNCIA (obrigatório — Invariante 0).** A divergência é um **sinal computado e
+> plotado pelo indicador** (V.V.I.R. / MACD Divergences Pro / Stoch RSI Div Pro), NÃO algo a inferir de
+> price action. `data_get_study_values` dá só o **valor atual** do RSI/MACD — **não** mostra divergência;
+> afirmar presença/ausência a partir dele é alucinação. Ler da fonte, nesta ordem:
+> 1. **Default (sempre):** `data_get_pine_lines(study_filter="RSI Div"/"MACD"/"Stoch RSI", verbose=true)`
+>    — os segmentos + **cor** codificam bull/bear (linhas que ligam os pivôs da divergência).
+> 2. **Escalar p/ `capture_screenshot` do sub-pane SÓ se** a divergência for pesar no bias/Confluence
+>    Score **ou** a cor/segmento de pine_lines for ambíguo (os marcadores Bull/Bear são plotshape e mais
+>    inequívocos no pane).
+> 3. **Manual** (preço-pivô vs RSI-pivô) só com os pivôs **puxados de fonte real** (OHLCV + série do RSI),
+>    declarando os 2 pontos com TF. NUNCA de um valor único.
+> 4. Nenhuma fonte disponível → **`DADO_INDISPONIVEL`**. **Proibido** escrever "sem divergência" por
+>    inferência. (Erro de referência: CYCLE 28/06 — ver [[mistakes]].)
+
 1. **RSI (14):** valor + zona (>70 OB / <30 OS) + direção + cruzamento RSI×SMA(RSI).
    - **M:** define teto/piso de momentum do CICLO; divergência mensal = reversão de ciclo (peso máximo).
    - **W:** limita upside/downside dos TFs menores; **divergência semanal = detector PRIMORDIAL de
      topo/fundo** — varrer a div do 1W antes dos TFs menores.
    - **Divergências MTF (OBRIGATÓRIO se RSI no layout) — varrer HTF→LTF `1M→2W→1W→1D→4H→1H→15m→5m`:**
-     bearish preço HH+RSI LH | bullish preço LL+RSI HL. **Separar Regular (reversão) de Oculta
+     **ler a marca do V.V.I.R. da fonte (callout 🔴 acima), não inferir.** bearish preço HH+RSI LH |
+     bullish preço LL+RSI HL (= o que o indicador já computou). **Separar Regular (reversão) de Oculta
      (continuação) — sinais OPOSTOS.** Aplicar a **tabela de pesos por TF** (FORTE = ≥2 TFs mesmo
      lado, soma ≥6 · FRACO = só LTF <3 · `DIV_CONTRA_HTF` = LTF contra HTF → não opera) e o
      **quórum de confirmação ≥2-de-3** (volume/Smart Volume+VRVP · zona SMC · price action LTF).

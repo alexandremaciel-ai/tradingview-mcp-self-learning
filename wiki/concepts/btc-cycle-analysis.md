@@ -176,9 +176,25 @@ Mede capitulação de mineradores via cruzamento de hash rate (30DMA vs 60DMA).
 
 ## PARTE 3: Análise Técnica de Ciclo (Price Action)
 
-### 3.0 Estrutura Mensal de Ciclo (OBRIGATÓRIO — ler primeiro)
+### 3.0 Estrutura de Timeframes Altos de Ciclo (6M / 3M / M) (OBRIGATÓRIO — ler primeiro)
 
-> O **Mensal (M)** é o âncora do ciclo: define teto/piso de momentum macro e os **alvos mensais**. Leitura obrigatória em toda análise CYCLE, antes de descer ao semanal.
+> Hierarquia de ciclo (top-down): **6M = âncora máxima** · **3M = confirmação intermediária** ·
+> **M = teto/piso de momentum macro** e alvos mensais. Leitura obrigatória em toda análise CYCLE, de
+> cima para baixo, antes de descer ao semanal.
+
+**O bear é a correção do gráfico de 6M.** Topos e fundos de ciclo **confirmam no FECHAMENTO** dos
+candles de 6M/3M/M — um candle ainda **em formação** revertendo é sinal **preliminar**, não confirmado
+até fechar.
+
+**Regra dos "2 candles de 6M" (janela de atenção, não predição):** os últimos fundos cíclicos vieram
+**~2 candles de 6 meses após o topo** (≈12 meses), cruzando com a coluna Topo→Fundo da Parte 1 — Ciclo 3
+(2017→2018) ~12m e Ciclo 4 (2021→2022) ~12m; Ciclo 2 (2013→2015) ~14m ≈ 2-3 candles. Usar como **janela
+de atenção** para monitorar indicadores com mais frequência e como **confirmação por fechamento** de
+6M/3M, **nunca** como gatilho temporal isolado (tempo = peso 10%; os indicadores DEFINEM).
+
+> **Fonte 6M/3M:** tentar `chart_set_timeframe({timeframe: "6M"/"3M"})`; se o TF nativo não existir no
+> setup, **agregar do Mensal** (`data_get_ohlcv({summary:true})`, ≥4 anos) e declarar `fonte:
+> agregado-do-mensal`. Não inventar fechamentos — declarar a fonte.
 
 Leitura sistemática do timeframe mensal (`chart_set_timeframe({timeframe: "M"})`):
 
@@ -199,6 +215,7 @@ Leitura sistemática do timeframe mensal (`chart_set_timeframe({timeframe: "M"})
 - [ ] EMA 21 semanal perdida como suporte pela primeira vez no ciclo
 - [ ] BOS bearish no semanal (primeiro LL confirmado)
 - [ ] Bollinger Bands semanal: preço fora da banda superior por semanas → retorno
+- [ ] Candle de 6M/3M **fechando** bearish (engolfo/rejeição) após ATH = topo de ciclo confirmado
 
 ### 3.2 Sinais de Fundo de Ciclo (Chart)
 
@@ -210,6 +227,7 @@ Leitura sistemática do timeframe mensal (`chart_set_timeframe({timeframe: "M"})
 - [ ] Re-acumulação: semanas de range apertado após capitulação
 - [ ] Preço recupera e fecha acima do Realized Price
 - [ ] 200W SMA recuperada como suporte (fecha acima por 2+ semanas)
+- [ ] Candle de 6M/3M **fechando** bullish (martelo/engolfo) com volume = fundo de ciclo confirmado
 
 ### 3.3 Fibonacci de Ciclo (Escala Log)
 
@@ -371,6 +389,7 @@ INDICADORES ON-CHAIN:
 - Hash Ribbons: [capitulação/recuperação/expansão]
 
 ANÁLISE TÉCNICA:
+- Estrutura 6M/3M: [HH/HL | LH/LL] | candle 6M atual: [em formação/fechado: bull/bear] | fonte: [nativo/agregado-do-mensal]
 - RSI Mensal: [valor] [vs 50: acima/abaixo] [divergência: sim/não] | P.RSI50 Mensal: $XX,XXX
 - MACD Mensal: [acima/abaixo zero] [cross: up/down]
 - RSI Semanal: [valor] [divergência: sim/não]

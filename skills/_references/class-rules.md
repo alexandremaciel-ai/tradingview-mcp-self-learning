@@ -19,9 +19,19 @@
 
 **BTC:** Macro vence micro — não confiar em rompimento sem fechamento + volume + USDT.D confirmando.
 
-**ALTCOIN:** Se BTC em risco macro → altcoins só como scalp/day trade. Wyckoff: só se vol diário > $50M.
-Compra de altcoin (swing) **só com o BTC dando sustentação técnica** (gatilho/estrutura de alta) — sem
-gatilho claro no ativo primário, long em secundárias é alto risco. Ver `[[institutional-flow-poi]]`.
+**ALTCOIN — medição DUPLA obrigatória (ALT/USDT × ALT/BTC):** toda altcoin é lida nos **dois pares
+simultaneamente**, nunca só em USDT:
+- ALT/USDT↑ + **ALT/BTC↑** → força real, outperform → **setup válido**.
+- ALT/USDT↑ + **ALT/BTC↓** → *fake pump* (só segue o BTC) → **rebaixar convicção**.
+- ALT/USDT↓ + **ALT/BTC↑** → acumulação relativa → candidata a outperform no próximo leg.
+
+**`HTF_BEARISH_HARD_BLOCK` (absoluto):** BTC em HTF bearish-hard (1W/1D bearish, EMA200 short-only) →
+**NENHUM long em altcoin — inclusive scalp** — independentemente do setup local da alt. Alts não
+sustentam alta contra BTC bearish em HTF. (Substitui a antiga exceção de scalp.) Ver `[[institutional-flow-poi]]`.
+
+**Contexto de dominância (puxar sempre):** BTC.D · USDT.D · TOTAL2 · TOTAL3 · **OTHERS** (apetite
+small-cap) · **Beta vs BTC** (amplitude do movimento vs BTC → dimensiona size/leverage). Wyckoff: só
+se vol diário > $50M.
 
 **EQUITIES:** Checar earnings iminentes (7 dias) → alertar risco de gap. Horário: pré-market (05h–10:30h BRT), regular (10:30–17:00h), after-hours — sinais em regular = mais confiáveis. Playbook 4 (squeeze crypto) **não se aplica** — usar Playbooks 1-3.
 
@@ -50,11 +60,14 @@ gatilho claro no ativo primário, long em secundárias é alto risco. Ver `[[ins
 - `Div RSI USDT.D: [TF:tipo ou —] | BTC↔USDT.D: alinhado/divergente`
 - `Derivativos: BTC FR [valor] OI [valor] | F&G [valor]` (de raw/feeds/latest.md)
 - `Longs/Shorts: Ratio [X.X] | Squeeze Risk: [nível]`
-- `{ALT}/BTC: [valor] [outperform/underperform] [%]`
+- `ALT/USDT: [dir] | {ALT}/BTC: [valor] [dir] → [real/fake-pump/acumulação] [%] | Beta vs BTC: [x] | OTHERS: [dir]`
+- `HTF block: [ativo/inativo]` (BTC HTF bearish-hard → nenhum long, inclusive scalp)
 - `Tipo: scalp | swing`
 
 **ALTCOIN — adicionar:**
-- `Setor: DeFi/AI/L2/meme/infra | Par/BTC: [subindo/caindo] | BTC.D: [valor] [tendência]`
+- `Setor: DeFi/AI/L2/meme/infra | BTC.D: [valor] [tendência] | OTHERS: [dir]`
+- `ALT/USDT: [dir] | ALT/BTC: [dir] → [real / fake-pump / acumulação] | Beta vs BTC: [x]`
+- `HTF block: [ativo/inativo]` (BTC HTF bearish-hard → nenhum long, inclusive scalp)
 - `Sentimento: F&G [valor]` (de raw/feeds/latest.md; funding default cobre BTC/ETH)
 - `Tipo: scalp | swing | holder`
 

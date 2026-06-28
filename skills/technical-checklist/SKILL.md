@@ -13,9 +13,18 @@ description: Checklist de análise técnica obrigatória (Fases 1-9) — MTF top
 > mapeia **POIs** (zonas de demanda institucional) e observa os **gatilhos de reversão** (CHoCH,
 > sobrevenda Diário/Semanal, perda de LTA). Toda ação de exposição é ancorada à disciplina.
 
+> **Filtro Sequencial (4 camadas — gate rígido, ordem obrigatória):** falhou a camada → **NÃO avança**.
+> 1. **Regime** [Fase 6.4 ADX + volatilidade]: tendência vs range. Sem classificar, não avança.
+> 2. **Tendência** [Fase 2 HTF — 1W/1D/4H + EMA200].
+> 3. **Momentum/Zona** [Fases 3–6: divergências MTF (peso + quórum ≥2-de-3) + zona SMC (OB/FVG/liq)].
+> 4. **Gatilho de price action** [Fase 2 LTF: BOS/CHoCH/candle de confirmação].
+
 ## Fase 1 — Leitura de Contexto
 Já coberto por `brain-read` (insights, mistakes, indicators, patterns, asset). Referenciar a
 sessão anterior do mesmo ativo → declarar o que mudou estruturalmente.
+> **Anti-alucinação (Invariante 0):** todo nível citado (S/R, OB, FVG, invalidação) carrega o **TF
+> de origem** (ex.: `EQL $60,755 [4H]`). Dado não puxado da fonte real → **`DADO_INDISPONIVEL`**
+> (não estimar). Fontes em conflito → reportar ambas + **`CONFLITO_DE_DADOS`**, sem forçar conclusão.
 
 ## Fase 2 — Multi-Timeframe (top-down obrigatório) — Ref: [[multi-timeframe-analysis]]
 Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — limita upside/downside de TODOS.
@@ -63,9 +72,12 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
    - **M:** define teto/piso de momentum do CICLO; divergência mensal = reversão de ciclo (peso máximo).
    - **W:** limita upside/downside dos TFs menores; **divergência semanal = detector PRIMORDIAL de
      topo/fundo** — varrer a div do 1W antes dos TFs menores.
-   - **Divergências M/W/D/4H/1H/15M (OBRIGATÓRIO se RSI no layout):** bearish preço HH+RSI LH |
-     bullish preço LL+RSI HL. 1W/1M = topo/fundo de CICLO; D/4H = swing; 1H/15M = gatilho.
-     ⚠️ Divergência sozinha NÃO é gatilho — confirmar com cruzamento RSI×SMA, CHoCH/BOS ou candle.
+   - **Divergências MTF (OBRIGATÓRIO se RSI no layout) — varrer HTF→LTF `1M→2W→1W→1D→4H→1H→15m→5m`:**
+     bearish preço HH+RSI LH | bullish preço LL+RSI HL. **Separar Regular (reversão) de Oculta
+     (continuação) — sinais OPOSTOS.** Aplicar a **tabela de pesos por TF** (FORTE = ≥2 TFs mesmo
+     lado, soma ≥6 · FRACO = só LTF <3 · `DIV_CONTRA_HTF` = LTF contra HTF → não opera) e o
+     **quórum de confirmação ≥2-de-3** (volume/Smart Volume+VRVP · zona SMC · price action LTF).
+     Detalhe em [[rsi-divergences]] §6.5. O sub-score de força alimenta o critério `divergencia`.
    - **USDT.D (BTC/ETH — OBRIGATÓRIO):** USDT.D INVERSO ao BTC. Varrer div de RSI no USDT.D (W/D/4H/
      1H/15M, **1W primordial**). USDT.D bullish → BTC **baixista**; USDT.D bearish → BTC **altista**.
      Div cruzada **BTC↔USDT.D** (BTC HH sem USDT.D fazer LL / fazendo HL = topo do BTC). Ref:
@@ -110,6 +122,10 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
    alinhado/divergente | Longs/Shorts: [ratio] [squeeze risk]`.
 
 ## Fase 9 — Declaração de Bias Final
+**Declaração obrigatória do setup (4 campos — sem o `nivel_invalidacao` o setup é INVÁLIDO → NEUTRO):**
+`vies_HTF` (1W/1D) · `estrutura_4H` (BULLISH/BEARISH/RANGE via HH-HL/LH-LL + ADX) ·
+`nivel_invalidacao` (preço EXATO que mata a tese, com TF) · `gatilho_LTF` (BOS/CHoCH/candle).
+
 Ver `skills/_references/confluence-score.md`: bias LONG/SHORT/NEUTRO, **Confluence Score (0–10)**,
 confiança derivada (≥8 alta / 6–7 média / 4–5 baixa / <4 NEUTRO), penalidades (`contra-macro −2`,
 `usdtd-diverge −1`, `dados-parciais −1`), disciplina (circuit breaker 🔴 → observação).

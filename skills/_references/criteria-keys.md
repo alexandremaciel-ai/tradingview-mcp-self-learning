@@ -63,6 +63,7 @@
 | slug | Significado |
 |---|---|
 | `macro` | Bias alinhado ao Veredito macro do briefing (risk-on/off) |
+| `alt-btc` | Força relativa ALT/BTC a favor (ALT/BTC↑ = força real; não fake-pump) — só altcoin |
 | `usdtd` | USDT.D confirmando o lado (mola/topo, divergência a favor) |
 | `dxy` | DXY a favor do bias |
 | `funding` | Funding/OI a favor (squeeze risk a favor) |

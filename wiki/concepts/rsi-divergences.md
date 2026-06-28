@@ -51,7 +51,7 @@
 ## 4. Parâmetros Operacionais
 
 - **Período padrão:** RSI(14)
-- **Timeframes para divergências:** **15M, 1H, 4H, Diário, Semanal e Mensal** — varrer TODOS quando o RSI está no layout. 1H/15M = gatilho; D/4H = swing; **1W e 1M são PRIMORDIAIS para marcar topo/fundo de movimento (peso máximo)**
+- **Timeframes para divergências:** **5M, 15M, 1H, 4H, Diário, Semanal, Quinzenal (2W) e Mensal** — varrer TODOS quando o RSI está no layout (ordem HTF→LTF). 1H/15M/5M = gatilho; D/4H = swing; **1W/2W e 1M são PRIMORDIAIS para marcar topo/fundo de movimento (peso máximo)**. Peso por TF + quórum de confirmação na §6.5.
 - **Timeframes para sobrecompra/venda macro:** Diário, Semanal e **Mensal**
 - **Timeframe de ciclo:** RSI **Mensal** define teto/piso de ciclo e alvos mensais. Cruzamento mensal de 50 = virada macro. Divergência mensal = reversão de **CICLO** (peso máximo, acima da semanal) — confirmar com a semanal.
 - **Sobrecompra limita retração:** RSI sobrecomprado no Semanal = limite da retração do Mensal; RSI mensal em extremo = teto/piso de ciclo que limita TODOS os TFs abaixo
@@ -106,6 +106,46 @@
 - **Oculta Bullish:** Preço HL + StochRSI LL → continuação de alta
 - **Oculta Bearish:** Preço LH + StochRSI HH → continuação de baixa
 - **⚠️ Regra:** StochRSI divergência SÓ vale se RSI HTF confirma a direção. Divergência StochRSI contra o RSI diário = ignorar.
+
+> ⚠️ **Regular e Oculta dão sinais OPOSTOS no mesmo gráfico** (Regular = reversão · Oculta =
+> continuação) — NUNCA tratar como equivalentes. Classificar o tipo ANTES de pontuar.
+
+---
+
+## 6.5 Divergência MTF — peso por TF e confirmação (obrigatório)
+
+> Varredura **sempre do maior para o menor**: `1M → 2W → 1W → 1D` (HTF, definem o viés) ·
+> `4H → 1H → 15m → 5m` (LTF, definem timing/gatilho). Separar SEMPRE Regular (reversão) de Oculta
+> (continuação) por TF.
+
+### Peso por timeframe (sub-score de FORÇA da divergência)
+| TF | Peso | Papel |
+|----|------|-------|
+| 1M | 5 | Viés macro / topo-fundo de ciclo |
+| 2W | 4 | Viés macro |
+| 1W | 4 | Viés primário |
+| 1D | 3 | Viés primário |
+| 4H | 2 | Estrutura operacional |
+| 1H | 1 | Timing |
+| 15m/5m | 0.5 | Gatilho de entrada |
+
+- **Sinal FORTE:** divergências do **mesmo lado** em ≥2 TFs com **peso somado ≥6** (ex.: 1W+1D=7).
+- **Sinal FRACO / não-gatilho:** só em LTF com **peso somado <3** (sem suporte de HTF).
+- **`DIV_CONTRA_HTF`:** divergência LTF **contra** o viés HTF = **não opera** (provável armadilha) —
+  registrar o rótulo, não pontuar.
+
+> Este é um **sub-score de força** que alimenta o critério `divergencia` (e `rsi`) do
+> **[[confluence-score]]** — **não** é um segundo sistema 0–10 paralelo.
+
+### Confirmação obrigatória — quórum ≥2-de-3 (divergência NUNCA opera sozinha)
+Para promover qualquer divergência a sinal acionável, exigir **≥2 dos 3**:
+1. **Volume/Delta confirmando** — nos layouts atuais = **Crypto Smart Volume** (Smart Score/Z
+   climático/virando) + **VRVP** (delta/OBV clássico não está nos layouts).
+2. **Zona SMC coincidente** — Order Block, FVG, liquidity sweep, EQH/EQL varridos.
+3. **Gatilho de price action** — engolfo, pin bar, BOS/CHoCH no LTF.
+
+> Este quórum ≥2-de-3 **substitui** (endurece) o antigo "confirmar com cruzamento RSI×SMA, CHoCH/BOS
+> **ou** candle" (1-de-N). Uma fonte de verdade.
 
 ---
 

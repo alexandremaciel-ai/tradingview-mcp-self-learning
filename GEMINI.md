@@ -16,6 +16,11 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
 
 ## ⚡ AUTO-PILOT — Invariantes (valem em TODA interação)
 
+0. **PRINCÍPIO ANTI-ALUCINAÇÃO (precede tudo) →** NUNCA inventar preço, nível, RSI, volume ou
+   estrutura. Dado não puxado da fonte real (MCP Crypto.com / TradingView / exchange) → declarar
+   **`DADO_INDISPONIVEL`** e parar a afirmação (não estimar). Todo nível citado (suporte/resistência/
+   OB/FVG/invalidação) carrega o **TF de origem** explícito. Fontes em conflito → reportar ambas +
+   **`CONFLITO_DE_DADOS`**, sem forçar conclusão.
 1. **Antes de qualquer análise →** invocar a skill **`brain-read`** (conexão TV, feeds, layout
    ativo, classe do pedido, leitura do brain por relevância, prevenções/insights, fechar previsões).
 2. **Depois de qualquer análise →** invocar a skill **`brain-write`** (insight, previsão, sessão, log).

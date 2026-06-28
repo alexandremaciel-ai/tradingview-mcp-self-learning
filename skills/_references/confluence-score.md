@@ -45,9 +45,17 @@ Para CADA critério que pontuaria, olhar `Acertos/Falhas` (= N amostras) e o Hit
 - Refresh de feeds FALHOU (rede/erro) ou `raw/feeds/latest.md` segue `indisponível`/ausente →
   **−1 + rótulo `dados-parciais`** (não assumir funding/OI não lidos). Dados puxados com sucesso → SEM penalidade.
 - Fim de semana (TradFi congelado) → rótulo `macro-parcial (dados sex)` no bloco macro.
+- **`DADO_INDISPONIVEL` (anti-alucinação, Invariante 0):** qualquer dado que sustentaria o bias e
+  **não foi puxado da fonte real** → NÃO assumir valor; tratar como `dados-parciais` (**−1**) e
+  marcar o critério ausente. Nunca pontuar um critério com número inventado.
+- **`CONFLITO_DE_DADOS`:** fontes que divergem para o mesmo dado (ex.: preço MCP × TradingView) →
+  declarar AMBAS, **−1**, e **não forçar conclusão** (não escolher a que confirma o bias).
 
 ## Regras finais
 
+- **Setup sem `nivel_invalidacao` explícito = INVÁLIDO** — não emitir bias acionável. Todo bias
+  LONG/SHORT declara os 4 campos (`vies_HTF | estrutura_4H | nivel_invalidacao | gatilho_LTF`,
+  Fase 9 do `technical-checklist`); faltando o preço exato que mata a tese, rebaixar a `NEUTRO`.
 - Se nenhum framework converge → declarar `NEUTRO — sem confluência` (score < 4).
 - **Checar disciplina:** se `brain/metrics.md` indicar circuit breaker 🔴 (3 losses seguidos / DD 5% no dia)
   → rebaixar para observação/paper ([[trading-psychology]]).

@@ -1,6 +1,6 @@
 ---
 name: macro-scan
-description: Scan macro obrigatório ANTES de analisar qualquer ativo — detecta o contexto de mercado (horário BRT, NYSE/CME/Forex abertos, reabertura Dom 19h), executa o Workflow da classe (A=BTC/BTC+ETH completo 10 passos · B=ALTCOIN reduzido 5 · C=BTC+ALTCOIN parcial 7 · D=EQUITIES TradFi) com os fallbacks de ticker, e aplica as Regras de Leitura Macro (Risk-On/Off, squeeze L/S, fim de semana). Use depois do brain-read e antes do technical-checklist.
+description: Scan macro obrigatório ANTES de analisar qualquer ativo — detecta o contexto de mercado (horário BRT, NYSE/CME/Forex abertos, reabertura Dom 19h), executa o Workflow da classe (A=BTC/BTC+ETH completo 10 passos · B=ALTCOIN reduzido 6 · C=BTC+ALTCOIN parcial 8 · D=EQUITIES TradFi) com os fallbacks de ticker, e aplica as Regras de Leitura Macro (Risk-On/Off, squeeze L/S, fim de semana). Use depois do brain-read e antes do technical-checklist.
 ---
 
 # Macro Scan — Pré-requisito de qualquer análise
@@ -56,15 +56,17 @@ sexta. Cripto = único mercado ao vivo.` Focar USDT.D + TOTAL/2/3 + BTCUSDLONGS/
 · 8 `BRENT` · 9 `BTCUSDLONGS` · 10 `BTCUSDSHORTS`.
 **Depois:** tabela de correlações (10 linhas), ratio L/S, regime + squeeze risk → SÓ ENTÃO BTC/ETH.
 
-## Workflow B — ALTCOIN (5 passos — REDUZIDO)
+## Workflow B — ALTCOIN (6 passos — REDUZIDO)
 
-1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `BTCUSD` (chart) · 5 `{ALT}BTC` (par).
-**Depois:** tabela reduzida (5 linhas), BTC bias → SÓ ENTÃO a altcoin.
+1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `OTHERS` (apetite small-cap) · 5 `BTCUSD` (chart) ·
+6 `{ALT}BTC` (par). ⚠️ **Medição DUPLA: ler `{ALT}USDT` E `{ALT}BTC`** (força absoluta × relativa).
+**Depois:** tabela reduzida, BTC bias + **HTF block** → SÓ ENTÃO a altcoin.
 
-## Workflow C — BTC+ALTCOIN (7 passos — PARCIAL)
+## Workflow C — BTC+ALTCOIN (8 passos — PARCIAL)
 
-1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `BTCUSD` · 5 `BTCUSDLONGS` · 6 `BTCUSDSHORTS` · 7 `{ALT}BTC`.
-**Depois:** ratio L/S (obrigatório), BTC bias → BTC → altcoin como relativo.
+1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `OTHERS` · 5 `BTCUSD` · 6 `BTCUSDLONGS` · 7 `BTCUSDSHORTS` ·
+8 `{ALT}BTC`. ⚠️ **ler `{ALT}USDT` E `{ALT}BTC`**.
+**Depois:** ratio L/S (obrigatório), BTC bias + **HTF block** → BTC → altcoin como relativo.
 
 ## Workflow D — EQUITIES (5 passos — TRADFI)
 
@@ -94,6 +96,10 @@ regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
    extremos/funding negativo (combustível de short squeeze) → setup de acumulação institucional.
    *Topo de ciclo* = sobrecompra Semanal/Mensal + DXY forte + USDT.D subindo + longs extremos/funding
    positivo (long squeeze) → setup de distribuição. Cruzar com a Regra 6 (squeeze L/S).
+10. **Força dupla de altcoin (B/C) — ver `[[class-rules]]`:** ler ALT/USDT × ALT/BTC (ALT/BTC↑ =
+    força real · ALT/BTC↓ com USDT↑ = fake-pump → rebaixar · ALT/USDT↓ + ALT/BTC↑ = acumulação).
+    **`HTF_BEARISH_HARD_BLOCK` absoluto:** BTC HTF bearish-hard → **nenhum long em altcoin, inclusive
+    scalp**. Beta vs BTC dimensiona size/leverage; OTHERS = apetite small-cap.
 
 ## Registrar na sessão
 

@@ -14,7 +14,11 @@ description: Fecha o loop de aprendizado avaliando previsões abertas — gradin
    real, R:R, P&L, tempo) + "Setup utilizado" (link).
 5. **Se setup usado no trade:** atualizar "Histórico de Ocorrências" + recalcular "Estatísticas" +
    atualizar `wiki/setups/index.md`.
-6. **Se ❌ errou:** causa raiz → append `brain/mistakes.md` (categoria + lição + **Prevenção**).
+6. **Se ❌ errou OU ⚪-errada (direção contra na expiração):** causa raiz → append `brain/mistakes.md`
+   um stub estruturado (categoria `falso-sinal|bias-errado|timing|indicador|htf-ignorado|...` +
+   **O que aconteceu** + **Por que errou** + **Lição** + **Prevenção**). Matéria-prima: reaproveitar
+   os campos `Penalidades:`/`Confiança` da própria previsão (já listam o que pesou contra). Isto é o
+   que mantém `mistakes.md` vivo — todo erro graduado vira aprendizado acionável, não só um ❌ no log.
 7. **Se ✅ acertou:** reforçar insight em `brain/insights.md`.
 8. Atualizar `brain/patterns.md` se padrão confirmou/negou → promover Status se atingiu threshold.
 9. Preencher "Aprendizados desta Sessão" se ainda vazio.

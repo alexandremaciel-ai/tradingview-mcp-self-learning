@@ -25,14 +25,20 @@ description: Ciclo READ obrigatório do AUTO-PILOT antes de QUALQUER análise de
      (refresh por evento 🔴; sobrescreve o arquivo do dia).
    - Aplica-se a **todas as classes** (o briefing é macro-global; FOMC/CPI/DXY também movem
      EQUITIES). O `macro-scan` (Step 0.5) consome o Veredito daqui.
-2c. **🔁 Gate de feedback (fecha o loop ANTES de analisar):** garante que a análise leia métricas
-   frescas. Espelha o gate matinal:
-   - `grep -n "⏳" wiki/brain/predictions-log.md` filtrando o símbolo → para cada previsão aberta
-     **vencida** (horizonte/prazo passou, ou > 48h sem update), rodar o grading do `prediction-feedback`
-     (regra objetiva com `data_get_ohlcv`): TP antes SL = ✅ / SL antes TP = ❌ / nenhum = ⚪ + `Pós-fecho`.
-   - Depois de fechar o que venceu, rodar **`python3 scripts/tools/metrics_engine.py`** → atualiza
+2c. **🔁 Gate de feedback (DURO — fecha o loop ANTES de analisar):** uma previsão sai de `⏳`
+   por **grading objetivo**, nunca por substituição. Sem isto, `criteria_stats` fica em N=0 e o
+   Cartão de Calibração (passo 3) lê pesos de template. **Bloqueante:**
+   - Rodar **`python3 scripts/tools/check_predictions.py --symbol {SÍMBOLO}`** (gate determinístico).
+     Exit `0` (`loop: LIMPO`) → seguir. Exit `1` (`loop: SUJO`) → o stdout traz o **worklist** das
+     `⏳` pendentes (status `supersedida` OU `vencida`).
+   - Para CADA item do worklist (inclui as **supersedidas** — antes ignoradas), rodar o grading do
+     `prediction-feedback` com `data_get_ohlcv`: TP antes SL = ✅ / SL antes TP = ❌ / nenhum no prazo =
+     ⚪ + `Pós-fecho`. Erro (❌/⚪-errada) também gera stub em `mistakes.md` (ver `prediction-feedback`).
+   - Depois de zerar o worklist, rodar **`python3 scripts/tools/metrics_engine.py`** → reescreve
      `metrics.md` (WR, circuit breaker) + `indicators.md` (Hit Rate por critério) a partir dos `Critérios:`.
-   - Só então prosseguir: o Cartão de Calibração (passo 3) lerá números atuais, não defasados.
+   - **NÃO avançar ao macro-scan com `loop: SUJO`.** Só então o Cartão de Calibração lê números atuais.
+   - Sem conexão TradingView (OHLCV indisponível) → não inventar grading: declarar `loop-pendente:N`
+     no Summary e usar pesos atuais com a ressalva (degradação explícita, não silenciosa).
 3. **🖼️ Layout ativo (0c):** `chart_get_state()` → casar os studies (fingerprint) com um perfil em
    `wiki/brain/layouts.md`; ele define QUAIS indicadores a Fase 6 aplica + a recipe do layout. Sem
    match → `layout-adhoc`. **Híbrido:** trocar de layout (navegar `/chart/{slug}/`) só se o
@@ -82,7 +88,8 @@ Classes: `BTC | BTC+ETH | BTC+ALTCOIN | ALTCOIN | EQUITIES | WATCHLIST | DAILY |
 Bloco com: classe detectada, layout ativo + indicadores, prevenções ativas, insights aplicados,
 padrões monitorados, previsões abertas fechadas/atualizadas (gate de feedback), estado de disciplina,
 e o **📊 Cartão de Calibração** (ajustes de peso data-driven por critério + trava de setup).
-Incluir também:
+Incluir também (obrigatórias):
+`🔁 Loop: [N graduadas | LIMPO] · metrics @ HH:MM · calibração [N≥8: sim/não]` (do gate 2c).
 `🗞️ Briefing do dia: [presente | recém-gerado | refresh por evento] | Postura: [risk-on/off/cautela/aguardar evento] | 🔴 hoje: [evento ou —]`.
 
 > Brain files inexistentes → copiar de `wiki/brain/_templates/`. Próximo passo do pipeline:

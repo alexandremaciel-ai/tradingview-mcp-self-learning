@@ -115,19 +115,16 @@ def field(block, name):
 
 
 def detect_status(block):
-    """Detecta status pelo emoji na linha '- **Status:**'. Retorna win/loss/open/expired/None."""
+    """Detecta status pelo PRIMEIRO emoji (por posição) na linha '- **Status:**'.
+    Posição, não precedência: um '⚪ expirada … TP1 ✅' lê ⚪, não ✅ — a narração
+    pós-fecho costuma citar outros emojis. Retorna win/loss/open/expired/None."""
     m = re.search(r'- \*\*Status:\*\*\s*(.+)', block)
     if not m:
         return None
-    s = m.group(1)
-    if '✅' in s:
-        return 'win'
-    if '❌' in s:
-        return 'loss'
-    if '⏳' in s:
-        return 'open'
-    if '⚪' in s:
-        return 'expired'
+    emoji = {'✅': 'win', '❌': 'loss', '⏳': 'open', '⚪': 'expired'}
+    for ch in m.group(1):
+        if ch in emoji:
+            return emoji[ch]
     return None
 
 

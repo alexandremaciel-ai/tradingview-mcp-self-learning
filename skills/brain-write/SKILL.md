@@ -17,13 +17,20 @@ description: Ciclo WRITE obrigatório do AUTO-PILOT depois de QUALQUER análise 
 2. **Bias definido →** previsão em `wiki/brain/predictions-log.md` (Status `⏳ aberta`). **Obrigatório:**
    incluir o campo `- **Critérios:**` com os slugs de `skills/_references/criteria-keys.md` — os MESMOS
    critérios que pontuaram no Confluence Score (Fase 9). É o que alimenta a calibração por sinal.
+   - **Graduar-antes-de-supersedir (regra dura):** se esta previsão substitui uma anterior do mesmo
+     ativo, a anterior **já deve ter sido graduada** pelo gate 2c do `brain-read` (✅/❌/⚪) ANTES de
+     virar `Supersedida por [[…]]`. NUNCA marcar `Supersedida` sobre uma `⏳` ainda não graduada —
+     **supersedir ≠ resolver**; toda previsão sai de `⏳` por grading objetivo (TP vs SL), não por
+     substituição. Era esse vazamento que deixava `criteria_stats` em N=0.
 3. **Indicador surpreendeu →** registrar a observação qualitativa em `wiki/brain/indicators.md`
    ("Confiabilidade observada" / "Falhas comuns"). Os campos numéricos (Sessões/Acertos/Falhas/Hit Rate)
    são reescritos por `metrics_engine.py` a partir dos `Critérios:` — **não editar à mão**.
 4. **Padrão repetido (2ª+ vez) →** atualizar `wiki/brain/patterns.md`; promover Status quando
    atingir threshold: OBSERVAÇÃO →(2)→ VALIDADO →(3)→ CONSOLIDADO.
 5. **Erro confirmado →** append em `wiki/brain/mistakes.md` (categoria + lição + **Prevenção**).
-6. **Previsões > 48h sem update →** marcar `⚪ expirada` em `predictions-log.md`.
+6. **Previsões pendentes (supersedidas/vencidas) →** NÃO marcar `⚪` à mão por idade. O gate 2c do
+   `brain-read` (via `check_predictions.py` + `prediction-feedback`) gradua pela regra objetiva
+   (TP/SL com OHLCV) e roda o `metrics_engine.py`. Aqui só confirmar que o worklist foi zerado.
 
 ## Arquivo de sessão (operação INGEST)
 Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template, com TODAS as seções obrigatórias:

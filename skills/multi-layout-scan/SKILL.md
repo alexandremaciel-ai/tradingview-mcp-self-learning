@@ -46,6 +46,12 @@ abaixo divergirem desse arquivo, **o `layouts.md` vence** (rode RECALIBRATE LAYO
 Delegue às camadas reutilizáveis (não reimplemente aqui):
 1. **`brain-read`** — conexão TV, feeds, layout ativo, classe do pedido, leitura do brain por
    relevância, prevenções/insights/padrões, fechar previsões abertas. → Brain Read Summary.
+   - ⚠️ **Calibração cross-layout (específico do multi-layout):** o `brain-read` lê o Hit Rate "só do
+     layout ativo", mas aqui o sweep cobre **os 5 layouts** → puxar em `wiki/brain/indicators.md` a
+     calibração de **TODOS os indicadores que serão varridos** (V.V.I.R./StochRSI/MACD/SMC/EMA-Cross/
+     ADX/MVRV/Bollinger/VRVP/Whale/Mxwll/Supertrend/EMA200), não só os do home. É esse Cartão de
+     Calibração ampliado + as **Prevenções ativas** e **Insights aplicados** do Brain Read Summary que
+     o Passo 5 consome (carregar para a consolidação, não deixar órfãos).
 2. **`macro-scan`** — Step 0 (contexto/horário, NYSE/CME/Forex, reabertura Dom 19h) + Workflow da
    classe (A/B/C/D) + Regras de Leitura Macro. Faça-o **1× no início** (multi-ativo: 1× só).
    - ⚠️ Lembrete: **`quote_get(symbol=...)` IGNORA o parâmetro** → `chart_set_symbol` por ticker.
@@ -122,6 +128,9 @@ Reúna tudo (cada indicador uma vez) numa visão única, organizada por eixo:
 - **Ciclo on-chain:** MVRV Z-Score (ad-hoc — sem layout dedicado)
 - **Estrutura SMC:** CHoCH/BOS · EQH/EQL · Order Blocks (LuxAlgo) · BoS/CHoCH/HH/HL/LH/LL (Mxwll)
 - **Volatilidade:** Bollinger squeeze
+- **Rotação de liquidez:** Veredito do `macro-scan` Step 1.5 ([[liquidity-rotation-cycle]]) — **Fase**
+  (Migração BTC / Rotação ETH / Altseason / Fuga Stablecoins) + `BTC.D` + índice ES (`TOTAL2ES` p/ ETH,
+  `TOTAL3ES` p/ alt) + índice-TA anti-bull-trap. **Consumir** o veredito (não re-puxar os índices).
 - **Níveis-chave:** P.RSI50/70 (Tabela Maciel) · POC (VRVP) · OBs (SMC) · clusters Whale · Fib + S/R (Mxwll)
 
 ---
@@ -129,9 +138,19 @@ Reúna tudo (cada indicador uma vez) numa visão única, organizada por eixo:
 ## Passo 5 — Bias final (Fase 9)
 
 1. Sintetize todos os eixos num bias claro: **LONG / SHORT / NEUTRO**.
-2. **Confluence Score (0–10)** + penalidades + confiança derivada → seguir
-   `skills/_references/confluence-score.md`.
-3. **Multi-ativo:** adicionar força relativa (ETH/BTC, ALT/BTC: outperform/underperform).
+2. **Aplicar os aprendizados do brain (obrigatório — fecha o elo do Passo 2):**
+   - **Cartão de Calibração** sobre os indicadores varridos: `sinal-fraco` (<40%, N≥8) **não pontua**
+     (e considerar inverter a leitura); `meio-peso` (40–55%) conta 0.5; `setup-fraco` (WR<50%, N≥10)
+     **trava** a confiança em "média" −1. Critério N<8 = peso atual (declarar).
+   - **Prevenções ativas** (dos `mistakes`) e **Padrões monitorados** do Brain Read Summary → aplicar
+     como gate/desconto no bias (ex.: "Melt-up ≠ reclaim", "OB subindo ≠ gatilho", "não confirmar
+     swing em FDS"); **Insights aplicados** → reforço quando alinhados.
+3. **Confluence Score (0–10)** + penalidades + confiança derivada → seguir
+   `skills/_references/confluence-score.md`. **Incluir o critério `liq-rotacao`** (ou a penalidade
+   `bull-trap-liquidez` se o índice ES/rota contradiz o bias).
+4. **Multi-ativo:** força relativa (ETH/BTC, ALT/BTC: outperform/underperform) **interpretada pela
+   Fase de rotação** — ex.: ETH outperform + Fase "Rotação ETH" (BTC.D↓ + TOTAL2ES↑) = força
+   confirmada pela liquidez; ETH outperform mas Fase "Fuga Stablecoins" = força frágil/contra-fluxo.
 
 ---
 
@@ -146,5 +165,6 @@ Reúna tudo (cada indicador uma vez) numa visão única, organizada por eixo:
 ## Saída esperada (resumo)
 - Cabeçalho temporal (data/hora BRT, sessão, fechamentos) + `Classe` + `Layout home`.
 - Tabela/bloco por **eixo** (Passo 4) com cada indicador aparecendo **uma só vez**.
-- **Confluence Score + bias + confiança** por ativo; comparação relativa se multi-ativo.
+- **Veredito de Rotação de Liquidez** (Fase + índices ES + veredito Otimizado/Neutro/Bull-Trap).
+- **Confluence Score + bias + confiança** por ativo; comparação relativa **lida pela Fase** se multi-ativo.
 - Confirmação do brain WRITE e da restauração do layout home.

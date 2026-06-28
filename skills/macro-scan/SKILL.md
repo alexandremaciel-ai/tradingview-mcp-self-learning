@@ -50,21 +50,60 @@ sexta. Cripto = único mercado ao vivo.` Focar USDT.D + TOTAL/2/3 + BTCUSDLONGS/
    eventos, **ao lado** das Regras de Leitura Macro baseadas em ticker (abaixo).
 3. Se ausente (gate não rodou por algum motivo) → rótulo `briefing-ausente` e seguir só com tickers.
 
+## Step 1.5 — Roteamento de Liquidez + Fase de Rotação (OBRIGATÓRIO onde aplicável)
+
+> Doutrina: [[liquidity-rotation-cycle]]. Antes do bias, **selecionar a combinação de índices certa
+> para o target** e classificar onde a liquidez sistêmica está. Emite o **Veredito de Rotação de
+> Liquidez** (saída) + o critério `liq-rotacao±` (Confluence Score). É **camada de confirmação**, não
+> reclassifica o ativo (ETH segue Workflow A).
+
+**1) Mapa target → índices (puxar via `chart_set_symbol` → `data_get_study_values`):**
+
+| Target | Índice base | Índice de confirmação (ES = sem stablecoins) |
+|--------|-------------|-----------------------------------------------|
+| **ETH** | `BTC.D` | `TOTAL2ES` (cap total ex-BTC, ex-stables) |
+| **Altcoin menor** (≠BTC,≠ETH) | `BTC.D` | `TOTAL3ES` (cap total ex-BTC, ex-ETH, ex-stables) |
+| **BTC-solo** | `BTC.D` + `USDT.D` | — (só classificador de fase; **não** forçar TOTAL2ES/3ES) |
+| **EQUITIES** | — | **N/A** (declarar `Rotação liq: N/A`; não puxar índices cripto) |
+
+**2) Regra de validação (força do target):**
+- **ETH forte** = `BTC.D` falhando suporte / em tendência de baixa **E** `TOTAL2ES` ganhando momentum
+  de alta. Se BTC.D sobe junto = a "força" do ETH é só beta de BTC → rebaixar.
+- **Altcoin forte** = `BTC.D` em queda **+** ETH lateral/subindo com menos força **+** `TOTAL3ES`
+  rompendo resistência ou expansão de volatilidade. Cruza com a medição dupla ALT/BTC ([[class-rules]]).
+
+**3) Índice-TA anti-bull-trap (rodar RSI/MACD/Bollinger/Fib NO gráfico do índice ES, não só no ativo):**
+- **RSI:** exaustão macro de capital — **não validar compra** se o índice ES estiver em sobrecompra
+  forte. Simétrico: índice ES em sobrevenda profunda = risco de **bear-trap**/capitulação (não chase short).
+- **MACD:** cruzamento + histograma no índice = entrada/saída real de capital confirmando a tendência.
+- **Bollinger:** squeeze (compressão) antecede explosão de liquidez; rompimento da banda superior do
+  índice = fluxo direcional forte.
+- **Fibonacci:** retrações/extensões no índice mapeiam alvos macro onde a liquidez tende a secar/reverter.
+
+**4) Classificador de Fase do Ciclo de Liquidez** (consome Step 0/1.5 — **não** repete as Regras 5/9/10):
+- **Migração para BTC:** `BTC.D`↑ + `USDT.D` estável/baixo → capital concentra em BTC (alts sangram).
+- **Rotação para ETH:** `BTC.D`↓ + `TOTAL2ES`↑ com `TOTAL3ES` lateral → dinheiro sai de BTC p/ ETH.
+- **Altseason (TOTAL3ES):** `BTC.D`↓ + `TOTAL3ES`↑ + `OTHERS`↑ → risco se espalha p/ small-caps.
+- **Fuga para Stablecoins:** `USDT.D`↑ domina (risk-off) → liquidez sai de tudo p/ stables.
+
 ## Workflow A — BTC / BTC+ETH / DAILY / CYCLE (10 passos — COMPLETO)
 
 1 `USDT.D` · 2 `SPX`(→ES1!) · 3 `GOLD`(→XAUUSD) · 4 `DXY` · 5 `TOTAL` · 6 `TOTAL2` · 7 `TOTAL3`
 · 8 `BRENT` · 9 `BTCUSDLONGS` · 10 `BTCUSDSHORTS`.
 **Depois:** tabela de correlações (10 linhas), ratio L/S, regime + squeeze risk → SÓ ENTÃO BTC/ETH.
+> **Rota de liquidez (se o target inclui ETH):** somar `BTC.D` + `TOTAL2ES` (Step 1.5). Os TOTAL/2/3
+> aqui são o scan amplo (Regra 5); o **ES** (sem stablecoins) é o índice de confirmação da rota ETH.
 
 ## Workflow B — ALTCOIN (6 passos — REDUZIDO)
 
-1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `OTHERS` (apetite small-cap) · 5 `BTCUSD` (chart) ·
+1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3ES` · 4 `OTHERS` (apetite small-cap) · 5 `BTCUSD` (chart) ·
 6 `{ALT}BTC` (par). ⚠️ **Medição DUPLA: ler `{ALT}USDT` E `{ALT}BTC`** (força absoluta × relativa).
-**Depois:** tabela reduzida, BTC bias + **HTF block** → SÓ ENTÃO a altcoin.
+**Depois:** tabela reduzida, BTC bias + **HTF block** → SÓ ENTÃO a altcoin. (Rota de liquidez:
+`BTC.D` + `TOTAL3ES` = índice de confirmação — Step 1.5.)
 
 ## Workflow C — BTC+ALTCOIN (8 passos — PARCIAL)
 
-1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3` · 4 `OTHERS` · 5 `BTCUSD` · 6 `BTCUSDLONGS` · 7 `BTCUSDSHORTS` ·
+1 `USDT.D` · 2 `BTC.D` · 3 `TOTAL3ES` · 4 `OTHERS` · 5 `BTCUSD` · 6 `BTCUSDLONGS` · 7 `BTCUSDSHORTS` ·
 8 `{ALT}BTC`. ⚠️ **ler `{ALT}USDT` E `{ALT}BTC`**.
 **Depois:** ratio L/S (obrigatório), BTC bias + **HTF block** → BTC → altcoin como relativo.
 
@@ -100,6 +139,12 @@ regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
     força real · ALT/BTC↓ com USDT↑ = fake-pump → rebaixar · ALT/USDT↓ + ALT/BTC↑ = acumulação).
     **`HTF_BEARISH_HARD_BLOCK` absoluto:** BTC HTF bearish-hard → **nenhum long em altcoin, inclusive
     scalp**. Beta vs BTC dimensiona size/leverage; OTHERS = apetite small-cap.
+11. **Roteamento de liquidez (Step 1.5 — [[liquidity-rotation-cycle]]):** classificar a **Fase**
+    (Migração BTC / Rotação ETH / Altseason / Fuga Stablecoins) e validar o target pelo par
+    `BTC.D` + índice ES (`TOTAL2ES` p/ ETH, `TOTAL3ES` p/ alt). Esta regra é o **classificador que
+    consome** as leituras das Regras 5 (TOTAL vs TOTAL3), 9 (acum/distrib cíclica) e 10 (força dupla)
+    — **não as repete**. Índice ES em sobrecompra macro contra um LONG (índice-TA) ⇒ `Alto Risco de
+    Bull Trap` (penalidade `bull-trap-liquidez`, ver `[[confluence-score]]`). Target = EQUITIES → `N/A`.
 
 ## Registrar na sessão
 
@@ -107,5 +152,13 @@ regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
 - `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
 - `Briefing: [postura sugerida] | 🔴 janela: [evento ou —]` (do Step 0.5)
 - Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`.
+
+### Veredito de Rotação de Liquidez (obrigatório p/ cripto; EQUITIES → `N/A`)
+Bloco compacto de 4 linhas (Step 1.5) que **alimenta** o Confluence Score (não substitui a Fase 9):
+1. **Fase do Ciclo de Liquidez:** [Migração BTC / Rotação ETH / Altseason (TOTAL3ES) / Fuga Stablecoins].
+2. **Leitura dos Índices Macro:** `BTC.D [dir/nível]` + `TOTAL2ES/3ES [dir/momentum]` (status cruzado).
+3. **Confluência Técnica (no índice ES):** `RSI [val/zona] | MACD [cross/hist] | Boll [squeeze/break] | Fib [retração/alvo]`.
+4. **Veredito Estratégico:** **Cenário Otimizado** / **Neutro** / **Alto Risco de Bull Trap** p/ o target.
+→ emite o critério `liq-rotacao+` (Otimizado alinhado) / `-liq-rotacao` ou `bull-trap-liquidez` (contra).
 
 > Próximo passo: `technical-checklist`.

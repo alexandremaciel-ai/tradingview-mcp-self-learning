@@ -72,6 +72,7 @@
 | `wyckoff` | Fase de Wyckoff (SC/AR/Spring/UTAD) confirmando |
 | `estrutura` | Estrutura MTF (BoS/tendência) a favor; regra "só é topo se perder fundo" + quebra validada em D/M |
 | `poi` | POI institucional alinhado ([[institutional-flow-poi]]) |
+| `liq-rotacao` | Rota de liquidez a favor (Veredito `macro-scan` Step 1.5): fase + BTC.D + índice ES (`TOTAL2ES`/`TOTAL3ES`) confirmam o lado, sem sobrecompra macro do índice contra o bias. `-liq-rotacao` / `bull-trap-liquidez` = contra ([[liquidity-rotation-cycle]]) |
 
 > Mantenha esta lista 1:1 com os cabeçalhos `##` de `indicators.md`. Ao adicionar um indicador
 > novo lá, adicione o slug aqui (e no mapa `SLUG_TO_HEADER` de `metrics_engine.py`).

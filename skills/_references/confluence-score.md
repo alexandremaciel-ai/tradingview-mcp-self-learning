@@ -50,6 +50,11 @@ Para CADA critério que pontuaria, olhar `Acertos/Falhas` (= N amostras) e o Hit
   marcar o critério ausente. Nunca pontuar um critério com número inventado.
 - **`CONFLITO_DE_DADOS`:** fontes que divergem para o mesmo dado (ex.: preço MCP × TradingView) →
   declarar AMBAS, **−1**, e **não forçar conclusão** (não escolher a que confirma o bias).
+- **Rotação de liquidez (Veredito do `macro-scan` Step 1.5 — [[liquidity-rotation-cycle]]):** veredito
+  **Alto Risco de Bull Trap** (rota de liquidez contradiz o bias, ou índice ES `TOTAL2ES`/`TOTAL3ES`
+  em sobrecompra macro contra um LONG) → **−1 + rótulo `bull-trap-liquidez`** (critério `-liq-rotacao`).
+  Veredito **Cenário Otimizado** alinhado ao bias → conta no critério **`liq-rotacao+`** (elegível à
+  confluência). **Neutro** = não pontua. EQUITIES = critério ausente (rota `N/A`, sem efeito).
 
 ## Regras finais
 

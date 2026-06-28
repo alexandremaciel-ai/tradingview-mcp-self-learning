@@ -30,6 +30,10 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
    → 1ª análise do dia sem `wiki/briefings/{hoje}.md` invoca **`btc-macro-briefing`** (que persiste o
    arquivo); toda análise do dia consome o Veredito (`macro-scan` Step 0.5). Refresh só por evento 🔴.
 6. Circuit breaker 🔴 em `brain/metrics.md` (3 losses seguidos / DD 5% dia) → rebaixar p/ observação/paper.
+7. **Roteamento de liquidez (obrigatório por target — `macro-scan` Step 1.5 / [[liquidity-rotation-cycle]]):**
+   ETH→`BTC.D`+`TOTAL2ES` · altcoin→`BTC.D`+`TOTAL3ES` · BTC-solo→só fase (USDT.D/BTC.D) · equity→`N/A`.
+   O macro-scan classifica a **Fase** (Migração BTC / Rotação ETH / Altseason / Fuga Stablecoins) e emite
+   o **Veredito de Rotação** que alimenta o Confluence Score (`liq-rotacao`; `bull-trap-liquidez` se contra).
 
 ---
 

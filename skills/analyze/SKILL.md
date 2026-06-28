@@ -12,8 +12,9 @@ description: Análise técnica completa de um ativo (operação INGEST) — orqu
 
 1. **`brain-read`** — conexão, feeds, layout ativo, classe do pedido, leitura do brain por
    relevância, prevenções/insights/padrões, fechar previsões abertas. → Brain Read Summary.
-2. **`macro-scan`** — Step 0 (contexto/horário) + Workflow da classe (A/B/C/D) + Regras de Leitura
-   Macro. Declarar regime (Risk-On/Off/Misto). Classes e fallbacks em
+2. **`macro-scan`** — Step 0 (contexto/horário) + **Step 1.5 (Roteamento de Liquidez** — Fase +
+   `BTC.D` + índice ES por target; emite o Veredito de Rotação) + Workflow da classe (A/B/C/D) +
+   Regras de Leitura Macro. Declarar regime (Risk-On/Off/Misto). Classes e fallbacks em
    `skills/_references/class-rules.md` + `skills/_references/tv-tools.md`.
 3. **`technical-checklist`** — Fases 1-9 (MTF, SMC, Wyckoff, Fib, Indicadores dirigidos pelo layout,
    Playbook, Liquidez/USDT.D/Longs-Shorts, Bias). Pular framework = PROIBIDO (N/A justificado).
@@ -23,9 +24,9 @@ description: Análise técnica completa de um ativo (operação INGEST) — orqu
    `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` + append `wiki/log.md` (`ingest | {SYMBOL} {TF}`).
 
 ## Saída
-Análise consolidada com header temporal, contexto macro, MTF, indicadores do layout, liquidez/
-posicionamento, bias + score + confiança, e o plano de operação (entrada/stop/TP/R:R). Adaptar o
-formato à classe (ver `class-rules.md`).
+Análise consolidada com header temporal, contexto macro, **Veredito de Rotação de Liquidez** (Fase +
+índices ES; `N/A` em EQUITIES), MTF, indicadores do layout, liquidez/posicionamento, bias + score +
+confiança, e o plano de operação (entrada/stop/TP/R:R). Adaptar o formato à classe (ver `class-rules.md`).
 
 ## Atalhos de classe
 - WATCHLIST → use `multi-symbol-scan`. DAILY → use `daily-scan`. CYCLE → use `btc-cycle`.

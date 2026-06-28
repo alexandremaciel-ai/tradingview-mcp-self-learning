@@ -12,8 +12,12 @@ You are scanning multiple symbols for trading setups or comparing performance.
 Se o scan for de **análise de mercado** (não só comparar backtests), rode 1× no início:
 - **`brain-read`** — conexão, feeds, brain por relevância, classe `WATCHLIST`, fechar previsões.
 - **`macro-scan`** — macro completo **1×** (Risk-On/Off/Misto) — vale para todos os ativos do scan.
-- Output por ativo: tabela `Ativo | Preço | Bias | Confiança | Setup? | Nota` + Top 3
-  (ver `skills/_references/class-rules.md`). Ao final, **`brain-write`** (1 sessão `YYYY-MM-DD-WATCHLIST.md`).
+  Inclui o **Step 1.5: a Fase de rotação de liquidez é SISTÊMICA → ler 1× só** (Migração BTC /
+  Rotação ETH / Altseason / Fuga Stablecoins). Por ativo, o veredito é por **target-type**: ETH usa
+  `TOTAL2ES`, altcoins usam `TOTAL3ES` — **não** re-puxar os índices por ativo ([[liquidity-rotation-cycle]]).
+- Output por ativo: tabela `Ativo | Preço | Bias | Confiança | Rot.Liq | Setup? | Nota` + Top 3
+  (`Rot.Liq` = ✅ a-favor / ⚠️ bull-trap / — neutro vs. a Fase). Em Altseason as alts ganham peso; em
+  Fuga Stablecoins **rebaixar** os longs de alt. Ao final, **`brain-write`** (1 sessão `YYYY-MM-DD-WATCHLIST.md`).
 
 > Para puro screening técnico/backtest (sem brain), siga direto do Step 1.
 

@@ -8,7 +8,11 @@ description: Análise de ciclo do Bitcoin — onde estamos no ciclo, projeção 
 Ref: [[btc-cycle-analysis]] · [[institutional-flow-poi]] (acumulação cíclica, POIs, gatilhos de sobrevenda)
 
 1. **[BRAIN READ]** Rodar `brain-read` + ler `wiki/concepts/btc-cycle-analysis.md`.
-2. **[MACRO SCAN]** Rodar `macro-scan` Workflow A completo (10 passos).
+2. **[MACRO SCAN]** Rodar `macro-scan` Workflow A completo (10 passos). Target = BTC-solo → o
+   **Step 1.5 usa só o classificador de Fase** (BTC.D/USDT.D; **não** forçar TOTAL2ES/3ES). A Fase é
+   um *tell* de timing de ciclo ([[liquidity-rotation-cycle]]): **Migração para BTC** (BTC.D↑) = bear/
+   recuperação inicial (capital foge das alts p/ BTC) · **Altseason** (BTC.D↓ + TOTAL3ES↑) = euforia
+   tardia/distribuição · **Fuga Stablecoins** (USDT.D↑) = capitulação. Cruzar com o Score de Fundo/Topo.
 3. **[PRICE ACTION W/M]**
    a. `BTCUSD` → TF `W` → `data_get_study_values` → `capture_screenshot`.
    b. TF `M` → `data_get_ohlcv({summary:true})` → `capture_screenshot`.
@@ -33,7 +37,7 @@ Ref: [[btc-cycle-analysis]] · [[institutional-flow-poi]] (acumulação cíclica
    negativo extremo entram como critérios de fundo (gatilhos de acumulação — [[institutional-flow-poi]]).
 8. **[PROJEÇÃO]** Se bear confirmado → zona de fundo com 6 métodos: Fractal drawdown · 200W SMA ·
    Realized Price · Fibonacci log · Temporal · Confluência técnica. Zona onde 3+ convergem.
-9. **[OUTPUT]** Diagnóstico: Fase atual | Scores | Indicadores | Projeção | Estratégia de acumulação.
+9. **[OUTPUT]** Diagnóstico: Fase de ciclo | **Fase de liquidez** (BTC.D tell) | Scores | Indicadores | Projeção | Estratégia de acumulação.
    A estratégia mapeia **POIs** (primário = onde 3+ métodos convergem; secundários abaixo) para
    **compras escalonadas** ancoradas a [[position-sizing]] — não adivinhar o fundo absoluto.
 10. **[BRAIN WRITE]** Registrar `wiki/sessions/YYYY-MM-DD-BTC-CYCLE.md` + previsão em

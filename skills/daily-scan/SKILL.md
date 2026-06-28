@@ -10,11 +10,12 @@ Classe `DAILY` (ver `skills/_references/class-rules.md`).
 1. **`brain-read`** — incluir fechamento de previsões expiradas (>48h → ⚪). O gate 2b garante o
    **briefing macro do dia** (roda `btc-macro-briefing` se ausente) — a abertura é o momento natural.
 2. **`macro-scan`** — Workflow A completo **1×** (Risk-On/Off/Misto). Já incorpora o Veredito do
-   briefing (Step 0.5) — **não** duplicar a busca web aqui.
+   briefing (Step 0.5) **e a Fase de rotação de liquidez** (Step 1.5 — [[liquidity-rotation-cycle]]).
+   **Não** duplicar a busca web aqui.
 3. **BTC rápido** — D + 4H (citar o M no contexto de ciclo). Fases-chave do `technical-checklist`.
 4. **Watchlist** — varredura compacta (ou chamar `multi-symbol-scan`).
 5. **Previsões** — listar abertas + expiradas fechadas.
 6. **`brain-write`** — insight + append `wiki/log.md`.
 
 ## Output — dashboard compacto
-`Macro: Risk-On/Off/Misto | Briefing: [postura] | 🔴 hoje: [evento ou —] | BTC: [bias] | Alertas: [N] | Previsões abertas: [N]`
+`Macro: Risk-On/Off/Misto | Fase liq: [Migração BTC/Rotação ETH/Altseason/Fuga Stables] | Briefing: [postura] | 🔴 hoje: [evento ou —] | BTC: [bias] | Alertas: [N] | Previsões abertas: [N]`

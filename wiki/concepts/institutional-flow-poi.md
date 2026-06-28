@@ -150,5 +150,6 @@ temporais de ciclos anteriores (halving, drawdowns, sazonalidade) — detalhe em
 - [[btc-cycle-analysis]] — Pilar Ciclos + sazonalidade
 - [[volume-profile]] — Pilar Volume
 - [[btc-macro-correlations]] — Pilar Contexto Macro
+- [[liquidity-rotation-cycle]] — roteamento de liquidez (BTC.D + índices ES) e fases de rotação; lente macro complementar
 - [[whale-liquidity-absorption]] — perfil de absorção por faixa = mapa da defesa de preço médio
 - [[trade-playbooks]] — playbooks de entrada que usam POIs e gatilhos

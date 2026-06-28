@@ -120,6 +120,10 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
    Cruzar com Funding/OI.
 5. Declarar: `Liquidez: … | USDT.D: confirma/nega | Div RSI USDT.D: [TF:tipo ou —] | BTC↔USDT.D:
    alinhado/divergente | Longs/Shorts: [ratio] [squeeze risk]`.
+6. **Rotação de liquidez (consumir, não re-derivar):** ler o **Veredito de Rotação de Liquidez** do
+   `macro-scan` Step 1.5 ([[liquidity-rotation-cycle]]) e declarar `Rotação liq: [fase] | BTC.D [dir]
+   | TOTAL2ES/3ES [dir] | Veredito: [Otimizado/Neutro/Bull-Trap]` (EQUITIES → `N/A`). Veredito
+   `Alto Risco de Bull Trap` ⇒ a Fase 9 aplica `bull-trap-liquidez`.
 
 ## Fase 9 — Declaração de Bias Final
 **Declaração obrigatória do setup (4 campos — sem o `nivel_invalidacao` o setup é INVÁLIDO → NEUTRO):**
@@ -137,5 +141,8 @@ confiança derivada (≥8 alta / 6–7 média / 4–5 baixa / <4 NEUTRO), penali
 > Gatilhos institucionais confirmados (CHoCH + Sobrevenda Semanal + POI alinhado) **reforçam** o
 > Confluence Score pelos critérios que já existem — **não** criam score paralelo e **nunca** burlam
 > a disciplina ([[institutional-flow-poi]]).
+> **Rotação de liquidez:** o Veredito do `macro-scan` Step 1.5 entra no score pelo critério
+> `liq-rotacao` (penalidade `bull-trap-liquidez` quando o índice ES/rota contradiz o bias) — é um
+> **input ao Confluence Score**, não um veredito paralelo ([[liquidity-rotation-cycle]]).
 
 > Análise concluída → chamar `brain-write` para registrar insight/previsão/sessão.

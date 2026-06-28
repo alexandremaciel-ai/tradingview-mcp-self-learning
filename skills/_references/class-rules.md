@@ -7,9 +7,9 @@
 | Classe | Quando | Macro Scan | Checklist | Extras |
 |--------|--------|------------|-----------|--------|
 | `BTC` | Análise solo de Bitcoin | **Completo** (10 passos) | Fases 1-9 completas | BTCUSDLONGS/SHORTS obrigatório |
-| `BTC+ETH` | BTC e ETH juntos | Completo **1×** | BTC completo → ETH relativo (+ ETH/BTC pair) | Declarar ETH outperform/underperform |
-| `BTC+ALTCOIN` | BTC + altcoin específica (BTC+SOL, BTC+ADA) | **Parcial** (7 passos): USDT.D + BTC.D + TOTAL3 + BTC + Longs/Shorts + par | BTC: Fases 1-6,8-9 → Altcoin: Fases 1-6,8-9 | ALTCOIN/BTC pair obrigatório. Wyckoff só se vol > $50M |
-| `ALTCOIN` | SOL, ADA, DOGE, etc. | **Reduzido** (5 passos): USDT.D + BTC.D + TOTAL3 + BTC bias + par | Fases 1-6, 8-9. Wyckoff só se vol > $50M | Tag obrigatória: `scalp/swing/holder` |
+| `BTC+ETH` | BTC e ETH juntos | Completo **1×** (+ rota ETH: BTC.D + TOTAL2ES) | BTC completo → ETH relativo (+ ETH/BTC pair) | Declarar ETH outperform/underperform |
+| `BTC+ALTCOIN` | BTC + altcoin específica (BTC+SOL, BTC+ADA) | **Parcial** (7 passos): USDT.D + BTC.D + TOTAL3ES + BTC + Longs/Shorts + par | BTC: Fases 1-6,8-9 → Altcoin: Fases 1-6,8-9 | ALTCOIN/BTC pair obrigatório. Wyckoff só se vol > $50M |
+| `ALTCOIN` | SOL, ADA, DOGE, etc. | **Reduzido** (5 passos): USDT.D + BTC.D + TOTAL3ES + BTC bias + par | Fases 1-6, 8-9. Wyckoff só se vol > $50M | Tag obrigatória: `scalp/swing/holder` |
 | `EQUITIES` | AAPL, TSLA, SPX, ações | **TradFi**: DXY + SPX + VIX + setor (XLK/XLF) | Fases 1-6, 9. Sem USDT.D/Longs/Shorts | Checar earnings/eventos. Sem Funding Rate |
 | `WATCHLIST` | "scan da lista", vários ativos | Completo **1×** no início | Compacto por ativo: quote + indicators + bias | Output: tabela resumo. 1 sessão total |
 | `DAILY` | "daily", "morning scan" | Completo **1×** | Macro → BTC rápido (D+4H) → Watchlist → Previsões | Dashboard compacto |
@@ -33,6 +33,12 @@ sustentam alta contra BTC bearish em HTF. (Substitui a antiga exceção de scalp
 small-cap) · **Beta vs BTC** (amplitude do movimento vs BTC → dimensiona size/leverage). Wyckoff: só
 se vol diário > $50M.
 
+**Roteamento de liquidez (Step 1.5 do `macro-scan` — [[liquidity-rotation-cycle]]):** índices de
+confirmação **ES** (excluem stablecoins) por target: **ETH → BTC.D + `TOTAL2ES`** · **altcoin → BTC.D
++ `TOTAL3ES`** · **BTC-solo → só classificador de fase** (USDT.D/BTC.D; não forçar ES) · **EQUITIES →
+N/A**. ETH **permanece** classe `BTC+ETH` (Workflow A, mantém Longs/Shorts + macro TradFi) — a rota é
+camada de **confirmação**, não reclassifica ETH como altcoin.
+
 **EQUITIES:** Checar earnings iminentes (7 dias) → alertar risco de gap. Horário: pré-market (05h–10:30h BRT), regular (10:30–17:00h), after-hours — sinais em regular = mais confiáveis. Playbook 4 (squeeze crypto) **não se aplica** — usar Playbooks 1-3.
 
 **WATCHLIST:** Macro 1× no início. Output: tabela `Ativo | Preço | Bias | Confiança | Setup? | Nota`. Destacar "Top 3". 1 sessão: `YYYY-MM-DD-WATCHLIST.md`.
@@ -46,6 +52,8 @@ se vol diário > $50M.
 - `Classe: BTC | BTC+ETH | ALTCOIN | EQUITIES | WATCHLIST | DAILY`
 - `MTF: M/W/D/4H/1H → [resumo]` (DAILY: D+4H, mas citar o M no contexto de ciclo)
 - `Indicadores: RSI [M/W/D/4H/1H/15M valores+direção+divergências] | StochRSI [W/1H/15M %K/%D+cross] | MACD [M/W/D/4H vs zero+cross+hist] | ADX [valor]`
+- `Rotação liq: [fase] | BTC.D [dir] | TOTAL2ES/3ES [dir] | Veredito: [Otimizado/Neutro/Bull-Trap]`
+  (cripto; **EQUITIES → `Rotação liq: N/A`**)
 - `Bias: LONG/SHORT/NEUTRO | Confiança: alta/média/baixa`
 
 **BTC / BTC+ETH — adicionar:**

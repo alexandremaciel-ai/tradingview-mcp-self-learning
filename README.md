@@ -52,8 +52,12 @@ The upstream project gives the LLM **eyes and hands** on your chart. This fork g
 | **Session-by-session learning** | ❌ | ✅ |
 | **Setup tracking with statistics** | ❌ | ✅ |
 | **Strategy versioning & review** | ❌ | ✅ |
-| **Concept library (SMC, Wyckoff…)** | ❌ | ✅ |
+| **Concept library (SMC, Wyckoff, on-chain…)** | ❌ | ✅ |
 | **Daily macro briefing gate (event-aware analysis)** | ❌ | ✅ |
+| **Anti-hallucination protocol (source-first, TF-tagged)** | ❌ | ✅ |
+| **Systemic liquidity routing (BTC.D + ES indices)** | ❌ | ✅ |
+| **Prediction → calibration feedback gate** | ❌ | ✅ |
+| **On-chain cycle feed (NUPL, MVRV-Z, Puell…)** | ❌ | ✅ |
 | **Automated wiki maintenance** | ❌ | ✅ |
 | **Skill-first architecture (on-demand logic)** | ❌ | ✅ |
 | **Relevance-based brain recall** | ❌ | ✅ |
@@ -142,6 +146,29 @@ The brain no longer dumps entire files into context. On each analysis, `brain-re
 
 `archive_brain.py` keeps `insights.md` lean by moving older entries to `insights-archive/`, and `brain-write` keeps `insights-hot.md` trimmed to the Top 8. The effect is both fewer tokens and a more **relevant** recall than chronological dumping.
 
+### Anti-Hallucination Protocol
+
+A second brain is only as good as the data it trusts — a confident but invented price level poisons every downstream prediction. The top invariant of the runtime (Principle 0 in the context files) makes the agent **refuse to guess**:
+
+- **Source-first reads** — every price, level, RSI, volume, or structure must come from a real source (the MCP TradingView chart, the Crypto.com feed, an exchange). Nothing is estimated. A value that cannot be pulled is declared **`DADO_INDISPONIVEL`** and the claim stops there.
+- **Timeframe-tagged levels** — every cited level (support, resistance, Order Block, FVG, invalidation) carries its **timeframe of origin** explicitly, so a 15m level is never silently treated as a daily one.
+- **Conflict flagging** — when two sources disagree, both are reported with a **`CONFLITO_DE_DADOS`** tag instead of forcing a single conclusion.
+
+The rule extends to indicators the chart doesn't expose numerically (e.g. RSI divergence labels): the agent reads the source (Pine labels / panel screenshot) or declares the data unavailable — it never *infers* "no divergence" from price action.
+
+### Systemic Liquidity Routing
+
+Before validating any asset's bias, the agent maps **where capital is flowing inside the crypto ecosystem** — so an ETH or altcoin long is never taken against an outgoing tide. This layer (run by `macro-scan`) routes the read per target and feeds the confluence score:
+
+| Target | Routing tickers |
+|---|---|
+| ETH | `BTC.D` + `CRYPTOCAP:TOTAL2ES` |
+| Altcoin | `BTC.D` + `CRYPTOCAP:TOTAL3ES` |
+| BTC-only | phase only (`USDT.D` / `BTC.D`) |
+| Equity / TradFi | `N/A` |
+
+The **ES (Excluding Stablecoins)** indices strip stablecoins from the market cap so the read isolates real risk capital. From them the scan classifies a **rotation phase** — *BTC Migration · ETH Rotation · Altseason · Stablecoin Flight* — and emits a **Rotation Verdict** that adds to the [confluence score](wiki/concepts/confluence-score.md) (`liq-rotacao`), or penalizes the setup (`bull-trap-liquidez`) when the bias runs against the flow. See [`liquidity-rotation-cycle.md`](wiki/concepts/liquidity-rotation-cycle.md).
+
 ### Daily Macro Briefing Gate
 
 Chart indicators show the *structural* macro (USDT.D, DXY, S&P, longs/shorts) but are blind to *event* macro — an FOMC meeting today, a CPI print tomorrow, ETF flows, a stablecoin depeg. The `btc-macro-briefing` skill gathers that via live web search, but on its own it was ephemeral: nothing recorded whether it had already run, and `macro-scan` never consumed it.
@@ -180,6 +207,16 @@ Each session compounds on previous knowledge. The wiki grows. The analysis impro
 3. **Statistics accumulate** → win rates and R:R ratios auto-calculated by `metrics_engine.py`.
 4. **Strategy evolves** → `wiki/strategies/` updated with evidence-based changes.
 5. **Lint catches gaps** → missing data, stale pages, and broken links flagged by `wiki_lint.py`.
+
+### Prediction → Calibration Feedback Gate
+
+A learning loop only compounds if predictions are actually *scored*. Earlier, open predictions could be quietly superseded by a newer call and never graded — leaving the per-criterion hit-rate calibration empty. This edition closes that leak with a **deterministic gate**, mirroring the briefing gate:
+
+- **`check_predictions.py`** (read-only) answers a *filesystem* question — which `⏳ open` predictions should already have graded (superseded-but-unresolved, or aged past their window) — and reflects it in the exit code. It grades nothing; it just exposes the worklist.
+- **`brain-read` step 2c** consumes that worklist as a **blocking** gate: a prediction must be **graded before it can be superseded** (TP-before-SL = win, SL-before-TP = loss, neither in window = expired).
+- **Errors flow back** — a graded loss or a flagged mistake is appended to `mistakes.md` automatically, and the outcome updates `indicators.md` (per-indicator hit rate) and `metrics.md` (win rate, Brier score, circuit breaker).
+
+The result is a populated **Criteria → Hit Rate** calibration: the confluence score's weights are tuned by measured outcomes, not by assumption.
 
 ---
 
@@ -420,7 +457,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 |---|---|
 | `brain-read` | AUTO-PILOT READ — connection, feeds, layout fingerprint, relevance-based brain recall, declare preventions/insights, close open predictions |
 | `macro-scan` | Market-context detector + class workflow (A/B/C/D) + macro reading rules (Risk-On/Off, squeeze, weekend) |
-| `technical-checklist` | The 9-phase checklist — MTF, SMC, Wyckoff, Fibonacci, layout-driven indicators, playbook, liquidity/USDT.D, bias + confluence score |
+| `technical-checklist` | The 9-phase checklist — MTF, SMC, Wyckoff, Fibonacci, layout-driven indicators, playbook, liquidity/USDT.D, bias + confluence score — applied through the [institutional-flow doctrine](wiki/concepts/institutional-flow-poi.md) (4 Pillars) as the active lens |
 | `brain-write` | AUTO-PILOT WRITE — insight, prediction, indicator/pattern updates, session file, log |
 
 ### Dispatchers & operations
@@ -431,7 +468,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 | `multi-symbol-scan` | Screen/compare multiple symbols or a watchlist |
 | `daily-scan` | Morning dashboard (macro 1× + quick BTC + watchlist + predictions) |
 | `btc-macro-briefing` | Web-search macro briefing (economic calendar, liquidity, ETF flows, sentiment, black-swan) → daily verdict; persists `wiki/briefings/`. Gated by `brain-read` step 2b |
-| `btc-cycle` | Cycle phase, top/bottom scoring, 200W SMA, on-chain, Fibonacci-log projection |
+| `btc-cycle` | Cycle phase, top/bottom scoring, 200W SMA, Fibonacci-log projection — plus a 6M/3M high-timeframe layer (close-confirmed tops/bottoms) and the keyless on-chain feed (`fetch_onchain.py`, ~40% of the bottom score) |
 | `prediction-feedback` | Objective grading of open predictions + setup/indicator/metric updates |
 | `wiki-maintenance` | LINT / UPDATE STRATEGY / COMPILE / REVIEW / SEARCH — runs the Python tools |
 | `recalibrate-layouts` | Re-fingerprint TradingView layouts into `wiki/brain/layouts.md` |
@@ -444,7 +481,9 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 | Script | Purpose |
 |---|---|
 | `fetch_feeds.py` | Pull funding/OI (Coinalyze) + Fear & Greed → `raw/feeds/latest.md` |
+| `fetch_onchain.py` | Keyless on-chain cycle metrics (NUPL, MVRV-Z, Puell, Pi Cycle, Hash Ribbons, Realized Price, Reserve Risk) → `raw/feeds/onchain-latest.md` |
 | `check_briefing.py` | Read-only gate — report whether today's macro briefing exists (date/age/horizon) |
+| `check_predictions.py` | Read-only gate — list `⏳ open` predictions that should have graded (superseded / aged) |
 | `archive_brain.py` | Prune `insights.md` to the Top N, archive the rest |
 | `wiki_lint.py` | Broken links, expired predictions, statless setups; updates index counters |
 | `metrics_engine.py` | Win rate, Brier score, drawdown, circuit breaker → `brain/metrics.md` |
@@ -457,19 +496,22 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 
 ### Concepts (pre-populated)
 
+The library ships **~45 pre-populated concept pages** — from price-structure and Smart Money frameworks through on-chain cycle metrics and derivatives positioning — all cross-linked with `[[backlinks]]`. A curated selection of the anchor pages:
+
 | Concept | Description |
 |---|---|
-| [SMC](wiki/concepts/SMC.md) | Smart Money Concepts — CHoCH, BoS, FVG, Order Blocks |
+| [Institutional Flow & POIs](wiki/concepts/institutional-flow-poi.md) | **Reading doctrine** — the 4 Pillars (Structure / Cycles / Volume / Macro), Points of Interest, cyclical accumulation, reversal triggers. The active lens on every analysis |
+| [Liquidity Rotation Cycle](wiki/concepts/liquidity-rotation-cycle.md) | Systemic liquidity routing — BTC.D + ES indices, rotation phases, the Rotation Verdict |
+| [SMC](wiki/concepts/SMC.md) | Smart Money Concepts — CHoCH, BoS, FVG, Order Blocks, inducement |
 | [Wyckoff](wiki/concepts/Wyckoff.md) | Accumulation, Distribution, Spring, UTAD |
 | [ADX](wiki/concepts/ADX.md) | Trend-strength filter with interpretation table |
 | [ATR](wiki/concepts/ATR.md) | Volatility-based position sizing and stop-loss |
-| [MTF Analysis](wiki/concepts/multi-timeframe-analysis.md) | 1D→4H→1H→15m→5m hierarchy and conflict rules |
+| [MTF Analysis](wiki/concepts/multi-timeframe-analysis.md) | 1M→1D→4H→1H→15m→5m hierarchy and conflict rules |
 | [BTCUSDLONGS/SHORTS](wiki/concepts/btcusdlongs-btcusdshorts.md) | Bitfinex margin positioning for squeeze detection |
 | [Short/Long Squeeze](wiki/concepts/short-long-squeeze.md) | Cascade liquidation mechanics and setup conditions |
 | [BTC Cycle Analysis](wiki/concepts/btc-cycle-analysis.md) | Macro cycle framework — tops, bottoms, scoring system |
-| [Puell Multiple](wiki/concepts/puell-multiple.md) | Miner-revenue metric for cycle phase identification |
-| [Pi Cycle Top](wiki/concepts/pi-cycle-top.md) | 111DMA vs 350DMA×2 crossover for cycle-top detection |
-| [Hash Ribbons](wiki/concepts/hash-ribbons.md) | Mining-capitulation indicator for cycle-bottom signals |
+| [On-chain cycle metrics](wiki/concepts/mvrv-z-score.md) | MVRV-Z, [NUPL](wiki/concepts/nupl.md), [SOPR](wiki/concepts/sopr.md), [Realized Price](wiki/concepts/realized-price.md), [Puell](wiki/concepts/puell-multiple.md), [Pi Cycle](wiki/concepts/pi-cycle-top.md), [Hash Ribbons](wiki/concepts/hash-ribbons.md) |
+| [Derivatives positioning](wiki/concepts/funding-rate.md) | [Funding rate](wiki/concepts/funding-rate.md), [Open Interest](wiki/concepts/open-interest.md), [Long/Short ratio](wiki/concepts/long-short-ratio.md), [liquidation heatmap](wiki/concepts/liquidation-heatmap.md) |
 
 ### Strategies
 

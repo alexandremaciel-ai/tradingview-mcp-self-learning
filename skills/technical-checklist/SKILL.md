@@ -71,16 +71,19 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 > 🔴 **FONTE DA DIVERGÊNCIA (obrigatório — Invariante 0).** A divergência é um **sinal computado e
 > plotado pelo indicador** (V.V.I.R. / MACD Divergences Pro / Stoch RSI Div Pro), NÃO algo a inferir de
 > price action. `data_get_study_values` dá só o **valor atual** do RSI/MACD — **não** mostra divergência;
-> afirmar presença/ausência a partir dele é alucinação. Ler da fonte, nesta ordem:
-> 1. **Default (sempre):** `data_get_pine_lines(study_filter="RSI Div"/"MACD"/"Stoch RSI", verbose=true)`
->    — os segmentos + **cor** codificam bull/bear (linhas que ligam os pivôs da divergência).
-> 2. **Escalar p/ `capture_screenshot` do sub-pane SÓ se** a divergência for pesar no bias/Confluence
->    Score **ou** a cor/segmento de pine_lines for ambíguo (os marcadores Bull/Bear são plotshape e mais
->    inequívocos no pane).
-> 3. **Manual** (preço-pivô vs RSI-pivô) só com os pivôs **puxados de fonte real** (OHLCV + série do RSI),
->    declarando os 2 pontos com TF. NUNCA de um valor único.
-> 4. Nenhuma fonte disponível → **`DADO_INDISPONIVEL`**. **Proibido** escrever "sem divergência" por
->    inferência. (Erro de referência: CYCLE 28/06 — ver [[mistakes]].)
+> afirmar presença/ausência a partir dele é alucinação.
+> ⚠️ **FATO CONFIRMADO (28/06):** nesses 3 indicadores os marcadores **Bull/Bear são `plotshape()`** —
+> que **NÃO** é study-value, **NÃO** é `label.new` (`data_get_pine_labels` só devolve as projeções
+> RSI78/RSI30, K90/K10), **NÃO** é `line.new`. `data_get_pine_lines(study_filter="RSI Div")` devolve as
+> **~5.400 linhas do filtro MTF** (ruído, NÃO a divergência). **Nenhuma tool de dados da API lê plotshape**
+> — a única fonte é o **pixel do painel**. Ordem real:
+> 1. **Decisiva** (a divergência pesaria no bias/Confluence, ou o usuário pediu) → **`capture_screenshot`
+>    region=`full`** e ler os marcadores Bull/Bear/Oculta no painel V.V.I.R./StochRSI/MACD.
+>    ⚠️ region=`chart` **CORTA** o sub-painel do oscilador — tem que ser **`full`**. Ler o marcador no
+>    candle **atual** (à direita); marcadores à esquerda = históricos.
+> 2. **Não-decisiva** → registrar a leitura rápida do painel (ou pular o eixo) sem screenshot; não custa.
+> 3. Sem chart/screenshot disponível (TV offline) → **`DADO_INDISPONIVEL`**. **Proibido** escrever
+>    "sem divergência" por inferência de price action. (Erro de referência: CYCLE 28/06 — ver [[mistakes]].)
 
 1. **RSI (14):** valor + zona (>70 OB / <30 OS) + direção + cruzamento RSI×SMA(RSI).
    - **M:** define teto/piso de momentum do CICLO; divergência mensal = reversão de ciclo (peso máximo).

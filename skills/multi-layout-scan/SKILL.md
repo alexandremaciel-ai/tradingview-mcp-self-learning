@@ -85,10 +85,12 @@ Para cada layout: navegue, confirme, leia, aplique a dedup.
 4. **Ler estado:** `chart_get_state` (1× por layout) → lista os studies presentes.
 5. **Valores nativos:** `data_get_study_values`.
 6. **Custom (Pine drawings)** — usar a tool certa com `study_filter`:
-   - RSI Divergences Pro (V.V.I.R.) / MACD Divergences Pro / Stoch RSI Div Pro → **divergência** via
-     `data_get_pine_lines(study_filter="RSI Div"/"MACD"/"Stoch RSI", verbose=true)` (segmentos+cor=bull/bear);
-     escalar p/ `capture_screenshot` do pane só se decisivo/ambíguo. ⚠️ `data_get_study_values` dá só o
-     valor do RSI/MACD, **não** a divergência — nunca inferir presença/ausência dele (Invariante 0).
+   - RSI Divergences Pro (V.V.I.R.) / MACD Divergences Pro / Stoch RSI Div Pro → **divergência (Bull/Bear)
+     só sai por SCREENSHOT.** ⚠️ Confirmado 28/06: os marcadores são `plotshape()` → **nenhuma** tool de
+     dados os lê (`data_get_study_values` = só valor; `data_get_pine_labels` = só projeções RSI78/30, K90/10;
+     `data_get_pine_lines("RSI Div")` = ~5.400 linhas do filtro MTF = ruído). Se a divergência for **decisiva**
+     ao bias → `capture_screenshot(region="full")` (region `chart` corta o sub-painel!) e ler o marcador no
+     candle atual. Não-decisiva → pular sem custo. Nunca inferir de price action; sem chart → `DADO_INDISPONIVEL`.
    - Tabela RSI Dinâmica - Maciel → `data_get_pine_tables(study_filter="Tabela RSI")`
    - Smart Money Concepts [LuxAlgo] → `data_get_pine_labels` (CHoCH/BOS/EQH/EQL) +
      `data_get_pine_boxes` (Order Blocks) + `data_get_pine_lines` (níveis de estrutura)

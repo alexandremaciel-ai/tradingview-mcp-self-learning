@@ -112,7 +112,15 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
 3. **MACD (12/26/9):** posição vs zero + cruzamento×Signal + histograma.
    - M: cruzamento mensal vs zero = virada de regime de CICLO. W: idem de momentum.
    - Divergências M/W/D/4H: preço HH+MACD LH=bearish | preço LL+MACD HL=bullish. Cross sem volume = fraco.
-4. **ADX (14):** >25 tendência forte | <20 range. DI+>DI- bull / DI->DI+ bear.
+4. **ADX (14) — força + direção ([[ADX]]; layout EMA Cross e MVRV):** linha **ADX** (branca)=força da
+   tendência · **DI+** (verde)=compradores · **DI−** (vermelha)=vendedores. ADX só mede FORÇA, nunca direção.
+   - **Cruzamento direcional (início de tendência):** DI+ cruza acima de DI− = potencial compra; DI− acima
+     de DI+ = potencial venda. Cruzamento = **1º alerta** — confirmar com BOS/CHoCH (Fase 3), não operar isolado.
+   - **Confirmação de entrada:** só abrir NOVA posição de tendência com **ADX subindo E > 25** (tendência
+     forte real); ADX cruzando 25 a favor = início de perna. ADX caindo de >40 = tendência exaurindo.
+   - **Range (ADX < 20):** tendência perdeu força → trend-following falha (Playbooks 1/2 desabilitados,
+     ver Fase 7) → favorecer operações em faixa / P3 nas extremidades. Num flush, esperar ADX cruzar >25
+     antes de tratar como trend (senão `flush≠trend`/`-adx`, ver [[indicators]]).
 5. **EMA 50/200:** posição+cruzamento (Golden/Death Cross)+inclinação. 200W SMA = piso de ciclo.
 6. **Volume/OBV:** POC magneto, HVN S/R. Div Vol×Preço: preço↑+vol↓=rally fraco. OBV: preço HH+OBV
    LH=distribuição | preço LL+OBV HL=acumulação.

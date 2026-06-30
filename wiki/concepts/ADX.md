@@ -2,9 +2,9 @@
 
 ## O que mede
 Força da tendência (NÃO a direção). Escala 0–100. Composto por três linhas:
-- **ADX:** intensidade da tendência (qualquer direção)
-- **DI+ (DMI+):** pressão compradora
-- **DI- (DMI-):** pressão vendedora
+- **ADX (linha branca):** intensidade da tendência (qualquer direção)
+- **DI+ / DMI+ (linha verde):** pressão compradora
+- **DI- / DMI- (linha vermelha):** pressão vendedora
 
 ## Interpretação da Força
 | Valor | Interpretação |

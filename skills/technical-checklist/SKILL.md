@@ -150,6 +150,11 @@ Ref: [[liquidity-wicks-trap-short-usdtd]] + [[btc-macro-correlations]] + [[btcus
    `macro-scan` Step 1.5 ([[liquidity-rotation-cycle]]) e declarar `Rotação liq: [fase] | BTC.D [dir]
    | TOTAL2ES/3ES [dir] | Veredito: [Otimizado/Neutro/Bull-Trap]` (EQUITIES → `N/A`). Veredito
    `Alto Risco de Bull Trap` ⇒ a Fase 9 aplica `bull-trap-liquidez`.
+7. **Alertas disparados hoje (consumir, contexto — não pontua):** ler os alertas do `brain-read`
+   (item 2d). Onde um alerta disparado corresponde a um nível/condição da tese atual, tratá-lo como
+   **confirmação** (preço realmente atingiu o nível marcado) ou **aviso** (disparou contra o bias).
+   Declarar: `Alertas hoje: [SYMBOL cond @nível (TF) → confirma/avisa | —]`. É contexto qualitativo:
+   reforça a leitura de liquidez/estrutura, **não** entra no Confluence Score (Fase 9) nem vira slug.
 
 ## Fase 9 — Declaração de Bias Final
 **Declaração obrigatória do setup (4 campos — sem o `nivel_invalidacao` o setup é INVÁLIDO → NEUTRO):**

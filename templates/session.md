@@ -36,6 +36,10 @@
 | Nível | Tipo | Valor |
 |-------|------|-------|
 
+### Alertas disparados hoje
+<!-- Do brain-read (item 2d). Preencher com os alertas cujo last_fire caiu hoje (BRT), ou "— nenhum" / "alertas-parciais" (TV offline). -->
+- _{SYMBOL cond @nível (TF, HH:MM) → confirma/avisa | — nenhum}_
+
 ## Análise Técnica (OBRIGATÓRIO — preencher cada item)
 
 ### MTF (Multi-Timeframe)

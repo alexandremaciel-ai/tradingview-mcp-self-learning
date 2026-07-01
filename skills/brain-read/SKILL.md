@@ -39,6 +39,14 @@ description: Ciclo READ obrigatório do AUTO-PILOT antes de QUALQUER análise de
    - **NÃO avançar ao macro-scan com `loop: SUJO`.** Só então o Cartão de Calibração lê números atuais.
    - Sem conexão TradingView (OHLCV indisponível) → não inventar grading: declarar `loop-pendente:N`
      no Summary e usar pesos atuais com a ressalva (degradação explícita, não silenciosa).
+2d. **🚨 Alertas disparados hoje:** chamar a tool `alert_list` (usa a conexão viva; NÃO há script
+   offline — a auth é CDP). Filtrar os alertas cujo `last_fired` cai na data de HOJE (BRT). Para
+   cada um, ler `symbol`, `condition`, `resolution` (= TF de origem), `message`, `last_fired`.
+   Escopo: priorizar os do símbolo do pedido; os de OUTROS símbolos disparados hoje entram como
+   contexto macro. TradingView offline / `alert_list` falhou → `DADO_INDISPONIVEL` + rótulo
+   `alertas-parciais` (degradação explícita, não inventar). **Limitação da fonte (declarar):**
+   `last_fire_time` é só o ÚLTIMO disparo — múltiplos disparos no dia colapsam; one-time disparado
+   e deletado não aparece.
 3. **🖼️ Layout ativo (0c):** `chart_get_state()` → casar os studies (fingerprint) com um perfil em
    `wiki/brain/layouts.md`; ele define QUAIS indicadores a Fase 6 aplica + a recipe do layout. Sem
    match → `layout-adhoc`. **Híbrido:** trocar de layout (navegar `/chart/{slug}/`) só se o
@@ -91,6 +99,7 @@ e o **📊 Cartão de Calibração** (ajustes de peso data-driven por critério 
 Incluir também (obrigatórias):
 `🔁 Loop: [N graduadas | LIMPO] · metrics @ HH:MM · calibração [N≥8: sim/não]` (do gate 2c).
 `🗞️ Briefing do dia: [presente | recém-gerado | refresh por evento] | Postura: [risk-on/off/cautela/aguardar evento] | 🔴 hoje: [evento ou —]`.
+`🚨 Alertas hoje: [SYMBOL cond @nível (TF, HH:MM) · … | — | alertas-parciais]`.
 
 > Brain files inexistentes → copiar de `wiki/brain/_templates/`. Próximo passo do pipeline:
 > `macro-scan` (pelo Workflow da classe), depois `technical-checklist`.

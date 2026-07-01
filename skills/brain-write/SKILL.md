@@ -35,6 +35,8 @@ description: Ciclo WRITE obrigatório do AUTO-PILOT depois de QUALQUER análise 
 ## Arquivo de sessão (operação INGEST)
 Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template, com TODAS as seções obrigatórias:
 - **Brain Read Summary** (erros prevenidos, insights ativados, padrões monitorados)
+- **Alertas disparados hoje** (Dados Capturados) — copiar os alertas lidos no `brain-read` (item 2d):
+  `SYMBOL cond @nível (TF) → confirma/avisa`, ou `— nenhum` / `alertas-parciais` (TV offline)
 - **Contexto Macro** (se BTC/ETH/Altcoin)
 - **Setups Identificados** (mesmo que "Nenhum setup reconhecido")
 - **Plano de Operação** (entrada/stop/TP/R:R)

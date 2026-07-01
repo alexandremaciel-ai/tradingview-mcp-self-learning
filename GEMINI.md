@@ -21,8 +21,9 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
    **`DADO_INDISPONIVEL`** e parar a afirmação (não estimar). Todo nível citado (suporte/resistência/
    OB/FVG/invalidação) carrega o **TF de origem** explícito. Fontes em conflito → reportar ambas +
    **`CONFLITO_DE_DADOS`**, sem forçar conclusão.
-1. **Antes de qualquer análise →** invocar a skill **`brain-read`** (conexão TV, feeds, layout
-   ativo, classe do pedido, leitura do brain por relevância, prevenções/insights, fechar previsões).
+1. **Antes de qualquer análise →** invocar a skill **`brain-read`** (conexão TV, feeds, **alertas
+   disparados hoje**, layout ativo, classe do pedido, leitura do brain por relevância,
+   prevenções/insights, fechar previsões).
 2. **Depois de qualquer análise →** invocar a skill **`brain-write`** (insight, previsão, sessão, log).
 3. Estas duas pontas são **obrigatórias** mesmo num pedido "rápido". O dispatcher `analyze` já as chama.
 4. Feeds (cripto): `raw/feeds/latest.md` `indisponível` ou > 2h → `python3 scripts/tools/fetch_feeds.py`.

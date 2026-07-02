@@ -56,8 +56,11 @@ The upstream project gives the LLM **eyes and hands** on your chart. This fork g
 | **Daily macro briefing gate (event-aware analysis)** | ❌ | ✅ |
 | **Anti-hallucination protocol (source-first, TF-tagged)** | ❌ | ✅ |
 | **Systemic liquidity routing (BTC.D + ES indices)** | ❌ | ✅ |
+| **Macro regime filter (weekly MACD Bull/Bear)** | ❌ | ✅ |
+| **Fired-alert awareness (today's TradingView alerts)** | ❌ | ✅ |
 | **Prediction → calibration feedback gate** | ❌ | ✅ |
 | **On-chain cycle feed (NUPL, MVRV-Z, Puell…)** | ❌ | ✅ |
+| **Obsidian-native atomic notes (YAML frontmatter + Bases)** | ❌ | ✅ |
 | **Automated wiki maintenance** | ❌ | ✅ |
 | **Skill-first architecture (on-demand logic)** | ❌ | ✅ |
 | **Relevance-based brain recall** | ❌ | ✅ |
@@ -116,12 +119,16 @@ Every chart analysis feeds a structured markdown wiki that the LLM maintains aut
 wiki/
 ├── index.md                          # Master index (auto-updated)
 ├── log.md                            # Append-only operation log
+├── dashboard.md                      # Live Dataview dashboard (open predictions, win rate)
+├── predictions.base                  # Obsidian Bases view over prediction notes
 ├── brain/                            # Active second brain
 │   ├── insights-hot.md               #   Top-8 rolling digest (cheap, always read)
 │   ├── insights.md                   #   Full insight history (searched by relevance)
 │   ├── insights-archive/             #   Cold storage pruned by archive_brain.py
 │   ├── mistakes.md                   #   Logged errors + prevention notes
-│   ├── predictions-log.md            #   Predictions with objective grading
+│   ├── predictions/                  #   Atomic prediction notes (YAML frontmatter) — source of truth
+│   ├── predictions-archive/          #   Closed notes > 90d (archive_brain.py --predictions)
+│   ├── predictions-log.md            #   Frozen monolith — cold history, no more appends
 │   ├── patterns.md                   #   Recurring patterns with confirmation counts
 │   ├── indicators.md                 #   Per-indicator hit-rate calibration
 │   ├── metrics.md                    #   Win rate, Brier score, circuit breaker
@@ -146,6 +153,14 @@ The brain no longer dumps entire files into context. On each analysis, `brain-re
 
 `archive_brain.py` keeps `insights.md` lean by moving older entries to `insights-archive/`, and `brain-write` keeps `insights-hot.md` trimmed to the Top 8. The effect is both fewer tokens and a more **relevant** recall than chronological dumping.
 
+### Obsidian-Native Atomic Notes
+
+A single append-only log is easy to write but hard to query. This edition splits the record into **atomic notes with YAML frontmatter** — one file per prediction (`wiki/brain/predictions/YYYY-MM-DD-HHMM-SYMBOL-TF.md`, with `symbol/tf/side/status/criteria/confluence/…`) and per session — as the **single source of truth**:
+
+- The frontmatter feeds Obsidian's **Dataview / Bases / Graph** natively **and** a deterministic parser (`metrics_engine.py`, `check_predictions.py`) reads the same fields — no duplicated bookkeeping.
+- `wiki/dashboard.md` (Dataview) and `wiki/predictions.base` (Bases) answer *"open predictions / win-rate by setup or regime"* live, at zero token cost — **prefer them to asking the LLM**.
+- The old monolith (`predictions-log.md`) is **frozen** as cold history (no more appends); grading edits `status`/`rr_real`/`postclose` in a note's frontmatter, and `archive_brain.py --predictions` moves notes closed > 90 days into `predictions-archive/` (out of hot recall, still counted in metrics).
+
 ### Anti-Hallucination Protocol
 
 A second brain is only as good as the data it trusts — a confident but invented price level poisons every downstream prediction. The top invariant of the runtime (Principle 0 in the context files) makes the agent **refuse to guess**:
@@ -154,7 +169,7 @@ A second brain is only as good as the data it trusts — a confident but invente
 - **Timeframe-tagged levels** — every cited level (support, resistance, Order Block, FVG, invalidation) carries its **timeframe of origin** explicitly, so a 15m level is never silently treated as a daily one.
 - **Conflict flagging** — when two sources disagree, both are reported with a **`CONFLITO_DE_DADOS`** tag instead of forcing a single conclusion.
 
-The rule extends to indicators the chart doesn't expose numerically (e.g. RSI divergence labels): the agent reads the source (Pine labels / panel screenshot) or declares the data unavailable — it never *infers* "no divergence" from price action.
+The rule extends to indicators the chart doesn't expose numerically. Some signals are drawn as `plotshape` markers (the Bull/Bear flags from V.V.I.R., MACD, and StochRSI divergence indicators) that **no data tool can read** — the only source is `capture_screenshot(region="full")`. When such a signal is decisive for the bias, the agent reads the full-chart screenshot or declares the data unavailable — it never *infers* "no divergence" from price action.
 
 ### Systemic Liquidity Routing
 
@@ -168,6 +183,21 @@ Before validating any asset's bias, the agent maps **where capital is flowing in
 | Equity / TradFi | `N/A` |
 
 The **ES (Excluding Stablecoins)** indices strip stablecoins from the market cap so the read isolates real risk capital. From them the scan classifies a **rotation phase** — *BTC Migration · ETH Rotation · Altseason · Stablecoin Flight* — and emits a **Rotation Verdict** that adds to the [confluence score](wiki/concepts/confluence-score.md) (`liq-rotacao`), or penalizes the setup (`bull-trap-liquidez`) when the bias runs against the flow. See [`liquidity-rotation-cycle.md`](wiki/concepts/liquidity-rotation-cycle.md).
+
+### Macro Regime Filter (Weekly MACD)
+
+Liquidity tells you *where* capital is flowing; the regime filter tells you *which direction has the higher probability* for a swing. A single, system-wide gate reads the **weekly MACD zero-line on BTC**:
+
+- MACD histogram/line **above zero → Bull regime**, **below zero → Bear regime** — the default direction of least resistance for swing trades.
+- A **fresh cross** of the zero-line is treated as a *Transition* (neutral) — no regime edge until it confirms.
+- The regime feeds the confluence score (`macd-regime`); a bias taken **against** the prevailing regime is penalized (`contra-regime`, −1).
+- **Altcoins and ETH inherit BTC's regime** (they follow the majority); equities / TradFi are `N/A`.
+
+The read is produced by `macro-scan` and detailed in [`macd.md`](wiki/concepts/macd.md).
+
+### Fired-Alert Awareness
+
+Your own TradingView alerts are a signal the chart won't volunteer — a level *you* flagged that actually triggered today is high-signal context. Before any analysis, `brain-read` calls the live `alert_list` tool (CDP connection — there is no offline script, the auth is CDP), filters alerts whose `last_fired` falls on **today (BRT)**, and folds them in: alerts on the requested symbol are prioritized, alerts on *other* symbols enter as macro context (with their origin timeframe). TradingView offline / `alert_list` failure → `DADO_INDISPONIVEL`, never invented.
 
 ### Daily Macro Briefing Gate
 
@@ -225,7 +255,7 @@ The result is a populated **Criteria → Hit Rate** calibration: the confluence 
 The entire repository is designed to be opened as an **Obsidian Vault**. The LLM writes the markdown; you visualize it in Obsidian using:
 
 - **Graph View** — an interconnected map of assets, setups, and sessions
-- **Dataview Dashboards** — live tables of win rates and open predictions
+- **Dataview & Bases** — `wiki/dashboard.md` (Dataview) and `wiki/predictions.base` (Bases) render open predictions and win-rate by setup/regime live from the atomic notes' frontmatter — query them instead of asking the LLM
 - **Web Clipper** — save articles directly to `raw/clippings/` for the LLM to process
 - **Marp Slides** — weekly performance reviews generated as presentations
 
@@ -455,7 +485,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 ### Reusable layers
 | Skill | Role |
 |---|---|
-| `brain-read` | AUTO-PILOT READ — connection, feeds, layout fingerprint, relevance-based brain recall, declare preventions/insights, close open predictions |
+| `brain-read` | AUTO-PILOT READ — connection, feeds, today's fired alerts, layout fingerprint, relevance-based brain recall, declare preventions/insights, close open predictions |
 | `macro-scan` | Market-context detector + class workflow (A/B/C/D) + macro reading rules (Risk-On/Off, squeeze, weekend) |
 | `technical-checklist` | The 9-phase checklist — MTF, SMC, Wyckoff, Fibonacci, layout-driven indicators, playbook, liquidity/USDT.D, bias + confluence score — applied through the [institutional-flow doctrine](wiki/concepts/institutional-flow-poi.md) (4 Pillars) as the active lens |
 | `brain-write` | AUTO-PILOT WRITE — insight, prediction, indicator/pattern updates, session file, log |
@@ -484,7 +514,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 | `fetch_onchain.py` | Keyless on-chain cycle metrics (NUPL, MVRV-Z, Puell, Pi Cycle, Hash Ribbons, Realized Price, Reserve Risk) → `raw/feeds/onchain-latest.md` |
 | `check_briefing.py` | Read-only gate — report whether today's macro briefing exists (date/age/horizon) |
 | `check_predictions.py` | Read-only gate — list `⏳ open` predictions that should have graded (superseded / aged) |
-| `archive_brain.py` | Prune `insights.md` to the Top N, archive the rest |
+| `archive_brain.py` | Prune `insights.md` to the Top N; `--predictions` archives prediction notes closed > 90d |
 | `wiki_lint.py` | Broken links, expired predictions, statless setups; updates index counters |
 | `metrics_engine.py` | Win rate, Brier score, drawdown, circuit breaker → `brain/metrics.md` |
 | `plot_accuracy.py` / `plot_metrics.py` | Accuracy curve + calibration charts |
@@ -496,7 +526,7 @@ Skills live in `skills/<name>/SKILL.md` and load on demand. Claude Code invokes 
 
 ### Concepts (pre-populated)
 
-The library ships **~45 pre-populated concept pages** — from price-structure and Smart Money frameworks through on-chain cycle metrics and derivatives positioning — all cross-linked with `[[backlinks]]`. A curated selection of the anchor pages:
+The library ships **~47 pre-populated concept pages** — from price-structure and Smart Money frameworks through on-chain cycle metrics and derivatives positioning — all cross-linked with `[[backlinks]]`. A curated selection of the anchor pages:
 
 | Concept | Description |
 |---|---|
@@ -504,7 +534,8 @@ The library ships **~45 pre-populated concept pages** — from price-structure a
 | [Liquidity Rotation Cycle](wiki/concepts/liquidity-rotation-cycle.md) | Systemic liquidity routing — BTC.D + ES indices, rotation phases, the Rotation Verdict |
 | [SMC](wiki/concepts/SMC.md) | Smart Money Concepts — CHoCH, BoS, FVG, Order Blocks, inducement |
 | [Wyckoff](wiki/concepts/Wyckoff.md) | Accumulation, Distribution, Spring, UTAD |
-| [ADX](wiki/concepts/ADX.md) | Trend-strength filter with interpretation table |
+| [MACD](wiki/concepts/macd.md) | Momentum + the weekly zero-line Bull/Bear macro regime filter |
+| [ADX](wiki/concepts/ADX.md) | Trend-strength filter (DI-cross + ADX>25 confirmation, range rules) |
 | [ATR](wiki/concepts/ATR.md) | Volatility-based position sizing and stop-loss |
 | [MTF Analysis](wiki/concepts/multi-timeframe-analysis.md) | 1M→1D→4H→1H→15m→5m hierarchy and conflict rules |
 | [BTCUSDLONGS/SHORTS](wiki/concepts/btcusdlongs-btcusdshorts.md) | Bitfinex margin positioning for squeeze detection |

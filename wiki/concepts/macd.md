@@ -79,6 +79,40 @@
 
 ---
 
+## 5.5 MACD Semanal (1W) — Filtro de Regime Macro (Bull/Bear)
+
+> **Rastreador de macrotendência do BTC.** A posição do MACD 1W vs a Linha Zero define
+> matematicamente o regime de mercado e baliza os ciclos de Bull/Bear. Critério `macd-regime`
+> ([[criteria-keys]]); alimenta o `macro-scan` (Regra 12) e o Confluence Score.
+
+### Regra da Linha Zero (1W)
+- **MACD 1W > 0** (acima da linha zero): EMA de 12 semanas **acima** da EMA de 26 semanas →
+  momentum de alta consolidado → **regime BULL** (longs/alocação com maior probabilidade estatística).
+- **MACD 1W < 0** (abaixo da linha zero): EMA de 12 semanas cruzou **abaixo** da EMA de 26 semanas →
+  força vendedora domina a perspectiva de médio/longo prazo → **regime BEAR** (shorts favorecidos).
+- A matemática é a divergência EMA12/EMA26; o eixo zero é o divisor de momentum direcional macro.
+
+### Validação Histórica nos Ciclos do BTC
+| Regime | Período | MACD 1W |
+|--------|---------|---------|
+| 🐻 Bear | 2014-2015 | Abaixo de zero ~1 ano, acompanhando a formação do fundo |
+| 🐻 Bear | 2018 | Afundou < 0 meses após o topo de 2017; sustentou baixa até início 2019 |
+| 🐻 Bear | 2022 | Perdeu a linha zero no 1º semestre; fundo formado em território negativo |
+| 🐂 Bull | 2016-2017 | Rompeu > 0 no início de 2016; positivo até o topo ~$20k (dez/2017) |
+| 🐂 Bull | 2020-2021 | Cruzou > 0 fim de abr/início mai 2020; sustentou a corrida até $64k-$69k |
+| 🐂 Bull | 2023-2024 | Rompeu > 0 no início de 2023; suporte estrutural até o ATH ~$73k (mar/2024) |
+
+### Nota Operacional (OBRIGATÓRIA)
+- **Validador de tendência consolidada (lagging), NÃO timing de topo/fundo.** Não fornece o topo/fundo
+  absoluto — atua como **filtro de regime**, indicando em que direção swing trades e alocação têm a
+  maior probabilidade a médio/longo prazo.
+- **Cruzamento fresco da linha zero = TRANSIÇÃO de regime** → filtro ambíguo/fraco: tratar regime como
+  **neutro** (não pontua, sem penalidade) e reduzir size até o cruzamento consolidar.
+- **Hierarquia de regime:** **Mensal = regime de CICLO (prioridade — ver §5); 1W = regime macro
+  operável** para swing. Aplica-se ao BTC; via âncora HTF gate também altcoins/ETH. **EQUITIES = N/A.**
+
+---
+
 ## 6. Divergências no MACD
 
 > Divergências no MACD são tão importantes quanto no RSI, mas frequentemente ignoradas.
@@ -121,3 +155,7 @@
 - [[conservative-trend-follower-v2]]
 - [[trade-playbooks]]
 - [[multi-timeframe-analysis]]
+- [[btc-cycle-analysis]] — cruzamentos W/M confirmam mudança de fase de ciclo
+- [[institutional-flow-poi]] — regime macro é lente do Pilar Contexto/Ciclos
+- [[liquidity-rotation-cycle]] — regime 1W cruza com a Fase de rotação de liquidez
+- [[confluence-score]] — critério `macd-regime` (crédito/`contra-regime` −1)

@@ -201,6 +201,7 @@ Leitura sistemática do timeframe mensal (`chart_set_timeframe({timeframe: "M"})
 - **RSI Mensal:** valor + zona + cruzamento de 50. RSI mensal cruzando 50 para **baixo** = virada macro bearish do ciclo; para **cima** = virada macro bullish. Divergência mensal (preço HH + RSI LH em topo / preço LL + RSI HL em fundo) = sinal de reversão de **ciclo** (peso máximo, acima da semanal).
 - **P.RSI50 Mensal** (nível de preço onde o RSI mensal = 50): funciona como **teto/piso de ciclo** — em bear, o preço respeita o P.RSI50 mensal como resistência; em bull, como suporte.
 - **MACD Mensal:** posição vs zero + cruzamento + histograma. Cruzamento mensal vs linha zero = **mudança de regime de ciclo** (prioridade sobre o semanal).
+- **MACD Semanal (1W) — filtro de regime macro:** posição vs linha zero (>0 Bull / <0 Bear) = **confirmação de regime** que reage antes dos on-chain reverterem (early-warning de flip bull↔bear), **abaixo** da prioridade do cross Mensal. Filtro lagging de direção p/ swing/alocação, não timing de topo/fundo; cruzamento fresco = transição. Ver [[macd]] §5.5.
 - **Candles mensais de reversão:** pavios longos (rejeição), candle bearish climático pós-ATH (sign of weakness) ou candle bullish climático pós-capitulação (sign of strength).
 - **Volume mensal climático:** spike de volume em candle mensal = clímax de distribuição (topo) ou capitulação (fundo).
 - **Estrutura mensal:** HH/HL (bull de ciclo) ou LH/LL (bear de ciclo). O primeiro LH/LL mensal após ATH = confirmação de topo de ciclo.

@@ -145,18 +145,25 @@ regime SPX/DXY/VIX → SÓ ENTÃO o ativo.
     consome** as leituras das Regras 5 (TOTAL vs TOTAL3), 9 (acum/distrib cíclica) e 10 (força dupla)
     — **não as repete**. Índice ES em sobrecompra macro contra um LONG (índice-TA) ⇒ `Alto Risco de
     Bull Trap` (penalidade `bull-trap-liquidez`, ver `[[confluence-score]]`). Target = EQUITIES → `N/A`.
+12. **Regime Macro (MACD 1W — [[macd]]):** ler o MACD no Semanal do BTC (`chart_set_symbol("BTCUSD")`
+    → `chart_set_timeframe("W")` → `data_get_study_values`). **> 0 = regime BULL** (longs favorecidos)
+    · **< 0 = regime BEAR** (shorts favorecidos) · **cruzamento fresco da linha zero = Transição**
+    (regime neutro, não pontua). Filtro de tendência consolidada (lagging) — direção de maior
+    probabilidade p/ swing, **não** timing de topo/fundo. Emite `macd-regime+` (bias alinhado) /
+    `contra-regime` (−1, bias contra — ver `[[confluence-score]]`). Altcoins/ETH herdam o regime do
+    BTC (via âncora HTF); **EQUITIES = N/A**. Sem chart → `DADO_INDISPONIVEL` (não inventar).
 
 ## Registrar na sessão
 
 - `Contexto: [hora] | NYSE: …| CME: …| Workflow: A/B/C/D`
-- `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro`
+- `Macro: Risk-On/Off/Misto | DXY: bull/bear/neutro | S&P: bull/bear/neutro | Regime 1W: Bull/Bear/Transição`
 - `Briefing: [postura sugerida] | 🔴 janela: [evento ou —]` (do Step 0.5)
 - Cripto contradiz o macro → reduzir confiança e rotular `contra-macro`.
 
 ### Veredito de Rotação de Liquidez (obrigatório p/ cripto; EQUITIES → `N/A`)
 Bloco compacto de 4 linhas (Step 1.5) que **alimenta** o Confluence Score (não substitui a Fase 9):
 1. **Fase do Ciclo de Liquidez:** [Migração BTC / Rotação ETH / Altseason (TOTAL3ES) / Fuga Stablecoins].
-2. **Leitura dos Índices Macro:** `BTC.D [dir/nível]` + `TOTAL2ES/3ES [dir/momentum]` (status cruzado).
+2. **Leitura dos Índices Macro:** `BTC.D [dir/nível]` + `TOTAL2ES/3ES [dir/momentum]` (status cruzado) + `Regime 1W [Bull>0 / Bear<0 / Transição]` (Regra 12).
 3. **Confluência Técnica (no índice ES):** `RSI [val/zona] | MACD [cross/hist] | Boll [squeeze/break] | Fib [retração/alvo]`.
 4. **Veredito Estratégico:** **Cenário Otimizado** / **Neutro** / **Alto Risco de Bull Trap** p/ o target.
 → emite o critério `liq-rotacao+` (Otimizado alinhado) / `-liq-rotacao` ou `bull-trap-liquidez` (contra).

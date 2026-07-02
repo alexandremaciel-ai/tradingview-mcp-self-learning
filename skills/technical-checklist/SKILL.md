@@ -110,7 +110,10 @@ Ordem: **M → W → D → 4H → 1H → 15M**. O M é o âncora de ciclo — li
    - ⚠️ **RSI+StochRSI combinado** ([[rsi-stochrsi-combined]]): RSI (M/W/D/4H) define DIREÇÃO
      (>50 Long only / <50 Short only); StochRSI (1H/15M) define TIMING. **NUNCA StochRSI contra o RSI HTF.**
 3. **MACD (12/26/9):** posição vs zero + cruzamento×Signal + histograma.
-   - M: cruzamento mensal vs zero = virada de regime de CICLO. W: idem de momentum.
+   - M: cruzamento mensal vs zero = virada de regime de CICLO (prioridade).
+   - **W vs zero = FILTRO DE REGIME MACRO** (>0 Bull / <0 Bear — direção de maior probabilidade p/
+     swing; cruzamento fresco = transição/neutro). Alimenta `macro-scan` Regra 12 + Confluence
+     (`macd-regime`, [[criteria-keys]]). Ref: [[macd]].
    - Divergências M/W/D/4H: preço HH+MACD LH=bearish | preço LL+MACD HL=bullish. Cross sem volume = fraco.
 4. **ADX (14) — força + direção ([[ADX]]; layout EMA Cross e MVRV):** linha **ADX** (branca)=força da
    tendência · **DI+** (verde)=compradores · **DI−** (vermelha)=vendedores. ADX só mede FORÇA, nunca direção.

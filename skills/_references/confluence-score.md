@@ -55,6 +55,10 @@ Para CADA critério que pontuaria, olhar `Acertos/Falhas` (= N amostras) e o Hit
   em sobrecompra macro contra um LONG) → **−1 + rótulo `bull-trap-liquidez`** (critério `-liq-rotacao`).
   Veredito **Cenário Otimizado** alinhado ao bias → conta no critério **`liq-rotacao+`** (elegível à
   confluência). **Neutro** = não pontua. EQUITIES = critério ausente (rota `N/A`, sem efeito).
+- **Regime Macro (MACD 1W — [[macd]], `macro-scan` Regra 12):** bias contradiz o regime semanal
+  (LONG com MACD 1W < 0, ou SHORT com > 0) → **−1 + rótulo `contra-regime`** (critério `-macd-regime`).
+  Bias alinhado ao regime → conta no critério **`macd-regime+`** (elegível à confluência). **Transição**
+  (cruzamento fresco da linha zero) = não pontua, sem penalidade. EQUITIES = critério ausente (`N/A`).
 
 ## Regras finais
 

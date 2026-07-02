@@ -35,6 +35,10 @@ Gemini CLI ←→ MCP Server (stdio) ←→ CDP (localhost:9222) ←→ TradingV
    ETH→`BTC.D`+`TOTAL2ES` · altcoin→`BTC.D`+`TOTAL3ES` · BTC-solo→só fase (USDT.D/BTC.D) · equity→`N/A`.
    O macro-scan classifica a **Fase** (Migração BTC / Rotação ETH / Altseason / Fuga Stablecoins) e emite
    o **Veredito de Rotação** que alimenta o Confluence Score (`liq-rotacao`; `bull-trap-liquidez` se contra).
+8. **Regime Macro (MACD 1W — `macro-scan` Regra 12 / [[macd]]):** MACD Semanal do BTC `>0 = Bull` /
+   `<0 = Bear` = filtro de regime (direção de maior probabilidade p/ swing; cruzamento fresco =
+   Transição/neutro). Alimenta o Confluence Score (`macd-regime`; `contra-regime` −1 se o bias vai
+   contra). Altcoins/ETH herdam do BTC · EQUITIES `N/A`.
 
 ---
 

@@ -1,0 +1,33 @@
+filters:
+  and:
+    - type == "prediction"
+views:
+  - type: table
+    name: Todas as previsões
+    order:
+      - file.name
+      - symbol
+      - tf
+      - side
+      - status
+      - confluence
+      - confidence
+      - regime
+      - setup
+      - rr_plan
+      - rr_real
+    sort:
+      - property: date
+        direction: DESC
+  - type: table
+    name: Abertas
+    filters:
+      and:
+        - status == "open"
+    order:
+      - file.name
+      - symbol
+      - tf
+      - side
+      - confluence
+      - date

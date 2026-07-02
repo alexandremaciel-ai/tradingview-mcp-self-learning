@@ -30,6 +30,10 @@ from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PRED_FILE = os.path.join(BASE_DIR, 'wiki', 'brain', 'predictions-log.md')
+# Notas atômicas de previsão (uma por arquivo, frontmatter YAML) — formato novo.
+# O monolito PRED_FILE fica congelado como histórico cold; os dois são somados.
+PRED_DIR = os.path.join(BASE_DIR, 'wiki', 'brain', 'predictions')
+PRED_ARCHIVE_DIR = os.path.join(BASE_DIR, 'wiki', 'brain', 'predictions-archive')
 OUT_FILE = os.path.join(BASE_DIR, 'wiki', 'brain', 'metrics.md')
 SETUPS_INDEX = os.path.join(BASE_DIR, 'wiki', 'setups', 'index.md')
 
@@ -247,9 +251,114 @@ def infer_rr_real(block, status):
     return None
 
 
+# ---------- Frontmatter YAML (notas atômicas — formato novo) ----------
+
+_STATUS_FROM_FM = {'open': 'open', 'aberta': 'open', 'win': 'win', 'acertou': 'win',
+                   'loss': 'loss', 'errou': 'loss', 'expired': 'expired', 'expirou': 'expired'}
+
+
+def _yaml_value(raw):
+    """Converte um escalar/lista YAML flat em valor Python. Cobre só o que o schema
+    de previsão usa: escalar, string aspeada, lista flow [a, b, c], null/vazio."""
+    v = raw.strip()
+    if v == '' or v.lower() in ('null', '~', 'none'):
+        return None
+    if v.startswith('[') and v.endswith(']'):
+        inner = v[1:-1].strip()
+        if not inner:
+            return []
+        return [_unquote(x.strip()) for x in inner.split(',') if x.strip()]
+    return _unquote(v)
+
+
+def _unquote(s):
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in ('"', "'"):
+        return s[1:-1]
+    return s
+
+
+def read_frontmatter(text):
+    """Lê frontmatter YAML flat no topo do arquivo → (dict, corpo). Sem PyYAML."""
+    if not text.startswith('---'):
+        return {}, text
+    end = text.find('\n---', 3)
+    if end == -1:
+        return {}, text
+    fm_block = text[3:end].lstrip('\n')
+    body = text[end + 4:]
+    fm = {}
+    for line in fm_block.splitlines():
+        st = line.strip()
+        if not st or st.startswith('#') or ':' not in line:
+            continue
+        key, _, val = line.partition(':')
+        fm[key.strip()] = _yaml_value(val)
+    return fm, body
+
+
+def record_from_frontmatter(fm, body):
+    """Constrói o mesmo dict de record que parse_predictions, a partir do frontmatter
+    (fonte única, sem inferência). criteria reaproveita parse_criteria."""
+    date_str = str(fm.get('date') or '').strip()
+    try:
+        d = datetime.strptime(date_str, '%Y-%m-%d')
+    except ValueError:
+        return None
+    status = _STATUS_FROM_FM.get(str(fm.get('status') or '').strip().lower())
+    if status is None:
+        return None
+    crit = fm.get('criteria') or []
+    crit_str = ', '.join(crit) if isinstance(crit, list) else str(crit)
+    playbook = fm.get('playbook')
+    playbook = f'Playbook {playbook}' if playbook not in (None, '', '—') else None
+    setup = fm.get('setup')
+    setup = setup if setup not in (None, '', '—') else None
+    conf = (str(fm.get('confidence') or '').strip().lower() or None)
+    if conf in ('media', 'média'):
+        conf = 'média'
+    elif conf in ('media-alta', 'média-alta'):
+        conf = 'média-alta'
+    return {
+        'date': d,
+        'title': f"{fm.get('symbol', '?')} {fm.get('tf', '')} — {fm.get('side', '')}".strip(),
+        'status': status,
+        'side': (str(fm.get('side') or 'indefinido').strip().lower() or 'indefinido'),
+        'type': (str(fm.get('kind') or 'indefinido').strip().lower() or 'indefinido'),
+        'confidence': conf,
+        'regime': (str(fm.get('regime') or 'indefinido').strip().lower() or 'indefinido'),
+        'playbook': playbook,
+        'setup': setup,
+        'rr_plan': parse_float(str(fm.get('rr_plan')) if fm.get('rr_plan') is not None else None),
+        'rr_real': parse_float(str(fm.get('rr_real')) if fm.get('rr_real') is not None else None),
+        'postclose': (str(fm.get('postclose')).strip().lower() if fm.get('postclose') else None),
+        'weekend': d.weekday() >= 5,
+        'criteria': parse_criteria('- **Critérios:** ' + crit_str) if crit_str else [],
+    }
+
+
+def parse_note_predictions():
+    """Lê todas as notas atômicas de previsão (predictions/ + predictions-archive/)."""
+    records = []
+    import glob
+    for base in (PRED_DIR, PRED_ARCHIVE_DIR):
+        if not os.path.isdir(base):
+            continue
+        for path in glob.glob(os.path.join(base, '*.md')):
+            with open(path, 'r', encoding='utf-8') as f:
+                text = f.read()
+            fm, body = read_frontmatter(text)
+            if not fm:
+                continue
+            rec = record_from_frontmatter(fm, body)
+            if rec:
+                records.append(rec)
+    return records
+
+
 def parse_predictions():
+    records = parse_note_predictions()
     if not os.path.exists(PRED_FILE):
-        return []
+        return records
     with open(PRED_FILE, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -260,7 +369,6 @@ def parse_predictions():
         if hm:
             headers.append((i, hm.group(1), hm.group(2).strip()))
 
-    records = []
     for idx, (start, date_str, rest) in enumerate(headers):
         end = headers[idx + 1][0] if idx + 1 < len(headers) else len(lines)
         block = ''.join(lines[start:end])

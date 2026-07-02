@@ -1,37 +1,50 @@
 # 📊 Trading Dashboard
 
-## ⏳ Previsões Abertas (Brain)
+> Consultas ao vivo (Dataview) sobre o frontmatter das notas atômicas. Substitui pedir ao
+> LLM "como estão minhas previsões / quais setups pagam" — o Obsidian responde a custo zero.
+
+## ⏳ Previsões Abertas
 ```dataview
-TABLE ativo, confidence as "Confiança", status
-FROM "wiki/brain/predictions-log"
-WHERE contains(status, "aberta")
+TABLE symbol AS "Ativo", tf AS "TF", side AS "Lado", confluence AS "Conf", confidence AS "Confiança", date AS "Data"
+FROM "wiki/brain/predictions"
+WHERE type = "prediction" AND status = "open"
+SORT date DESC
+```
+
+## ✅ Últimas Previsões Fechadas
+```dataview
+TABLE symbol AS "Ativo", tf AS "TF", side AS "Lado", status AS "Resultado", rr_real AS "R:R real", setup AS "Setup"
+FROM "wiki/brain/predictions"
+WHERE type = "prediction" AND status != "open"
+SORT date DESC
+LIMIT 15
 ```
 
 ## 📈 Últimas Sessões
 ```dataview
-TABLE bias, Preço, assets as "Ativos"
+TABLE symbol AS "Ativo", tf AS "TF", bias AS "Bias", price AS "Preço", confluence AS "Conf", result AS "Resultado"
 FROM "wiki/sessions"
-SORT file.mtime DESC
-LIMIT 10
+WHERE type = "session"
+SORT date DESC
+LIMIT 12
 ```
 
-## 🎯 Top Setups
+## 🎯 Win Rate por Setup (previsões fechadas)
 ```dataview
-TABLE win-rate as "Win Rate", R-médio as "R:R", ocorrências as "Vezes"
-FROM "wiki/setups"
-WHERE win-rate > 0
-SORT win-rate DESC
-LIMIT 5
+TABLE length(rows) AS "N", sum(choice(status = "win", 1, 0)) AS "Wins", round(100 * sum(choice(status = "win", 1, 0)) / length(rows)) + "%" AS "Win Rate"
+FROM "wiki/brain/predictions"
+WHERE type = "prediction" AND status != "open" AND setup
+GROUP BY setup
+SORT length(rows) DESC
 ```
 
-## 🧠 Últimos Insights
+## 📊 Win Rate por Regime
 ```dataview
-TABLE Ativo, Baseado-em as "Evidência"
-FROM "wiki/brain/insights"
-SORT file.mtime DESC
-LIMIT 5
+TABLE length(rows) AS "N", round(100 * sum(choice(status = "win", 1, 0)) / length(rows)) + "%" AS "Win Rate"
+FROM "wiki/brain/predictions"
+WHERE type = "prediction" AND (status = "win" OR status = "loss")
+GROUP BY regime
 ```
 
 ## Backlinks
-- [[index]]
-- [[overview]]
+- [[index]] · [[metrics]]

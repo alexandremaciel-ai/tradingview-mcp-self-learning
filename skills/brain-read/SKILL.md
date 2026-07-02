@@ -59,14 +59,18 @@ Classes: `BTC | BTC+ETH | BTC+ALTCOIN | ALTCOIN | EQUITIES | WATCHLIST | DAILY |
 
 ## 2 — Ler o brain POR RELEVÂNCIA (recall otimizado)
 
-> ⚠️ NÃO ler `insights.md` (centenas de linhas) nem `predictions-log.md` inteiros. Buscar o que importa.
+> ⚠️ NÃO ler `insights.md` nem `predictions-log.md` (monolitos congelados) inteiros. Buscar o que importa.
+> Previsões novas vivem em **notas atômicas** `wiki/brain/predictions/*.md` com **frontmatter YAML**
+> (`symbol/tf/side/status/criteria/…`) — recall lê o frontmatter (barato), não abre o corpo em prosa.
 
 - **insights:** ler `wiki/brain/insights-hot.md` (Top 5–8, barato, sempre). Para profundidade no
   ativo/TF, `wiki_search` ou `grep` no `insights.md` pelos termos do pedido (símbolo, TF, setup).
 - **mistakes:** ler os **últimos 10** de `wiki/brain/mistakes.md` (arquivo curto).
 - **asset:** se envolve ativo → `wiki/assets/{SYMBOL}.md`.
-- **predictions:** `grep -n "⏳" wiki/brain/predictions-log.md` filtrando o **símbolo do pedido** →
-  ler só as abertas relevantes. Fechar/atualizar antes de continuar; > 48h sem update → ⚪ expirada.
+- **predictions:** `grep -l "status: open" wiki/brain/predictions/*.md | xargs grep -l "symbol: {SÍMBOLO}"`
+  (ou `grep -rn "^symbol:\|^status:" wiki/brain/predictions/`) → ler o frontmatter só das abertas do
+  símbolo, não o corpo. (Histórico: `grep "⏳" predictions-log.md` só se precisar do monolito antigo.)
+  Fechar/atualizar antes de continuar; > 48h sem update → `status: expired`.
 - **metrics:** ler `wiki/brain/metrics.md` (curto) → circuit breaker + WR (usar o **ajustado** como
   número principal) + segmentação (melhor/pior lado e regime).
 - **indicators (calibração por sinal):** ler em `wiki/brain/indicators.md` o Hit Rate **só dos

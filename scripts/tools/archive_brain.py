@@ -30,6 +30,7 @@ BRAIN_DIR = os.path.join(BASE_DIR, 'wiki', 'brain')
 INSIGHTS_FILE = os.path.join(BRAIN_DIR, 'insights.md')
 INSIGHTS_ARCHIVE_DIR = os.path.join(BRAIN_DIR, 'insights-archive')
 PRED_FILE = os.path.join(BRAIN_DIR, 'predictions-log.md')
+PRED_DIR = os.path.join(BRAIN_DIR, 'predictions')            # notas atômicas quentes
 PRED_ARCHIVE_DIR = os.path.join(BRAIN_DIR, 'predictions-archive')
 
 DEFAULT_KEEP = 30
@@ -154,6 +155,40 @@ def archive_predictions(now, dry_run):
     return len(cold)
 
 
+def archive_note_predictions(now, dry_run):
+    """Move NOTAS atômicas de previsão FECHADAS (status != open) com > 90 dias de
+    `predictions/` para `predictions-archive/`. Elas somem do recall quente
+    (brain-read/check_predictions só varrem `predictions/`) mas continuam contando nas
+    métricas (metrics_engine varre os dois). Não toca abertas. Idempotente (move arquivo)."""
+    import glob
+    if not os.path.isdir(PRED_DIR):
+        return 0
+    moved = 0
+    for path in sorted(glob.glob(os.path.join(PRED_DIR, '*.md'))):
+        with open(path, 'r', encoding='utf-8') as f:
+            head = f.read(600)
+        m = re.search(r'(?m)^status:\s*(\S+)', head)
+        dm = re.search(r'(?m)^date:\s*(\d{4}-\d{2}-\d{2})', head)
+        if not m or not dm:
+            continue
+        status = m.group(1).strip().strip('"\'').lower()
+        if status in ('open', 'aberta'):
+            continue
+        try:
+            age = (now - datetime.strptime(dm.group(1), '%Y-%m-%d')).days
+        except ValueError:
+            continue
+        if age <= PRED_MAX_AGE_DAYS:
+            continue
+        moved += 1
+        if dry_run:
+            continue
+        os.makedirs(PRED_ARCHIVE_DIR, exist_ok=True)
+        os.rename(path, os.path.join(PRED_ARCHIVE_DIR, os.path.basename(path)))
+    print(f'  predictions/ (notas): arquiva {moved} nota(s) fechada(s) > {PRED_MAX_AGE_DAYS}d.')
+    return moved
+
+
 def main():
     args = sys.argv[1:]
     dry_run = '--dry-run' in args
@@ -171,6 +206,7 @@ def main():
     moved = archive_insights(keep, dry_run)
     if do_pred:
         moved += archive_predictions(now, dry_run)
+        moved += archive_note_predictions(now, dry_run)
     print(f'Total movido: {moved} entrada(s).')
 
 

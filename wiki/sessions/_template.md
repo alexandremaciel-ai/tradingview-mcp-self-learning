@@ -1,6 +1,24 @@
+---
+type: session
+symbol: {SYMBOL}
+tf: {TF}
+date: {YYYY-MM-DD}
+class: {BTC|BTC+ETH|BTC+ALTCOIN|ALTCOIN|EQUITIES|WATCHLIST|DAILY|CYCLE}
+layout: {layout ativo}
+bias: {LONG|SHORT|NEUTRO}
+price: {preço}
+confluence: {N}
+regime: {risk-on|risk-off|misto}
+setup: {slug-do-setup|null}
+result: open
+tags: [class/{ALTCOIN}, bias/{LONG}, regime/{misto}]
+---
+
 # Sessão: {SYMBOL} {TIMEFRAME} — {YYYY-MM-DD HH:MM}
 
 > Gerado automaticamente pelo MCP. Não editar manualmente.
+> O **frontmatter acima** é a camada estruturada (Dataview/Bases/Graph). `result` passa a
+> ✅/❌/⚪ quando a previsão é graduada.
 
 ## Contexto
 - **Ativo:** {SYMBOL}

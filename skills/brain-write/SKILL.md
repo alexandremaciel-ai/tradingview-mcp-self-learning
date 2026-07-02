@@ -14,14 +14,19 @@ description: Ciclo WRITE obrigatório do AUTO-PILOT depois de QUALQUER análise 
    (`## [YYYY-MM-DD HH:MM] {op} | {SYMBOL} {TF}`).
 
 ## Condicional
-2. **Bias definido →** previsão em `wiki/brain/predictions-log.md` (Status `⏳ aberta`). **Obrigatório:**
-   incluir o campo `- **Critérios:**` com os slugs de `skills/_references/criteria-keys.md` — os MESMOS
-   critérios que pontuaram no Confluence Score (Fase 9). É o que alimenta a calibração por sinal.
+2. **Bias definido →** criar **nota atômica** de previsão em
+   `wiki/brain/predictions/YYYY-MM-DD-HHMM-SYMBOL-TF.md` a partir de
+   `wiki/brain/_templates/prediction-note.md` (`status: open`). **O frontmatter YAML é a fonte
+   única** (lido por Dataview/Bases e por `metrics_engine.py`) — preencher `criteria:` com os slugs
+   de `skills/_references/criteria-keys.md` (os MESMOS que pontuaram no Confluence Score / Fase 9;
+   sinal `-` entre aspas: `"-stochrsi"`). NÃO reescrever campos como prosa `- **Campo:**`.
+   - `predictions-log.md` está **congelado** (histórico cold, ainda somado pelo `metrics_engine.py`);
+     não fazer mais append nele.
    - **Graduar-antes-de-supersedir (regra dura):** se esta previsão substitui uma anterior do mesmo
-     ativo, a anterior **já deve ter sido graduada** pelo gate 2c do `brain-read` (✅/❌/⚪) ANTES de
-     virar `Supersedida por [[…]]`. NUNCA marcar `Supersedida` sobre uma `⏳` ainda não graduada —
-     **supersedir ≠ resolver**; toda previsão sai de `⏳` por grading objetivo (TP vs SL), não por
-     substituição. Era esse vazamento que deixava `criteria_stats` em N=0.
+     ativo, a anterior **já deve ter sido graduada** pelo gate 2c do `brain-read` (`status: win/loss/
+     expired`) ANTES de marcar a antiga com `superseded: true`. NUNCA setar `superseded` sobre uma
+     `open` ainda não graduada — **supersedir ≠ resolver**; toda previsão sai de `open` por grading
+     objetivo (TP vs SL), não por substituição. Era esse vazamento que deixava `criteria_stats` em N=0.
 3. **Indicador surpreendeu →** registrar a observação qualitativa em `wiki/brain/indicators.md`
    ("Confiabilidade observada" / "Falhas comuns"). Os campos numéricos (Sessões/Acertos/Falhas/Hit Rate)
    são reescritos por `metrics_engine.py` a partir dos `Critérios:` — **não editar à mão**.
@@ -33,7 +38,9 @@ description: Ciclo WRITE obrigatório do AUTO-PILOT depois de QUALQUER análise 
    (TP/SL com OHLCV) e roda o `metrics_engine.py`. Aqui só confirmar que o worklist foi zerado.
 
 ## Arquivo de sessão (operação INGEST)
-Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template, com TODAS as seções obrigatórias:
+Criar `wiki/sessions/YYYY-MM-DD-SYMBOL-TF.md` usando o template. **Preencher o frontmatter YAML no
+topo** (symbol/tf/date/class/layout/bias/price/confluence/regime/setup/result/tags) — é o que
+alimenta o `wiki/dashboard.md`, os `.base` e o Graph. Depois, TODAS as seções obrigatórias:
 - **Brain Read Summary** (erros prevenidos, insights ativados, padrões monitorados)
 - **Alertas disparados hoje** (Dados Capturados) — copiar os alertas lidos no `brain-read` (item 2d):
   `SYMBOL cond @nível (TF) → confirma/avisa`, ou `— nenhum` / `alertas-parciais` (TV offline)

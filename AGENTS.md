@@ -91,6 +91,16 @@ sempre ancoradas à disciplina (`position-sizing`/circuit breaker).
   seed `.initial.md` (`index.md`, `log.md`, `setups/index.md`, `watchlist.md`, `library.md`).
 - Recall otimizado: `brain-read` lê `insights-hot.md` (Top 8) + busca por relevância; **não** despeja
   `insights.md`/`predictions-log.md` inteiros.
+- **Notas atômicas + frontmatter (fonte única):** cada previsão nova = 1 arquivo
+  `wiki/brain/predictions/AAAA-MM-DD-HHMM-SYMBOL-TF.md` com frontmatter YAML
+  (`symbol/tf/side/status/criteria/confluence/…`); sessões idem (frontmatter no topo). Isso alimenta
+  nativamente Dataview/**Bases**/Graph do Obsidian **e** o parser determinístico. `metrics_engine.py`/
+  `check_predictions.py` leem o frontmatter das notas + o monolito **congelado** (`predictions-log.md`,
+  histórico cold — não fazer mais append). Grading edita `status`/`rr_real`/`postclose` no frontmatter.
+- **Obsidian nativo é o dashboard:** `wiki/dashboard.md` (Dataview) + `wiki/predictions.base` (Bases)
+  respondem "previsões abertas / win-rate por setup/regime" ao vivo, custo zero — preferir a consultar o LLM.
+  `archive_brain.py --predictions` move notas fechadas > 90d p/ `predictions-archive/` (fora do recall
+  quente, ainda contadas nas métricas).
 
 ---
 

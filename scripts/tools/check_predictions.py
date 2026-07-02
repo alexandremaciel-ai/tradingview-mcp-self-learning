@@ -31,10 +31,12 @@ Exit code: 0 = LIMPO · 1 = SUJO (há pendências) · 2 = erro de uso.
 Sem dependências externas (stdlib: importa os parsers de metrics_engine).
 """
 
+import glob
+import os
 import sys
 from datetime import datetime, timedelta, timezone
 
-from metrics_engine import HEADER_RE, PRED_FILE, detect_status
+from metrics_engine import HEADER_RE, PRED_FILE, PRED_DIR, detect_status, read_frontmatter
 
 BRT = timezone(timedelta(hours=-3))  # America/Sao_Paulo, sem DST desde 2019
 OVERDUE_DAYS = 2  # >= 48h sem update => vencida
@@ -60,13 +62,41 @@ def status_line(block):
     return ''
 
 
+def pending_notes(symbol=None):
+    """Notas atômicas ⏳ que precisam graduar (superseded OR idade >= 2d)."""
+    out = []
+    if not os.path.isdir(PRED_DIR):
+        return out
+    today = datetime.now(BRT).date()
+    for path in sorted(glob.glob(os.path.join(PRED_DIR, '*.md'))):
+        with open(path, encoding='utf-8') as f:
+            fm, _ = read_frontmatter(f.read())
+        if not fm or str(fm.get('status', '')).strip().lower() not in ('open', 'aberta'):
+            continue
+        title = f"{fm.get('symbol', '?')} {fm.get('tf', '')} — {fm.get('side', '')}".strip()
+        if symbol and symbol not in title.upper():
+            continue
+        date_str = str(fm.get('date') or '')
+        if str(fm.get('superseded', '')).strip().lower() in ('true', 'yes', 'sim', '1'):
+            out.append((date_str, title, 'supersedida'))
+            continue
+        try:
+            age = (today - datetime.strptime(date_str, '%Y-%m-%d').date()).days
+        except ValueError:
+            continue
+        if age >= OVERDUE_DAYS:
+            out.append((date_str, title, f'vencida ({age}d)'))
+    return out
+
+
 def pending_predictions(symbol=None):
-    """Lista (date_str, title, motivo) das ⏳ que precisam graduar."""
+    """Lista (date_str, title, motivo) das ⏳ que precisam graduar (monolito + notas)."""
+    out = pending_notes(symbol)
     try:
         with open(PRED_FILE, encoding='utf-8') as f:
             lines = f.readlines()
     except FileNotFoundError:
-        return []
+        return out
 
     headers = []
     for i, line in enumerate(lines):
@@ -75,7 +105,6 @@ def pending_predictions(symbol=None):
             headers.append((i, hm.group(1), hm.group(2).strip()))
 
     today = datetime.now(BRT).date()
-    out = []
     for idx, (start, date_str, title) in enumerate(headers):
         end = headers[idx + 1][0] if idx + 1 < len(headers) else len(lines)
         block = ''.join(lines[start:end])

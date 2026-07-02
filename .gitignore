@@ -98,6 +98,10 @@ wiki/brain/layouts.md
 wiki/brain/insights-archive/
 wiki/brain/predictions-archive/
 
+# ── Wiki Brain — notas atômicas de previsão (frontmatter YAML, pessoal) ──
+# wiki/brain/predictions/*.md são geradas pelo brain-write a cada previsão nova.
+wiki/brain/predictions/*.md
+
 # ── Wiki Sessions — personal analysis sessions ──────────────
 wiki/sessions/*.md
 !wiki/sessions/_template.md

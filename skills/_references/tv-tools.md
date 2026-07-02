@@ -29,6 +29,7 @@ Evitar context bloat: (1) `data_get_ohlcv` sempre `summary: true` (exceto barras
 - `chart_manage_indicator` exige **nome completo**: "Relative Strength Index" (não "RSI"), "Moving Average Exponential" (não "EMA"), "Bollinger Bands" (não "BB").
 - Screenshots → `screenshots/` com timestamp. OHLCV cap 500 barras, trades 20/req. Pine labels cap 50/study (override via `max_labels`).
 - ⚠️ **Bug `quote_get(symbol=...)` (12/06):** ignora o parâmetro e retorna o chart ativo → para o macro, **DEVE** `chart_set_symbol` por ticker (não confiar em "quotes paralelos por símbolo").
+- ⚠️ **Race condition pós `chart_set_symbol`/navegação de layout (confirmado 02/07):** `data_get_pine_boxes`/`_labels`/`_lines` podem retornar vazio (`total_boxes: 0` / `showing: 0`) logo após trocar de símbolo ou navegar para outro layout — o indicador (ex.: Whale Liquidity and Absorption, SMC LuxAlgo) ainda não recalculou no novo símbolo, mesmo com `chart_ready: true` no retorno do `chart_set_symbol`/`chart_set_timeframe`. **Um resultado vazio nesse contexto NÃO é `DADO_INDISPONIVEL`** — re-consultar a MESMA tool 1× (sem re-navegar) antes de aceitar "nenhuma zona/label". Só declarar `DADO_INDISPONIVEL` se a 2ª tentativa também vier vazia. Mesma cautela vale pra `capture_screenshot` logo após troca de símbolo (canvas pode estar em branco/stale enquanto o data-layer já respondeu — ver [[feedback_tv_canvas_desync_recovery]] na memória).
 
 ## Architecture
 

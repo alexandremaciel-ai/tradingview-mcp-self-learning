@@ -95,7 +95,13 @@ Para cada layout: navegue, confirme, leia, aplique a dedup.
    - Smart Money Concepts [LuxAlgo] → `data_get_pine_labels` (CHoCH/BOS/EQH/EQL) +
      `data_get_pine_boxes` (Order Blocks) + `data_get_pine_lines` (níveis de estrutura)
    - Whale Liquidity and Absorption → `data_get_pine_boxes` (**filtrar zonas dentro de ±5%
-     do preço** para poupar contexto)
+     do preço** para poupar contexto). ⚠️ **Capturar para CADA ativo do sweep** (não só o 1º) — é
+     item comum de omissão ao trocar de símbolo na mesma página sem re-navegar. Resultado vazio
+     (`total_boxes: 0`) logo após `chart_set_symbol`/navegação = provável **race condition**
+     (indicador ainda recalculando no novo símbolo), **não** `DADO_INDISPONIVEL` — re-consultar a
+     MESMA tool 1× antes de aceitar "nenhuma zona" (ver `skills/_references/tv-tools.md` → Tool
+     Conventions). A tool não expõe cor/intensidade do box — reportar as zonas de preço sem inventar
+     rótulo qualitativo "oferta/demanda" que a API não confirma.
    - Visible Range Volume Profile → `data_get_study_values` (POC/HVN/Up/Down/Total)
    - Mxwll Suite (layout Emas) → `data_get_pine_labels` (estrutura BoS/CHoCH/HH/HL/LH/LL + Fib) +
      `data_get_pine_tables(study_filter="Mxwll")` (sessões/volume) + `data_get_pine_lines(study_filter="Mxwll")`
